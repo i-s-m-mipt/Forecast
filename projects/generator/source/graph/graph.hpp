@@ -8,11 +8,13 @@
 #endif // #ifdef BOOST_HAS_PRAGMA_ONCE
 
 #include <algorithm>
+#include <cmath>
 #include <exception>
 #include <filesystem>
 #include <fstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <boost/extended/serialization/json.hpp>
@@ -52,13 +54,14 @@ namespace solution
 
 				id_t id;
 
-				std::string first_station;
-				std::string second_station;
+				std::pair < std::string, std::string > stations;
 
-				std::size_t length; // miles
+				std::size_t length; // kilometers
 
 				std::size_t train_limit;
 			};
+
+		private:
 
 			struct Station
 			{
@@ -71,6 +74,82 @@ namespace solution
 
 			using stations_container_t = std::vector < Station > ;
 			using segments_container_t = std::vector < Segment > ;
+
+		private:
+
+			class Route
+			{
+			public:
+
+				using id_t = int;
+
+			public:
+
+				enum class Type
+				{
+					cargo,
+					military,
+					passenger
+				};
+
+			public:
+
+				explicit Route(Type type, const std::vector < std::string > & route,
+					const segments_container_t & segments) : 
+					m_id(++last_id), m_type(type), m_station_delay(get_station_delay(m_type)),
+					m_movement_factor(get_movement_factor(m_type))
+				{
+					initialize(route, segments);
+				}
+
+				~Route() noexcept = default;
+
+			private:
+
+				std::time_t get_station_delay(Type type) const;
+
+				double get_movement_factor(Type type) const;
+
+			private:
+
+				void initialize(const std::vector < std::string > & route, 
+					const segments_container_t & segments);
+
+			public:
+
+				const auto id() const noexcept
+				{
+					return m_id;
+				}
+
+				const auto type() const noexcept
+				{
+					return m_type;
+				}
+
+				const auto & timetable() const noexcept
+				{
+					return m_timetable;
+				}
+
+			private:
+
+				static id_t last_id;
+
+				
+			private:
+
+				id_t m_id;
+				Type m_type;
+				std::time_t m_station_delay;
+				double m_movement_factor;
+
+				std::vector < std::pair < std::string, std::time_t > > m_timetable;
+			};
+
+		private:
+
+			using routes_container_t = std::vector < Route > ;
 
 		private:
 
@@ -92,11 +171,20 @@ namespace solution
 
 					struct Segment
 					{
-						static inline const std::string id             = "id";
-						static inline const std::string first_station  = "first_station";
-						static inline const std::string second_station = "second_station";
-						static inline const std::string length         = "length";
-						static inline const std::string train_limit    = "train_limit";
+						static inline const std::string id          = "id";
+						static inline const std::string station_1   = "station_1";
+						static inline const std::string station_2   = "station_2";
+						static inline const std::string length      = "length";
+						static inline const std::string train_limit = "train_limit";
+					};
+
+					struct Route
+					{
+						static inline const std::string id        = "id";
+						static inline const std::string type      = "type";
+						static inline const std::string timetable = "timetable";
+						static inline const std::string station   = "station";
+						static inline const std::string delta     = "delta";
 					};
 				};
 
@@ -106,8 +194,10 @@ namespace solution
 				{
 					using path_t = std::filesystem::path;
 
-					static inline const path_t stations_data = "generator/data/stations.data";
-					static inline const path_t segments_data = "generator/data/segments.data";
+					static inline const path_t stations_data = "graph/data/stations.data";
+					static inline const path_t segments_data = "graph/data/segments.data";
+
+					static inline const path_t routes_data = "graph/data/routes.data";
 				};
 
 			private:
@@ -118,6 +208,8 @@ namespace solution
 
 				static void save(const stations_container_t & stations);
 				static void save(const segments_container_t & segments);
+
+				static void save(const routes_container_t & routes);
 
 			private:
 
@@ -136,12 +228,16 @@ namespace solution
 
 		private:
 
-			void verify() const;
+			void verify_segments() const;
+
+			void generate_routes();
 
 		private:
 
 			stations_container_t m_stations;
 			segments_container_t m_segments;
+
+			routes_container_t m_routes;
 		};
 
 	} // namespace generator

@@ -4,6 +4,106 @@ namespace solution
 {
 	namespace generator
 	{
+		Graph::Route::id_t Graph::Route::last_id = 0;
+
+		std::time_t Graph::Route::get_station_delay(Type type) const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				switch (type)
+				{
+				case Type::cargo:
+					return 30;
+					break;
+				case Type::military:
+					return 10;
+					break;
+				case Type::passenger:
+					return 5;
+					break;
+				default:
+					throw graph_exception("unknown train type");
+					break;
+				}
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < graph_exception > (logger, exception);
+			}
+		}
+
+		double Graph::Route::get_movement_factor(Type type) const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				switch (type)
+				{
+				case Type::cargo:
+					return 0.5;
+					break;
+				case Type::military:
+					return 0.8;
+					break;
+				case Type::passenger:
+					return 1.0;
+					break;
+				default:
+					throw graph_exception("unknown train type");
+					break;
+				}
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < graph_exception > (logger, exception);
+			}
+		}
+
+		void Graph::Route::initialize(const std::vector < std::string > & route,
+			const segments_container_t & segments)
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				if (route.size() < 2)
+				{
+					throw graph_exception("route is too short");
+				}
+
+				m_timetable.push_back(std::make_pair(route[0], 0));
+
+				for (auto i = 1U; i < route.size(); ++i)
+				{
+					auto iterator = std::find_if(segments.begin(), segments.end(),
+						[&route, i](const auto & segment)
+					{
+						return
+							(segment.stations.first == route[i - 1] && segment.stations.second == route[i]) ||
+							(segment.stations.first == route[i]     && segment.stations.second == route[i - 1]);
+					});
+
+					if (iterator == segments.end())
+					{
+						throw graph_exception("route contains invalid segment: " +
+							route[i - 1] + " --> " + route[i]);
+					}
+
+					std::time_t delta = m_timetable.back().second + m_station_delay +
+						static_cast < std::time_t > (std::ceil(iterator->length * m_movement_factor));
+
+					m_timetable.push_back(std::make_pair(route[i], delta));
+				}
+			}
+			catch (const std::exception& exception)
+			{
+				shared::catch_handler < graph_exception > (logger, exception);
+			}
+		}
+
 		void Graph::Data::save(const stations_container_t & stations)
 		{
 			RUN_LOGGER(logger);
@@ -16,7 +116,7 @@ namespace solution
 				{
 					json_t element;
 
-					element[Key::Station::name]     = station.name;
+					element[Key::Station::name] = station.name;
 
 					for (const auto & segment : station.segments)
 					{
@@ -47,9 +147,9 @@ namespace solution
 					json_t element;
 
 					element[Key::Segment::id] = boost::uuids::to_string(segment.id);
-					element[Key::Segment::first_station] = segment.first_station;
-					element[Key::Segment::second_station] = segment.second_station;
-					element[Key::Segment::length] = segment.length;
+					element[Key::Segment::station_1]   = segment.stations.first;
+					element[Key::Segment::station_2]   = segment.stations.second;
+					element[Key::Segment::length]      = segment.length;
 					element[Key::Segment::train_limit] = segment.train_limit;
 
 					array.push_back(element);
@@ -58,6 +158,46 @@ namespace solution
 				save(File::segments_data, array);
 			}
 			catch (const std::exception& exception)
+			{
+				shared::catch_handler < graph_exception > (logger, exception);
+			}
+		}
+
+		void Graph::Data::save(const routes_container_t & routes)
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				auto array = json_t::array();
+
+				for (const auto & route : routes)
+				{
+					json_t element;
+
+					element[Key::Route::id] = route.id();
+					element[Key::Route::type] = static_cast < int > (route.type());
+
+					json_t timetable;
+
+					for (const auto & record : route.timetable())
+					{
+						json_t entry;
+
+						entry[Key::Route::station] = record.first;
+						entry[Key::Route::delta]   = record.second;
+
+						timetable.push_back(entry);
+					}
+
+					element[Key::Route::timetable] = timetable;
+
+					array.push_back(element);
+				}
+
+				save(File::routes_data, array);
+			}
+			catch (const std::exception & exception)
 			{
 				shared::catch_handler < graph_exception > (logger, exception);
 			}
@@ -103,7 +243,7 @@ namespace solution
 					"DOL AMROTH",
 					"HELMS DEEP",
 					"ISENGARD",
-					"LONG DAER",
+					"LOND DAER",
 					"DIMRILL DALE",
 					"DOL GULDUR",
 					"SARN FORD",
@@ -154,7 +294,7 @@ namespace solution
 					{
 						auto id = generator();
 
-						m_segments.push_back({ id, station_name, station_name, 1, 1 });
+						m_segments.push_back({ id, std::make_pair(station_name, station_name), 1, 1 });
 
 						m_stations.back().segments.push_back(id);
 					}
@@ -170,7 +310,7 @@ namespace solution
 					{
 						auto id = generator();
 
-						m_segments.push_back({ id, station_name, station_name, 1, 1 });
+						m_segments.push_back({ id, std::make_pair(station_name, station_name), 1, 1 });
 
 						m_stations.back().segments.push_back(id);
 					}
@@ -186,7 +326,7 @@ namespace solution
 					{
 						auto id = generator();
 
-						m_segments.push_back({ id, station_name, station_name, 1, 1 });
+						m_segments.push_back({ id, std::make_pair(station_name, station_name), 1, 1 });
 
 						m_stations.back().segments.push_back(id);
 					}
@@ -194,59 +334,61 @@ namespace solution
 
 				// =============================================================
 
-				m_segments.push_back({ generator(), "BARAD-DUR", "MOUNT DOOM", 50, 1 });
-				m_segments.push_back({ generator(), "ISENMOUTHE", "MOUNT DOOM", 50, 1 });
-				m_segments.push_back({ generator(), "BARAD-DUR", "ISENMOUTHE", 75, 1 });
-				m_segments.push_back({ generator(), "THE BLACK GATE", "ISENMOUTHE", 75, 1 });
-				m_segments.push_back({ generator(), "THE BLACK GATE", "OSGILIATH", 200, 1 });
-				m_segments.push_back({ generator(), "MINAS MORGUL", "MOUNT DOOM", 50, 1 });
-				m_segments.push_back({ generator(), "MINAS MORGUL", "OSGILIATH", 25, 1 });
-				m_segments.push_back({ generator(), "MINAS TIRITH", "OSGILIATH", 25, 1 });
-				m_segments.push_back({ generator(), "PELARGIR", "OSGILIATH", 100, 1 });
-				m_segments.push_back({ generator(), "PELARGIR", "EDHELLOND", 225, 1 });
-				m_segments.push_back({ generator(), "PELARGIR", "ERECH", 250, 1 });
-				m_segments.push_back({ generator(), "ERECH", "EDHELLOND", 75, 1 });
-				m_segments.push_back({ generator(), "DOL AMROTH", "EDHELLOND", 50, 1 });
-				m_segments.push_back({ generator(), "MINAS TIRITH", "EDORAS", 250, 1 });
-				m_segments.push_back({ generator(), "HELMS DEEP", "EDORAS", 75, 1 });
-				m_segments.push_back({ generator(), "HELMS DEEP", "ISENGARD", 75, 1 });
-				m_segments.push_back({ generator(), "HELMS DEEP", "THARBAD", 300, 1 });
-				m_segments.push_back({ generator(), "THARBAD", "ISENGARD", 250, 1 });
-				m_segments.push_back({ generator(), "LONG DAER", "THARBAD", 200, 1 });
-				m_segments.push_back({ generator(), "SARN FORD", "THARBAD", 150, 1 });
-				m_segments.push_back({ generator(), "MORIA GATE", "THARBAD", 175, 1 });
-				m_segments.push_back({ generator(), "MORIA GATE", "DIMRILL DALE", 25, 1 });
-				m_segments.push_back({ generator(), "DOL GULDUR", "DIMRILL DALE", 200, 1 });
-				m_segments.push_back({ generator(), "LAST BRIDGE", "THARBAD", 200, 1 });
-				m_segments.push_back({ generator(), "LAST BRIDGE", "RIVENDELL", 100, 1 });
-				m_segments.push_back({ generator(), "HIGH PASS", "RIVENDELL", 25, 1 });
-				m_segments.push_back({ generator(), "HIGH PASS", "GOBLIN GATE", 25, 1 });
-				m_segments.push_back({ generator(), "HIGH PASS", "OLD FORD", 50, 1 });
-				m_segments.push_back({ generator(), "BEORN", "OLD FORD", 25, 1 });
-				m_segments.push_back({ generator(), "BEORN", "WOOD ELVES", 125, 1 });
-				m_segments.push_back({ generator(), "ESGAROTH", "WOOD ELVES", 25, 1 });
-				m_segments.push_back({ generator(), "EREBOR", "WOOD ELVES", 25, 1 });
-				m_segments.push_back({ generator(), "EREBOR", "ESGAROTH", 25, 1 });
-				m_segments.push_back({ generator(), "MOUNT GUNDABAD", "GOBLIN GATE", 100, 1 });
-				m_segments.push_back({ generator(), "MOUNT GUNDABAD", "CARN DUM", 100, 1 });
-				m_segments.push_back({ generator(), "ESGAROTH", "OLD FORD", 150, 1 });
-				m_segments.push_back({ generator(), "LAST BRIDGE", "WEATHERTOP", 75, 1 });
-				m_segments.push_back({ generator(), "BREE", "WEATHERTOP", 50, 1 });
-				m_segments.push_back({ generator(), "BREE", "SARN FORD", 50, 1 });
-				m_segments.push_back({ generator(), "BREE", "FORNOST", 50, 1 });
-				m_segments.push_back({ generator(), "HOBBITON", "SARN FORD", 75, 1 });
-				m_segments.push_back({ generator(), "HOBBITON", "BREE", 75, 1 });
-				m_segments.push_back({ generator(), "HOBBITON", "GREY HAVENS", 75, 1 });
-				m_segments.push_back({ generator(), "FORLOND", "GREY HAVENS", 75, 1 });
-				m_segments.push_back({ generator(), "HARLOND", "GREY HAVENS", 50, 1 });
+				m_segments.push_back({ generator(), std::make_pair("BARAD-DUR", "MOUNT DOOM"), 50, 1 });
+				m_segments.push_back({ generator(), std::make_pair("ISENMOUTHE", "MOUNT DOOM"), 50, 1 });
+				m_segments.push_back({ generator(), std::make_pair("BARAD-DUR", "ISENMOUTHE"), 75, 1 });
+				m_segments.push_back({ generator(), std::make_pair("THE BLACK GATE", "ISENMOUTHE"), 75, 1 });
+				m_segments.push_back({ generator(), std::make_pair("THE BLACK GATE", "OSGILIATH"), 200, 1 });
+				m_segments.push_back({ generator(), std::make_pair("MINAS MORGUL", "MOUNT DOOM"), 50, 1 });
+				m_segments.push_back({ generator(), std::make_pair("MINAS MORGUL", "OSGILIATH"), 25, 1 });
+				m_segments.push_back({ generator(), std::make_pair("MINAS TIRITH", "OSGILIATH"), 25, 1 });
+				m_segments.push_back({ generator(), std::make_pair("PELARGIR", "OSGILIATH"), 100, 1 });
+				m_segments.push_back({ generator(), std::make_pair("PELARGIR", "EDHELLOND"), 225, 1 });
+				m_segments.push_back({ generator(), std::make_pair("PELARGIR", "ERECH"), 250, 1 });
+				m_segments.push_back({ generator(), std::make_pair("ERECH", "EDHELLOND"), 75, 1 });
+				m_segments.push_back({ generator(), std::make_pair("DOL AMROTH", "EDHELLOND"), 50, 1 });
+				m_segments.push_back({ generator(), std::make_pair("MINAS TIRITH", "EDORAS"), 250, 1 });
+				m_segments.push_back({ generator(), std::make_pair("HELMS DEEP", "EDORAS"), 75, 1 });
+				m_segments.push_back({ generator(), std::make_pair("HELMS DEEP", "ISENGARD"), 75, 1 });
+				m_segments.push_back({ generator(), std::make_pair("HELMS DEEP", "THARBAD"), 300, 1 });
+				m_segments.push_back({ generator(), std::make_pair("THARBAD", "ISENGARD"), 250, 1 });
+				m_segments.push_back({ generator(), std::make_pair("LOND DAER", "THARBAD"), 200, 1 });
+				m_segments.push_back({ generator(), std::make_pair("SARN FORD", "THARBAD"), 150, 1 });
+				m_segments.push_back({ generator(), std::make_pair("MORIA GATE", "THARBAD"), 175, 1 });
+				m_segments.push_back({ generator(), std::make_pair("MORIA GATE", "DIMRILL DALE"), 25, 1 });
+				m_segments.push_back({ generator(), std::make_pair("DOL GULDUR", "DIMRILL DALE"), 200, 1 });
+				m_segments.push_back({ generator(), std::make_pair("LAST BRIDGE", "THARBAD"), 200, 1 });
+				m_segments.push_back({ generator(), std::make_pair("LAST BRIDGE", "RIVENDELL"), 100, 1 });
+				m_segments.push_back({ generator(), std::make_pair("HIGH PASS", "RIVENDELL"), 25, 1 });
+				m_segments.push_back({ generator(), std::make_pair("HIGH PASS", "GOBLIN GATE"), 25, 1 });
+				m_segments.push_back({ generator(), std::make_pair("HIGH PASS", "OLD FORD"), 50, 1 });
+				m_segments.push_back({ generator(), std::make_pair("BEORN", "OLD FORD"), 25, 1 });
+				m_segments.push_back({ generator(), std::make_pair("BEORN", "WOOD ELVES"), 125, 1 });
+				m_segments.push_back({ generator(), std::make_pair("ESGAROTH", "WOOD ELVES"), 25, 1 });
+				m_segments.push_back({ generator(), std::make_pair("EREBOR", "WOOD ELVES"), 25, 1 });
+				m_segments.push_back({ generator(), std::make_pair("EREBOR", "ESGAROTH"), 25, 1 });
+				m_segments.push_back({ generator(), std::make_pair("MOUNT GUNDABAD", "GOBLIN GATE"), 100, 1 });
+				m_segments.push_back({ generator(), std::make_pair("MOUNT GUNDABAD", "CARN DUM"), 100, 1 });
+				m_segments.push_back({ generator(), std::make_pair("ESGAROTH", "OLD FORD"), 150, 1 });
+				m_segments.push_back({ generator(), std::make_pair("LAST BRIDGE", "WEATHERTOP"), 75, 1 });
+				m_segments.push_back({ generator(), std::make_pair("BREE", "WEATHERTOP"), 50, 1 });
+				m_segments.push_back({ generator(), std::make_pair("BREE", "SARN FORD"), 50, 1 });
+				m_segments.push_back({ generator(), std::make_pair("BREE", "FORNOST"), 50, 1 });
+				m_segments.push_back({ generator(), std::make_pair("HOBBITON", "SARN FORD"), 75, 1 });
+				m_segments.push_back({ generator(), std::make_pair("HOBBITON", "BREE"), 75, 1 });
+				m_segments.push_back({ generator(), std::make_pair("HOBBITON", "GREY HAVENS"), 75, 1 });
+				m_segments.push_back({ generator(), std::make_pair("FORLOND", "GREY HAVENS"), 75, 1 });
+				m_segments.push_back({ generator(), std::make_pair("HARLOND", "GREY HAVENS"), 50, 1 });
 
-				verify();
+				verify_segments();
 
 				std::cout << "Stations total: " << m_stations.size() << std::endl;
 				std::cout << "Segments total: " << m_segments.size() << std::endl;
 
 				Data::save(m_stations);
 				Data::save(m_segments);
+
+				generate_routes();
 			}
 			catch (const std::exception & exception)
 			{
@@ -254,7 +396,7 @@ namespace solution
 			}
 		}
 
-		void Graph::verify() const
+		void Graph::verify_segments() const
 		{
 			RUN_LOGGER(logger);
 
@@ -265,21 +407,94 @@ namespace solution
 					if (std::find_if(m_stations.begin(), m_stations.end(),
 						[&segment](const auto & station)
 					{
-						return (station.name == segment.first_station);
+						return (station.name == segment.stations.first);
 					}) == m_stations.end())
 					{
-						throw graph_exception("cannot find first station: \"" + segment.first_station + "\"");
+						throw graph_exception("cannot find first station: \"" + segment.stations.first + "\"");
 					}
 
 					if (std::find_if(m_stations.begin(), m_stations.end(),
 						[&segment](const auto& station)
 					{
-						return (station.name == segment.second_station);
+						return (station.name == segment.stations.second);
 					}) == m_stations.end())
 					{
-						throw graph_exception("cannot find second station: \"" + segment.first_station + "\"");
+						throw graph_exception("cannot find second station: \"" + segment.stations.second + "\"");
 					}
 				}
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < graph_exception > (logger, exception);
+			}
+		}
+
+		void Graph::generate_routes()
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				m_routes.push_back(Route(Route::Type::cargo, 
+					{
+						"EREBOR", "ESGAROTH", "OLD FORD", "HIGH PASS", "RIVENDELL",
+						"LAST BRIDGE", "WEATHERTOP", "BREE", "HOBBITON", "GREY HAVENS"
+					}, m_segments));
+
+				m_routes.push_back(Route(Route::Type::military,
+					{
+						"CARN DUM", "MOUNT GUNDABAD", "GOBLIN GATE", "HIGH PASS", "RIVENDELL",
+						"LAST BRIDGE", "WEATHERTOP", "BREE" 
+					}, m_segments));
+
+				m_routes.push_back(Route(Route::Type::passenger,
+					{
+						"EREBOR", "WOOD ELVES", "BEORN", "OLD FORD", "HIGH PASS", "RIVENDELL"
+					}, m_segments));
+
+				m_routes.push_back(Route(Route::Type::passenger,
+					{
+						"FORNOST", "BREE", "SARN FORD", "THARBAD", "LOND DAER"
+					}, m_segments));
+
+				m_routes.push_back(Route(Route::Type::passenger,
+					{
+						"FORLOND", "GREY HAVENS", "HOBBITON", "BREE"
+					}, m_segments));
+
+				m_routes.push_back(Route(Route::Type::passenger,
+					{
+						"HARLOND", "GREY HAVENS", "HOBBITON", "BREE"
+					}, m_segments));
+
+				m_routes.push_back(Route(Route::Type::military,
+					{
+						"LOND DAER", "THARBAD", "MORIA GATE", "DIMRILL DALE", "DOL GULDUR"
+					}, m_segments));
+
+				m_routes.push_back(Route(Route::Type::cargo,
+					{
+						"GREY HAVENS", "HOBBITON", "SARN FORD", "THARBAD", "HELMS DEEP",
+						"EDORAS", "MINAS TIRITH" 
+					}, m_segments));
+
+				m_routes.push_back(Route(Route::Type::passenger,
+					{
+						"EDORAS", "HELMS DEEP", "ISENGARD"
+					}, m_segments));
+
+				m_routes.push_back(Route(Route::Type::military,
+					{
+						"MINAS TIRITH", "OSGILIATH", "MINAS MORGUL", "MOUNT DOOM", "BARAD-DUR",
+						"ISENMOUTHE", "THE BLACK GATE", "OSGILIATH", "MINAS TIRITH"
+					}, m_segments));
+
+				m_routes.push_back(Route(Route::Type::cargo,
+					{
+						"MINAS TIRITH", "OSGILIATH", "PELARGIR", "EDHELLOND"
+					}, m_segments));
+
+				Data::save(m_routes);
 			}
 			catch (const std::exception & exception)
 			{
