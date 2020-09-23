@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "graph/graph.hpp"
+#include "generator/generator.hpp"
 
 #include "../../shared/source/logger/logger.hpp"
 
@@ -12,9 +12,9 @@ int main(int argc, char** argv)
 
 	try
 	{
-		solution::generator::Graph graph;
+		solution::generator::Generator generator;
 
-		graph.generate();
+		generator.run();
 
 		return EXIT_SUCCESS;
 	}

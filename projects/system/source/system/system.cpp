@@ -6,7 +6,7 @@ namespace solution
 	{
 		using Severity = shared::Logger::Severity;
 
-		void System::Data::load(      actions_container_t & actions)
+		void System::Data::load(      segments_container_t & segments)
 		{
 			RUN_LOGGER(logger);
 
@@ -14,7 +14,7 @@ namespace solution
 			{
 				json_t array;
 				
-				load(File::actions_data, array);
+				load(File::segments_data, array);
 
 				for (const auto & element : array)
 				{

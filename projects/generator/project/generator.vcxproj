@@ -20,12 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\source\logger\logger.cpp" />
-    <ClCompile Include="..\source\graph\graph.cpp" />
+    <ClCompile Include="..\source\generator\generator.cpp" />
     <ClCompile Include="..\source\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\source\logger\logger.hpp" />
-    <ClInclude Include="..\source\graph\graph.hpp" />
+    <ClInclude Include="..\source\generator\generator.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -132,7 +132,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>C:\Libraries\boost;</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4715</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4715; 26451</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

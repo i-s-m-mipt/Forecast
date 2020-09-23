@@ -5,30 +5,30 @@
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="source\graph">
-      <UniqueIdentifier>{7adcca31-e7c4-4630-ad64-1b90abb21b3b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="source\logger">
       <UniqueIdentifier>{c0296f3a-ee65-4f82-a612-d0f4adcc51cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\generator">
+      <UniqueIdentifier>{7adcca31-e7c4-4630-ad64-1b90abb21b3b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\main.cpp">
       <Filter>source</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\graph\graph.cpp">
-      <Filter>source\graph</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\shared\source\logger\logger.cpp">
       <Filter>source\logger</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\generator\generator.cpp">
+      <Filter>source\generator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\source\graph\graph.hpp">
-      <Filter>source\graph</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\shared\source\logger\logger.hpp">
       <Filter>source\logger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\generator\generator.hpp">
+      <Filter>source\generator</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

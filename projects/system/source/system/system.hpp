@@ -8,13 +8,21 @@
 #endif // #ifdef BOOST_HAS_PRAGMA_ONCE
 
 #include <exception>
+#include <filesystem>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 
 #include <boost/extended/application/service.hpp>
 #include <boost/extended/serialization/json.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_generators.hpp>
+#include <boost/uuid/uuid_io.hpp>
 
 #include "../../../shared/source/logger/logger.hpp"
+
+#include "module/segment/segment.hpp"
 
 namespace solution 
 {
@@ -39,6 +47,13 @@ namespace solution
 		{
 		private:
 
+			using Segment = module::Segment;
+
+			using segments_container_t =
+				std::unordered_map < boost::uuids::uuid, std::shared_ptr < Segment > > ;
+
+		private:
+
 			class Data
 			{
 			private:
@@ -49,9 +64,9 @@ namespace solution
 
 				struct File
 				{
-					using path_t = boost::filesystem::path;
+					using path_t = std::filesystem::path;
 
-					static inline const path_t actions_data = "system/data/actions.data";
+					static inline const path_t segments_data = "system/data/segments.data";
 				};
 
 			private:
@@ -62,18 +77,14 @@ namespace solution
 
 				struct Key
 				{
-					struct Action
-					{
-						static inline const std::string path = "path";
-						static inline const std::string name = "name";
-					};
+
 				};
 
 			public:
 
-				static void load(	   actions_container_t & actions);
+				static void load(	   segments_container_t & segments);
 
-				static void save(const actions_container_t & actions);
+				static void save(const segments_container_t & segments);
 
 			private:
 

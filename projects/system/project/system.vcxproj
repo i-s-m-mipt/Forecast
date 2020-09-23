@@ -21,9 +21,17 @@
   <ItemGroup>
     <ClCompile Include="..\..\shared\source\logger\logger.cpp" />
     <ClCompile Include="..\source\main.cpp" />
+    <ClCompile Include="..\source\system\agents\train\route\route.cpp" />
+    <ClCompile Include="..\source\system\agents\train\train.cpp" />
+    <ClCompile Include="..\source\system\module\segment\segment.cpp" />
+    <ClCompile Include="..\source\system\system.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\source\logger\logger.hpp" />
+    <ClInclude Include="..\source\system\agents\train\route\route.hpp" />
+    <ClInclude Include="..\source\system\agents\train\train.hpp" />
+    <ClInclude Include="..\source\system\module\segment\segment.hpp" />
+    <ClInclude Include="..\source\system\system.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

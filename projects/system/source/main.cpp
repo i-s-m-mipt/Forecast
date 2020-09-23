@@ -10,7 +10,7 @@ int main(int argc, char** argv)
 
 	try
 	{
-		std::cout << "READY" << std::endl;
+		
 
 		return EXIT_SUCCESS;
 	}

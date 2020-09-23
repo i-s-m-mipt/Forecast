@@ -8,6 +8,24 @@
     <Filter Include="source\logger">
       <UniqueIdentifier>{c0296f3a-ee65-4f82-a612-d0f4adcc51cb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\system">
+      <UniqueIdentifier>{20b7982c-4909-4954-887d-7efeb299c139}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\system\module">
+      <UniqueIdentifier>{7bcbe489-50a4-4dd5-8de4-3dc09b16d8d4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\system\module\segment">
+      <UniqueIdentifier>{98fd4a20-5e36-4671-9ca9-261cdf8b6b6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\system\agents">
+      <UniqueIdentifier>{286572d2-842f-4050-9c0b-82a5c5431574}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\system\agents\train">
+      <UniqueIdentifier>{655954a5-895c-4c78-8bc7-e33fc0a3ea9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\system\agents\train\route">
+      <UniqueIdentifier>{607a97f5-24d0-4a01-8b14-f892c6402a79}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\source\logger\logger.cpp">
@@ -16,10 +34,34 @@
     <ClCompile Include="..\source\main.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="..\source\system\system.cpp">
+      <Filter>source\system</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\system\module\segment\segment.cpp">
+      <Filter>source\system\module\segment</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\system\agents\train\train.cpp">
+      <Filter>source\system\agents\train</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\system\agents\train\route\route.cpp">
+      <Filter>source\system\agents\train\route</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\source\logger\logger.hpp">
       <Filter>source\logger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\system\module\segment\segment.hpp">
+      <Filter>source\system\module\segment</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\system\system.hpp">
+      <Filter>source\system</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\system\agents\train\train.hpp">
+      <Filter>source\system\agents\train</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\system\agents\train\route\route.hpp">
+      <Filter>source\system\agents\train\route</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
