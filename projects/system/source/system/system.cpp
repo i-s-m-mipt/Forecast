@@ -126,6 +126,32 @@ namespace solution
 			}
 		}
 
+		void System::Data::save_segments_order(const segments_container_t & segments)
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				path_t path = File::segments_order_txt;
+
+				std::fstream fout(path.string(), std::ios::out);
+
+				if (!fout)
+				{
+					throw system_exception("cannot open file " + path.string());
+				}
+
+				for (const auto & segment : segments)
+				{
+					fout << boost::uuids::to_string(segment.second->id()) << std::endl;
+				}
+			}
+			catch (const std::exception& exception)
+			{
+				shared::catch_handler < system_exception >(logger, exception);
+			}
+		}
+
 		void System::Data::load(const path_t & path, json_t & object)
 		{
 			RUN_LOGGER(logger);
@@ -178,6 +204,8 @@ namespace solution
 
 				Data::load(m_routes);
 				logger.write(Severity::debug, std::to_string(m_routes.size()) + " routes");
+
+				Data::save_segments_order(m_segments);
 			}
 			catch (const std::exception & exception)
 			{
@@ -229,13 +257,13 @@ namespace solution
 
 				if (getchar() == 'y')
 				{
-					logger.write(Severity::debug, std::string("has train on route: ") + (has_train_on_route() ? "true" : "false"));
-
 					for (std::time_t t = 0; t < limit_time && has_train_on_route(); ++t)
 					{
 						auto v_in = make_input_vector();
 
 						// print_input_vector(v_in);
+
+						// v_in -> model (N times), return N copies of v_out
 
 						break;
 					}

@@ -11,6 +11,7 @@
 #include <cassert>
 #include <exception>
 #include <filesystem>
+#include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
@@ -92,6 +93,8 @@ namespace solution
 					static inline const path_t segments_data = "system/data/segments.data";
 					static inline const path_t routes_data   = "system/data/routes.data";
 					static inline const path_t trains_data   = "system/data/trains.data";
+
+					static inline const path_t segments_order_txt = "segments_order.txt";
 				};
 
 			private:
@@ -142,6 +145,8 @@ namespace solution
 				static void load(trains_container_t & trains);
 
 				static void load(routes_container_t & routes);
+
+				static void save_segments_order(const segments_container_t & segments);
 
 			private:
 
