@@ -7,6 +7,7 @@
 #  pragma once
 #endif // #ifdef BOOST_HAS_PRAGMA_ONCE
 
+#include <algorithm>
 #include <exception>
 #include <memory>
 #include <stdexcept>
@@ -64,8 +65,8 @@ namespace solution
 
 					std::string station;
 
-					std::time_t arrival;
-					std::time_t departure;
+					std::time_t arrival   = 0;
+					std::time_t departure = 0;
 				};
 
 			public:
@@ -73,6 +74,8 @@ namespace solution
 				using records_container_t = std::vector < Record > ;
 
 			public:
+
+				Route() noexcept = default;
 
 				template < typename Id, typename Records, typename Enable = 
 					std::enable_if_t < 
@@ -83,6 +86,22 @@ namespace solution
 				{}
 
 				~Route() noexcept = default;
+
+			public:
+
+				const auto & id() const noexcept
+				{
+					return m_id;
+				}
+
+				const auto & records() const noexcept
+				{
+					return m_records;
+				}
+
+			public:
+
+				bool empty() const;
 
 			public:
 

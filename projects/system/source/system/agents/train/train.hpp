@@ -21,6 +21,8 @@
 
 #include "../../../../shared/source/logger/logger.hpp"
 
+#include "route/route.hpp"
+
 namespace solution
 {
 	namespace system
@@ -50,6 +52,16 @@ namespace solution
 
 			public:
 
+				enum class State
+				{
+					wait = 1,
+					move,
+					stop_wait,
+					stop_move
+				};
+
+			public:
+
 				template < typename Id, typename Name, typename Code, typename Type, typename Enable =
 					std::enable_if_t <
 						std::is_convertible_v < Id, id_t > &&
@@ -66,6 +78,42 @@ namespace solution
 				{}
 
 				~Train() noexcept = default;
+
+			public:
+
+				const auto & id() const noexcept
+				{
+					return m_id;
+				}
+
+				const auto & route_id() const noexcept
+				{
+					return m_route_id;
+				}
+
+				const auto & current_segment_id() const noexcept
+				{
+					return m_current_segment_id;
+				}
+
+				const auto & route() const noexcept
+				{
+					return m_route;
+				}
+
+				const auto & state() const noexcept
+				{
+					return m_state;
+				}
+
+			public:
+
+				void set_route(const Route & route)
+				{
+					m_route = std::make_shared < Route > (route.id(), route.records());
+				}
+
+				void update_state(State state);
 
 			public:
 
@@ -94,9 +142,9 @@ namespace solution
 
 				std::time_t m_deviation = 0; // (min)
 
-			private:
+				std::shared_ptr < Route > m_route = nullptr;
 
-				mutable boost::uuids::nil_generator m_nil_generator;
+				State m_state = State::wait;
 			};
 
 		} // namespace agents

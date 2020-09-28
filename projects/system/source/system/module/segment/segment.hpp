@@ -61,6 +61,13 @@ namespace solution
 
 			public:
 
+				enum class State
+				{
+					normal
+				};
+
+			public:
+
 				template < typename Id, typename Name, typename Adjacent_Segments, typename Enable = 
 					std::enable_if_t <
 						std::is_convertible_v < Id, id_t > &&
@@ -81,9 +88,27 @@ namespace solution
 					return m_id;
 				}
 
+				const auto train_id() const noexcept
+				{
+					return m_train_id;
+				}
+
+				const auto state() const noexcept
+				{
+					return m_state;
+				}
+
+			public:
+
+				void train_arrived(const id_t & train_id);
+
+				void train_departured();
+
 			public:
 
 				static boost::uuids::string_generator string_generator;
+
+				static boost::uuids::nil_generator nil_generator;
 
 			private:
 
@@ -95,7 +120,9 @@ namespace solution
 
 			private:
 
-				id_t m_current_train_id = boost::uuids::nil_generator()();
+				id_t m_train_id = nil_generator();
+
+				State m_state = State::normal;
 			};
 
 		} // namespace module

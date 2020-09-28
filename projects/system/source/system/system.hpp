@@ -8,8 +8,11 @@
 #endif // #ifdef BOOST_HAS_PRAGMA_ONCE
 
 #include <algorithm>
+#include <cassert>
 #include <exception>
 #include <filesystem>
+#include <iomanip>
+#include <iostream>
 #include <iterator>
 #include <stdexcept>
 #include <string>
@@ -56,21 +59,21 @@ namespace solution
 
 			using Segment = module::Segment;
 
-			using segments_container_t = std::vector < std::shared_ptr < Segment > > ;
+			// using segments_container_t = std::vector < std::shared_ptr < Segment > > ;
 
-			// using segments_container_t = std::unordered_map < id_t, std::shared_ptr < Segment >, boost::hash < id_t > > ;
+			using segments_container_t = std::unordered_map < id_t, std::shared_ptr < Segment >, boost::hash < id_t > > ;
 
 			using Train = agents::Train;
 
-			using trains_container_t = std::vector < std::shared_ptr < Train > >;
+			// using trains_container_t = std::vector < std::shared_ptr < Train > >;
 
-			// using trains_container_t = std::unordered_map < id_t, std::shared_ptr < Train >, boost::hash < id_t > > ;
+			using trains_container_t = std::unordered_map < id_t, std::shared_ptr < Train >, boost::hash < id_t > > ;
 
 			using Route = agents::Route;
 
-			using routes_container_t = std::vector < std::shared_ptr < Route > >;
+			// using routes_container_t = std::vector < std::shared_ptr < Route > >;
 
-			// using routes_container_t = std::unordered_map < id_t, std::shared_ptr < Route >, boost::hash < id_t > > ;
+			using routes_container_t = std::unordered_map < id_t, std::shared_ptr < Route >, boost::hash < id_t > > ;
 
 		private:
 
@@ -145,6 +148,12 @@ namespace solution
 				static void load(const path_t & path, json_t & object);
 			};
 
+		private:
+
+			using v_in_element_t = int;
+
+			using v_in_t = std::vector < v_in_element_t > ;
+
 		public:
 
 			System()
@@ -162,11 +171,29 @@ namespace solution
 
 			void load();
 
+		private:
+
+			void prepare_trains();
+
+			void prepare_segments();
+
 		public:
 
 			void run();
 
 			void stop();
+
+		private:
+
+			bool has_train_on_route() const;
+
+			v_in_t make_input_vector() const;
+
+			void print_input_vector(const v_in_t & v_in) const;
+
+		private:
+
+			const std::time_t limit_time = 60 * 24;
 
 		private:
 

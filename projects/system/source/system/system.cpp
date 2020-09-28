@@ -36,7 +36,9 @@ namespace solution
 						std::move(Segment::string_generator(std::move(id))), static_cast < Segment::Type > (type), 
 						std::move(name), length, std::move(adjacent_segments));
 
-					segments.push_back(segment);
+					segments[segment->id()] = segment;
+
+					// segments.push_back(segment);
 				}
 			}
 			catch (const std::exception & exception)
@@ -74,7 +76,9 @@ namespace solution
 						std::move(Train::string_generator(std::move(current_segment_id))),
 						std::move(Train::string_generator(std::move(previous_segment_id))));
 
-					trains.push_back(train);
+					trains[train->id()] = train;
+
+					// trains.push_back(train);
 				}
 			}
 			catch (const std::exception & exception)
@@ -111,7 +115,9 @@ namespace solution
 
 					auto route = std::make_shared < Route > (std::move(Route::string_generator(std::move(id))), std::move(records));
 
-					routes.push_back(route);
+					routes[route->id()] = route;
+
+					// routes.push_back(route);
 				}
 			}
 			catch (const std::exception& exception)
@@ -148,6 +154,9 @@ namespace solution
 			try
 			{
 				load();
+
+				prepare_trains();
+				prepare_segments();
 			}
 			catch (const std::exception & exception)
 			{
@@ -161,7 +170,48 @@ namespace solution
 
 			try
 			{
-				// ...
+				Data::load(m_segments);
+				logger.write(Severity::debug, std::to_string(m_segments.size()) + " segments");
+
+				Data::load(m_trains);
+				logger.write(Severity::debug, std::to_string(m_trains.size()) + " trains");
+
+				Data::load(m_routes);
+				logger.write(Severity::debug, std::to_string(m_routes.size()) + " routes");
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		void System::prepare_trains()
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				for (auto & train : m_trains)
+				{
+					train.second->set_route(*m_routes.at(train.second->route_id()));
+				}
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		void System::prepare_segments()
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				for (auto & train : m_trains)
+				{
+					m_segments.at(train.second->current_segment_id())->train_arrived(train.second->id());
+				}
 			}
 			catch (const std::exception & exception)
 			{
@@ -179,7 +229,16 @@ namespace solution
 
 				if (getchar() == 'y')
 				{
-					// ...
+					logger.write(Severity::debug, std::string("has train on route: ") + (has_train_on_route() ? "true" : "false"));
+
+					for (std::time_t t = 0; t < limit_time && has_train_on_route(); ++t)
+					{
+						auto v_in = make_input_vector();
+
+						// print_input_vector(v_in);
+
+						break;
+					}
 				}
 			}
 			catch (const std::exception & exception)
@@ -194,7 +253,94 @@ namespace solution
 
 			try
 			{
-				
+				// ...
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		bool System::has_train_on_route() const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				return (std::find_if(m_trains.begin(), m_trains.end(), [](const auto & train)
+				{
+					return !(train.second->route()->empty());
+				}) != m_trains.end());
+			}
+			catch (const std::exception& exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		System::v_in_t System::make_input_vector() const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				v_in_t v_in;
+
+				const auto segment_data_size = 2U + 2U * m_routes.begin()->second->records().size();
+
+				v_in.reserve(m_segments.size() * segment_data_size);
+
+				for (const auto & segment : m_segments)
+				{
+					auto train_id = segment.second->train_id();
+
+					if (train_id.is_nil())
+					{
+						for (auto i = 0U; i < segment_data_size; ++i)
+						{
+							v_in.push_back(0);
+						}
+					}
+					else
+					{
+						v_in.push_back(static_cast < v_in_element_t > (m_trains.at(train_id)->state()));
+						v_in.push_back(static_cast < v_in_element_t > (segment.second->state()));
+
+						for (const auto & record : m_trains.at(train_id)->route()->records())
+						{
+							v_in.push_back(static_cast < v_in_element_t > (record.arrival));
+							v_in.push_back(static_cast < v_in_element_t > (record.departure));
+						}
+					}
+				}
+
+				return v_in;
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		void System::print_input_vector(const v_in_t & v_in) const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				const auto segment_data_size = 2U + 2U * m_routes.begin()->second->records().size();
+
+				for (auto i = 0U; i < m_segments.size(); ++i)
+				{
+					for (auto j = 0U; j < segment_data_size; ++j)
+					{
+						std::cout << std::setw(3) << std::right << v_in.at(i * segment_data_size + j) << ' ';
+					}
+
+					std::cout << std::endl;
+				}
+
+				std::cout << std::endl;
 			}
 			catch (const std::exception & exception)
 			{

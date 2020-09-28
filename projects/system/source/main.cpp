@@ -2,6 +2,8 @@
 
 #include "../../shared/source/logger/logger.hpp"
 
+#include "system/system.hpp"
+
 using Logger = solution::shared::Logger;
 
 int main(int argc, char** argv)
@@ -10,7 +12,9 @@ int main(int argc, char** argv)
 
 	try
 	{
-		
+		solution::system::System().run();
+
+		system("pause");
 
 		return EXIT_SUCCESS;
 	}
