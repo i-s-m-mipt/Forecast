@@ -140,6 +140,21 @@ namespace solution
 
 			private:
 
+				struct File
+				{
+					using path_t = std::filesystem::path;
+
+					static inline const path_t segments_data = "generator/data/segments.data";
+					static inline const path_t routes_data	 = "generator/data/routes.data";
+					static inline const path_t trains_data	 = "generator/data/trains.data";
+				};
+
+			private:
+
+				using path_t = File::path_t;
+
+			private:
+
 				struct Key
 				{
 					struct Segment
@@ -174,21 +189,6 @@ namespace solution
 						static inline const std::string previous_segment_id = "previous_segment_id";
 					};
 				};
-
-			private:
-
-				struct File
-				{
-					using path_t = std::filesystem::path;
-
-					static inline const path_t segments_data = "generator/data/segments.data";
-					static inline const path_t routes_data   = "generator/data/routes.data";
-					static inline const path_t trains_data   = "generator/data/trains.data";
-				};
-
-			private:
-
-				using path_t = File::path_t;
 
 			public:
 

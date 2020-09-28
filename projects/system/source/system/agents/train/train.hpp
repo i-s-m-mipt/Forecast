@@ -49,18 +49,27 @@ namespace solution
 				using id_t = boost::uuids::uuid;
 
 			public:
+
+				template < typename Id, typename Name, typename Code, typename Type, typename Enable =
+					std::enable_if_t <
+						std::is_convertible_v < Id, id_t > &&
+						std::is_convertible_v < Name, std::string > &&
+						std::is_convertible_v < Code, std::string > &&
+						std::is_convertible_v < Type, std::string > > >
 				explicit Train(
-					const std::string & id,   const std::string & name, 
-					const std::string & code, const std::string & type, double weight_k,
-					const std::string & route_id, std::size_t speed, std::size_t length,
-					const std::string & current_segment_id, const std::string & previous_segment_id = "") :
-						m_id(m_string_generator(id)), m_name(name), m_code(code), m_type(type), m_weight_k(weight_k),
-						m_route_id(m_string_generator(route_id)), m_speed(speed), m_length(length), 
-						m_current_segment_id(m_string_generator(current_segment_id)),
-						m_previous_segment_id(previous_segment_id.empty() ? m_nil_generator() : m_string_generator(previous_segment_id))
+					Id && id, Name && name, Code && code, Type && type, double weight_k, Id && route_id, 
+					std::size_t speed, std::size_t length, Id && current_segment_id, Id && previous_segment_id) :
+						m_id(std::forward < Id > (id)), m_name(std::forward < Name > (name)), m_code(std::forward < Code > (code)), 
+						m_type(std::forward < Type > (type)), m_weight_k(weight_k), m_route_id(std::forward < Id > (route_id)), 
+						m_speed(speed), m_length(length), m_current_segment_id(std::forward < Id > (current_segment_id)),
+						m_previous_segment_id(std::forward < Id > (previous_segment_id))
 				{}
 
 				~Train() noexcept = default;
+
+			public:
+
+				static boost::uuids::string_generator string_generator;
 
 			private:
 
@@ -87,7 +96,6 @@ namespace solution
 
 			private:
 
-				mutable boost::uuids::string_generator m_string_generator;
 				mutable boost::uuids::nil_generator m_nil_generator;
 			};
 

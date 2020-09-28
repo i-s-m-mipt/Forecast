@@ -11,6 +11,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -44,7 +45,7 @@ namespace solution
 
 			class Segment
 			{
-			private:
+			public:
 
 				using id_t = boost::uuids::uuid;
 
@@ -59,20 +60,30 @@ namespace solution
 				};
 
 			public:
+
+				template < typename Id, typename Name, typename Adjacent_Segments, typename Enable = 
+					std::enable_if_t <
+						std::is_convertible_v < Id, id_t > &&
+						std::is_convertible_v < Name, std::string > &&
+						std::is_convertible_v < Adjacent_Segments, segments_container_t > > >
 				explicit Segment(
-					const std::string & id, Type type, 
-					const std::string & name, std::size_t length,
-					const std::vector < std::string > & adjacent_segments) :
-					m_id(m_string_generator(id)), m_type(type), m_name(name), m_length(length)
-				{
-					initialize(adjacent_segments);
-				}
+					Id && id, Type type, Name && name, std::size_t length, Adjacent_Segments && adjacent_segments) :
+						m_id(std::forward < Id > (id)), m_type(type), m_name(std::forward < Name > (name)), 
+						m_length(length), m_adjacent_segments(std::forward < Adjacent_Segments > (adjacent_segments))
+				{}
 
 				~Segment() noexcept = default;
 
-			private:
+			public:
 
-				void initialize(const std::vector < std::string > & adjacent_segments);
+				const auto & id() const noexcept
+				{
+					return m_id;
+				}
+
+			public:
+
+				static boost::uuids::string_generator string_generator;
 
 			private:
 
@@ -80,14 +91,11 @@ namespace solution
 				const Type m_type;
 				const std::string m_name;
 				const std::size_t m_length; // (m)
+				const segments_container_t m_adjacent_segments;
 
 			private:
 
-				segments_container_t m_adjacent_segments;
-
-			private:
-
-				mutable boost::uuids::string_generator m_string_generator;
+				id_t m_current_train_id = boost::uuids::nil_generator()();
 			};
 
 		} // namespace module

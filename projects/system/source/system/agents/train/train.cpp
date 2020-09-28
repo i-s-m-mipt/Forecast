@@ -6,7 +6,7 @@ namespace solution
 	{
 		namespace agents
 		{
-		
+			boost::uuids::string_generator Train::string_generator;
 
 		} // namespace agents
 

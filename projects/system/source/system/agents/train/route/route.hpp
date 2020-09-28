@@ -52,6 +52,16 @@ namespace solution
 
 				struct Record
 				{
+					Record() noexcept = default;
+
+					template < typename Station, typename Enable =
+						std::enable_if_t < std::is_convertible_v < Station, std::string > > >
+					explicit Record(Station && station_v, std::time_t arrival_v, std::time_t departure_v) :
+						station(std::forward < Station > (station_v)), arrival(arrival_v), departure(departure_v)
+					{}
+
+					~Record() noexcept = default;
+
 					std::string station;
 
 					std::time_t arrival;
@@ -63,11 +73,20 @@ namespace solution
 				using records_container_t = std::vector < Record > ;
 
 			public:
-				explicit Route(const std::string & id, const records_container_t & records) :
-					m_id(m_string_generator(id)), m_records(records)
+
+				template < typename Id, typename Records, typename Enable = 
+					std::enable_if_t < 
+						std::is_convertible_v < Id, id_t > &&
+						std::is_convertible_v < Records, records_container_t > > >
+				explicit Route(Id && id, Records && records) :
+					m_id(std::forward < Id > (id)), m_records(std::forward < Records > (records))
 				{}
 
 				~Route() noexcept = default;
+
+			public:
+
+				static boost::uuids::string_generator string_generator;
 
 			private:
 
@@ -76,10 +95,6 @@ namespace solution
 			private:
 
 				records_container_t m_records;
-
-			private:
-
-				mutable boost::uuids::string_generator m_string_generator;
 			};
 
 		} // namespace agents

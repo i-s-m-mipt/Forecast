@@ -7,14 +7,17 @@
 #  pragma once
 #endif // #ifdef BOOST_HAS_PRAGMA_ONCE
 
+#include <algorithm>
 #include <exception>
 #include <filesystem>
+#include <iterator>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <vector>
 
-#include <boost/extended/application/service.hpp>
 #include <boost/extended/serialization/json.hpp>
+#include <boost/functional/hash.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -23,6 +26,8 @@
 #include "../../../shared/source/logger/logger.hpp"
 
 #include "module/segment/segment.hpp"
+#include "agents/train/train.hpp"
+#include "agents/train/route/route.hpp"
 
 namespace solution 
 {
@@ -43,14 +48,29 @@ namespace solution
 			~system_exception() noexcept = default;
 		};
 
-		class System : public boost::extended::application::service
+		class System
 		{
 		private:
 
+			using id_t = boost::uuids::uuid;
+
 			using Segment = module::Segment;
 
-			using segments_container_t =
-				std::unordered_map < boost::uuids::uuid, std::shared_ptr < Segment > > ;
+			using segments_container_t = std::vector < std::shared_ptr < Segment > > ;
+
+			// using segments_container_t = std::unordered_map < id_t, std::shared_ptr < Segment >, boost::hash < id_t > > ;
+
+			using Train = agents::Train;
+
+			using trains_container_t = std::vector < std::shared_ptr < Train > >;
+
+			// using trains_container_t = std::unordered_map < id_t, std::shared_ptr < Train >, boost::hash < id_t > > ;
+
+			using Route = agents::Route;
+
+			using routes_container_t = std::vector < std::shared_ptr < Route > >;
+
+			// using routes_container_t = std::unordered_map < id_t, std::shared_ptr < Route >, boost::hash < id_t > > ;
 
 		private:
 
@@ -67,6 +87,8 @@ namespace solution
 					using path_t = std::filesystem::path;
 
 					static inline const path_t segments_data = "system/data/segments.data";
+					static inline const path_t routes_data   = "system/data/routes.data";
+					static inline const path_t trains_data   = "system/data/trains.data";
 				};
 
 			private:
@@ -77,20 +99,50 @@ namespace solution
 
 				struct Key
 				{
+					struct Segment
+					{
+						static inline const std::string id				  = "id";
+						static inline const std::string type			  = "type";
+						static inline const std::string name			  = "name";
+						static inline const std::string length			  = "length";
+						static inline const std::string adjacent_segments = "adjacent_segments";
+					};
 
+					struct Route
+					{
+						static inline const std::string id		  = "id";
+						static inline const std::string records	  = "records";
+						static inline const std::string station	  = "station";
+						static inline const std::string arrival	  = "arrival";
+						static inline const std::string departure = "departure";
+					};
+
+					struct Train
+					{
+						static inline const std::string id					= "id";
+						static inline const std::string name				= "name";
+						static inline const std::string code				= "code";
+						static inline const std::string type				= "type";
+						static inline const std::string weight_k			= "weight_k";
+						static inline const std::string route_id			= "route_id";
+						static inline const std::string speed				= "speed";
+						static inline const std::string length				= "length";
+						static inline const std::string current_segment_id	= "current_segment_id";
+						static inline const std::string previous_segment_id	= "previous_segment_id";
+					};
 				};
 
 			public:
 
-				static void load(	   segments_container_t & segments);
+				static void load(segments_container_t & segments);
 
-				static void save(const segments_container_t & segments);
+				static void load(trains_container_t & trains);
+
+				static void load(routes_container_t & routes);
 
 			private:
 
-				static void load(const path_t & path,		json_t & object);
-
-				static void save(const path_t & path, const json_t & object);
+				static void load(const path_t & path, json_t & object);
 			};
 
 		public:
@@ -100,36 +152,29 @@ namespace solution
 				initialize();
 			}
 
-			~System() noexcept
-			{
-				try
-				{
-					uninitialize();
-				}
-				catch (...) 
-				{
-					// std::abort();
-				}
-			}
+			~System() noexcept = default;
 
 		private:
 
 			void initialize();
 
-			void uninitialize();
-
 		private:
 
 			void load();
 
-			void save();
-
 		public:
 
-			virtual void run() override;
+			void run();
 
-			virtual void stop() override;
+			void stop();
 
+		private:
+
+			segments_container_t m_segments;
+
+			trains_container_t m_trains;
+
+			routes_container_t m_routes;
 		};
 
 	} // namespace system
