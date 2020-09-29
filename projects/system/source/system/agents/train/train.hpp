@@ -106,9 +106,14 @@ namespace solution
 					return m_route;
 				}
 
-				const auto & state() const noexcept
+				const auto state() const noexcept
 				{
 					return m_state;
+				}
+
+				const auto movement_time() const noexcept
+				{
+					return m_movement_time;
 				}
 
 			public:
@@ -121,6 +126,8 @@ namespace solution
 				void update_state(State state);
 
 				void update_current_segment_id(const id_t & next_segment_id);
+
+				void continue_movement(std::size_t segment_length);
 
 			public:
 
@@ -152,6 +159,8 @@ namespace solution
 				std::shared_ptr < Route > m_route = nullptr;
 
 				State m_state = State::wait;
+
+				std::time_t m_movement_time = 0; // (min)
 			};
 
 		} // namespace agents

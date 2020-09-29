@@ -213,9 +213,11 @@ namespace solution
 
 			void execute_command(const Segment::id_t & id, const v_out_t & command) const;
 
-			bool can_move(const Segment::id_t & current_segment_id, const Segment::id_t & next_segment_id) const;
+			bool can_goto_segment(const Segment::id_t & current_segment_id, const Segment::id_t & next_segment_id) const;
 
-			void move(const Segment::id_t & current_segment_id, const Segment::id_t & next_segment_id) const;
+			void goto_segment(const Segment::id_t & current_segment_id, const Segment::id_t & next_segment_id) const;
+
+			void continue_movement() const;
 
 		private:
 

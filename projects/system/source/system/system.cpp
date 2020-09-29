@@ -259,21 +259,20 @@ namespace solution
 				{
 					for (std::time_t t = 0; t < limit_time && has_train_on_route(); ++t)
 					{
-						// if (has_ready_train_on_route())
+						if (has_ready_train_on_route())
 						{
 							auto v_in = make_input_vector();
 
-							print_input_vector(v_in);
-
-							// v_in -> model (N times), return N copies of v_out
-							// N ~ 64-128 - for parallel programming implementation
+							// print_input_vector(v_in);
 
 							auto v_out = make_output_vector();
 
-							print_output_vector(v_out);
+							// print_output_vector(v_out);
+
+							apply_output_vector(v_out);
 						}
 
-						
+						continue_movement();
 
 						break; // debug
 					}
@@ -536,9 +535,9 @@ namespace solution
 					const auto next_segment_id = m_segments.at(id)->adjacent_segments().at(static_cast < std::size_t > (
 						std::distance(std::find(std::next(command.begin(), bias), command.end(), 1), std::next(command.begin(), bias))));
 
-					if (can_move(id, next_segment_id))
+					if (can_goto_segment(id, next_segment_id))
 					{
-						move(id, next_segment_id);
+						goto_segment(id, next_segment_id);
 					}
 					else
 					{
@@ -548,7 +547,11 @@ namespace solution
 					break;
 				}
 				default:
+				{
+					throw std::logic_error("unknown command type: " + std::to_string(command.at(0)));
+
 					break;
+				}
 				}
 			}
 			catch (const std::exception & exception)
@@ -557,7 +560,7 @@ namespace solution
 			}
 		}
 
-		bool System::can_move(const Segment::id_t & current_segment_id, const Segment::id_t & next_segment_id) const
+		bool System::can_goto_segment(const Segment::id_t & current_segment_id, const Segment::id_t & next_segment_id) const
 		{
 			RUN_LOGGER(logger);
 
@@ -572,7 +575,7 @@ namespace solution
 			}
 		}
 
-		void System::move(const Segment::id_t & current_segment_id, const Segment::id_t & next_segment_id) const
+		void System::goto_segment(const Segment::id_t & current_segment_id, const Segment::id_t & next_segment_id) const
 		{
 			RUN_LOGGER(logger);
 
@@ -585,6 +588,26 @@ namespace solution
 				m_trains.at(m_segments.at(next_segment_id)->train_id())->update_current_segment_id(next_segment_id);
 
 				m_trains.at(m_segments.at(next_segment_id)->train_id())->update_state(Train::State::move);
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		void System::continue_movement() const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				for (auto & train : m_trains)
+				{
+					if (train.second->state() == Train::State::move)
+					{
+						train.second->continue_movement(m_segments.at(train.second->current_segment_id())->length());
+					}
+				}
 			}
 			catch (const std::exception & exception)
 			{
