@@ -257,40 +257,57 @@ namespace solution
 
 				if (getchar() == 'y')
 				{
-					for (std::time_t t = 0; t < limit_time && has_train_on_route(); ++t)
+					std::time_t t = 0;
+
+					for (; t < limit_time && has_train_on_route(); ++t)
 					{
 						bool flag = has_ready_train_on_route();
 
-						std::cout << "Trains ready on route: " << std::boolalpha << flag << std::endl << std::endl;
+						// std::cout << "Trains ready on route: " << std::boolalpha << flag << std::endl << std::endl; // debug
 
 						if (flag)
 						{
 							auto v_in = make_input_vector();
 
-							print_input_vector(v_in);
+							// print_input_vector(v_in); // debug
 
 							auto v_out = make_output_vector();
 
-							print_output_vector(v_out);
+							// print_output_vector(v_out); // debug
 
 							apply_output_vector(v_out);
 
 							v_in = make_input_vector();
 
-							// print_input_vector(v_in);
-
-							print_deviations();
+							// print_deviations(); // debug
 						}
 
 						continue_action();
+						/*
+						if (t && (t % 300 == 0)) // debug
+						{
+							std::cout << "t = " << t << ", exiting main cycle to compute residual deviations ... \n" << std::endl; // debug
 
-						if (t && (t % 360 == 0))
+							break; // debug
+						}
+						*/
+						if (t % 60 == 0)
 						{
 							std::cout << "t = " << t << std::endl;
-
-							char c; std::cin >> c;
 						}
 					}
+
+					std::cout << "t = " << t << ", exiting main cycle to compute residual deviations ... \n" << std::endl; // debug
+
+					std::cout << std::boolalpha << "Has train on route: " << has_train_on_route() << std::endl << std::endl; // debug
+
+					auto v_in = make_input_vector();
+
+					print_input_vector(v_in);
+
+					compute_final_deviations();
+
+					print_deviations(); // debug
 				}
 			}
 			catch (const std::exception & exception)
@@ -734,10 +751,29 @@ namespace solution
 			{
 				for (const auto & train : m_trains)
 				{
-					std::cout << std::setw(5) << std::right << train.second->name() << " deviation = " << train.second->deviation() << " (min)\n";
+					std::cout << 
+						std::setw(5) << std::right << train.second->name() << " deviation = " <<
+						std::setw(4) << std::right << train.second->deviation() << " (min)\n";
 				}
 
 				std::cout << std::endl;
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		void System::compute_final_deviations() const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				for (auto & train : m_trains)
+				{
+					train.second->compute_final_deviation();
+				}
 			}
 			catch (const std::exception & exception)
 			{

@@ -224,6 +224,8 @@ namespace solution
 
 			void print_deviations() const;
 
+			void compute_final_deviations() const;
+
 		private:
 
 			const std::time_t limit_time = 60 * 24;

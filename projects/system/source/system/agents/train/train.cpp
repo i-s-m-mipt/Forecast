@@ -98,6 +98,26 @@ namespace solution
 				}
 			}
 
+			void Train::compute_final_deviation()
+			{
+				RUN_LOGGER(logger);
+
+				try
+				{
+					for (const auto & record : m_route->records())
+					{
+						if (record.arrival < 0)
+						{
+							m_deviation += std::abs(record.arrival);
+						}
+					}
+				}
+				catch (const std::exception & exception)
+				{
+					shared::catch_handler < train_exception > (logger, exception);
+				}
+			}
+
 			boost::uuids::string_generator Train::string_generator;
 
 		} // namespace agents

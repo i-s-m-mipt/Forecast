@@ -143,6 +143,8 @@ namespace solution
 
 				void update_deviation(const std::string & current_station);
 
+				void compute_final_deviation();
+
 			public:
 
 				static boost::uuids::string_generator string_generator;
