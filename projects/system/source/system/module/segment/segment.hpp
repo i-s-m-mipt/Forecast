@@ -109,6 +109,10 @@ namespace solution
 
 				void train_departured();
 
+				bool has_train() const;
+
+				bool is_available_to_move() const;
+
 			public:
 
 				static boost::uuids::string_generator string_generator;

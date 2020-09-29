@@ -160,7 +160,7 @@ namespace solution
 
 			using v_in_t = std::vector < v_in_element_t > ;
 
-			using v_out_element = bool;
+			using v_out_element = int;
 
 			using v_out_t = std::vector < v_out_element > ;
 
@@ -206,6 +206,16 @@ namespace solution
 			v_out_t make_output_vector() const;
 
 			void print_output_vector(const v_out_t & v_out) const;
+
+			void apply_output_vector(const v_out_t & v_out) const;
+
+			bool can_execute_command(const Segment::id_t & id) const;
+
+			void execute_command(const Segment::id_t & id, const v_out_t & command) const;
+
+			bool can_move(const Segment::id_t & current_segment_id, const Segment::id_t & next_segment_id) const;
+
+			void move(const Segment::id_t & current_segment_id, const Segment::id_t & next_segment_id) const;
 
 		private:
 

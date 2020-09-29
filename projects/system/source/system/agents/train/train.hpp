@@ -54,7 +54,7 @@ namespace solution
 
 				enum class State
 				{
-					wait = 1,
+					wait = 0,
 					move,
 					stop_wait,
 					stop_move
@@ -96,6 +96,11 @@ namespace solution
 					return m_current_segment_id;
 				}
 
+				const auto & previous_segment_id() const noexcept
+				{
+					return m_previous_segment_id;
+				}
+
 				const auto & route() const noexcept
 				{
 					return m_route;
@@ -114,6 +119,8 @@ namespace solution
 				}
 
 				void update_state(State state);
+
+				void update_current_segment_id(const id_t & next_segment_id);
 
 			public:
 

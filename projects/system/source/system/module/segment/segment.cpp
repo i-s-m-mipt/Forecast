@@ -34,6 +34,34 @@ namespace solution
 				}
 			}
 
+			bool Segment::has_train() const
+			{
+				RUN_LOGGER(logger);
+
+				try
+				{
+					return (!m_train_id.is_nil());
+				}
+				catch (const std::exception& exception)
+				{
+					shared::catch_handler < segment_exception > (logger, exception);
+				}
+			}
+
+			bool Segment::is_available_to_move() const
+			{
+				RUN_LOGGER(logger);
+
+				try
+				{
+					return (!has_train() && m_state == State::normal);
+				}
+				catch (const std::exception & exception)
+				{
+					shared::catch_handler < segment_exception > (logger, exception);
+				}
+			}
+
 			boost::uuids::string_generator Segment::string_generator;
 
 			boost::uuids::nil_generator Segment::nil_generator;
