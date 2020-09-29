@@ -88,6 +88,11 @@ namespace solution
 					return m_id;
 				}
 
+				const auto adjacent_segments() const noexcept
+				{
+					return m_adjacent_segments;
+				}
+
 				const auto train_id() const noexcept
 				{
 					return m_train_id;

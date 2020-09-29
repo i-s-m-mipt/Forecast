@@ -259,13 +259,23 @@ namespace solution
 				{
 					for (std::time_t t = 0; t < limit_time && has_train_on_route(); ++t)
 					{
-						auto v_in = make_input_vector();
+						if (has_ready_train_on_route())
+						{
+							auto v_in = make_input_vector();
 
-						// print_input_vector(v_in);
+							// print_input_vector(v_in);
 
-						// v_in -> model (N times), return N copies of v_out
+							// v_in -> model (N times), return N copies of v_out
+							// N ~ 64-128 - for parallel programming implementation
 
-						break;
+							auto v_out = make_output_vector();
+
+							// print_output_vector(v_out);
+						}
+
+						
+
+						break; // debug
 					}
 				}
 			}
@@ -303,6 +313,25 @@ namespace solution
 			catch (const std::exception& exception)
 			{
 				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		bool System::has_ready_train_on_route() const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				return (std::find_if(m_trains.begin(), m_trains.end(), [](const auto & train)
+				{
+					return (
+						train.second->state() == Train::State::stop_move || 
+						train.second->state() == Train::State::stop_wait);
+				}) != m_trains.end());
+			}
+			catch (const std::exception& exception)
+			{
+				shared::catch_handler < system_exception >(logger, exception);
 			}
 		}
 
@@ -363,6 +392,57 @@ namespace solution
 					for (auto j = 0U; j < segment_data_size; ++j)
 					{
 						std::cout << std::setw(3) << std::right << v_in.at(i * segment_data_size + j) << ' ';
+					}
+
+					std::cout << std::endl;
+				}
+
+				std::cout << std::endl;
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		System::v_out_t System::make_output_vector() const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				std::size_t total_adjacent_segments_size = 0U;
+
+				for (const auto & segment : m_segments)
+				{
+					total_adjacent_segments_size += segment.second->adjacent_segments().size();
+				}
+
+				v_out_t v_out(total_adjacent_segments_size + m_segments.size(), false);
+
+				// ...
+
+				return v_out;
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		void System::print_output_vector(const v_out_t & v_out) const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				auto index = 0U;
+
+				for (auto i = 0U; i < m_segments.size(); ++i)
+				{
+					for (auto j = 0U; j < std::next(m_segments.begin(), i)->second->adjacent_segments().size() + 1; ++j, ++index)
+					{
+						std::cout << std::setw(5) << std::boolalpha << v_out[index] << ' ';
 					}
 
 					std::cout << std::endl;

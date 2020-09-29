@@ -15,6 +15,7 @@
 #include <iomanip>
 #include <iostream>
 #include <iterator>
+#include <numeric>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -159,6 +160,10 @@ namespace solution
 
 			using v_in_t = std::vector < v_in_element_t > ;
 
+			using v_out_element = bool;
+
+			using v_out_t = std::vector < v_out_element > ;
+
 		public:
 
 			System()
@@ -192,9 +197,15 @@ namespace solution
 
 			bool has_train_on_route() const;
 
+			bool has_ready_train_on_route() const;
+
 			v_in_t make_input_vector() const;
 
 			void print_input_vector(const v_in_t & v_in) const;
+
+			v_out_t make_output_vector() const;
+
+			void print_output_vector(const v_out_t & v_out) const;
 
 		private:
 
