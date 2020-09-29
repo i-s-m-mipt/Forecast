@@ -63,6 +63,41 @@ namespace solution
 				}
 			}
 
+			void Train::reduce_route_time(std::time_t delta, const std::string & current_station)
+			{
+				RUN_LOGGER(logger);
+
+				try
+				{
+					if (current_station.empty())
+					{
+						m_route->reduce_time_on_railway(delta);
+					}
+					else
+					{
+						m_state = (m_route->reduce_time_on_station(delta, current_station) ? State::stop_wait : State::wait);
+					}					
+				}
+				catch (const std::exception & exception)
+				{
+					shared::catch_handler < train_exception > (logger, exception);
+				}
+			}
+
+			void Train::update_deviation(const std::string & current_station)
+			{
+				RUN_LOGGER(logger);
+
+				try
+				{
+					m_deviation += m_route->reduce_time_on_station_arrival(current_station);
+				}
+				catch (const std::exception & exception)
+				{
+					shared::catch_handler < train_exception > (logger, exception);
+				}
+			}
+
 			boost::uuids::string_generator Train::string_generator;
 
 		} // namespace agents

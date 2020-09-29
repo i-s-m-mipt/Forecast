@@ -259,22 +259,37 @@ namespace solution
 				{
 					for (std::time_t t = 0; t < limit_time && has_train_on_route(); ++t)
 					{
-						if (has_ready_train_on_route())
+						bool flag = has_ready_train_on_route();
+
+						std::cout << "Trains ready on route: " << std::boolalpha << flag << std::endl << std::endl;
+
+						if (flag)
 						{
 							auto v_in = make_input_vector();
 
-							// print_input_vector(v_in);
+							print_input_vector(v_in);
 
 							auto v_out = make_output_vector();
 
-							// print_output_vector(v_out);
+							print_output_vector(v_out);
 
 							apply_output_vector(v_out);
+
+							v_in = make_input_vector();
+
+							// print_input_vector(v_in);
+
+							print_deviations();
 						}
 
-						continue_movement();
+						continue_action();
 
-						break; // debug
+						if (t && (t % 360 == 0))
+						{
+							std::cout << "t = " << t << std::endl;
+
+							char c; std::cin >> c;
+						}
 					}
 				}
 			}
@@ -309,7 +324,7 @@ namespace solution
 					return !(train.second->route()->empty());
 				}) != m_trains.end());
 			}
-			catch (const std::exception& exception)
+			catch (const std::exception & exception)
 			{
 				shared::catch_handler < system_exception > (logger, exception);
 			}
@@ -328,7 +343,7 @@ namespace solution
 						train.second->state() == Train::State::stop_wait);
 				}) != m_trains.end());
 			}
-			catch (const std::exception& exception)
+			catch (const std::exception & exception)
 			{
 				shared::catch_handler < system_exception >(logger, exception);
 			}
@@ -388,17 +403,27 @@ namespace solution
 
 				for (auto i = 0U; i < m_segments.size(); ++i)
 				{
-					for (auto j = 0U; j < segment_data_size; ++j)
+					if (std::next(m_segments.begin(), i)->second->has_train())
 					{
-						std::cout << std::setw(3) << std::right << v_in.at(i * segment_data_size + j) << ' ';
-					}
+						for (auto j = 0U; j < segment_data_size; ++j)
+						{
+							if (j < 2U)
+							{
+								std::cout << v_in.at(i * segment_data_size + j) << " | ";
+							}
+							else
+							{
+								std::cout << std::setw(4) << std::right << v_in.at(i * segment_data_size + j) << "| ";
+							}
+						}
 
-					std::cout << std::endl;
+						std::cout << std::endl;
+					}
 				}
 
 				std::cout << std::endl;
 
-				std::cout << "v_in size: " << v_in.size() << std::endl << std::endl;
+				// std::cout << "v_in size: " << v_in.size() << std::endl << std::endl;
 			}
 			catch (const std::exception & exception)
 			{
@@ -421,7 +446,27 @@ namespace solution
 
 				v_out_t v_out(total_adjacent_segments_size + m_segments.size(), 0);
 
-				// ...
+				// get v_out from model
+
+				std::uniform_int_distribution < v_out_element_t > distribution_command(0, 1);
+
+				std::size_t index = 0U;
+
+				for (const auto & segment : m_segments)
+				{
+					const auto group_size = segment.second->adjacent_segments().size();
+
+					v_out[index] = distribution_command(m_generator);
+
+					if (v_out[index] == 1)
+					{
+						std::uniform_int_distribution < std::size_t > distribution_segment(0U, group_size - 1U);
+
+						v_out[index + 1U + distribution_segment(m_generator)] = 1;
+					}
+
+					index += (group_size + 1);
+				}
 
 				return v_out;
 			}
@@ -437,23 +482,30 @@ namespace solution
 
 			try
 			{
-				auto index = 0U;
+				std::size_t index = 0U;
 
-				for (auto i = 0U; i < m_segments.size(); ++i)
+				for (const auto & segment : m_segments)
 				{
-					const auto group_size = std::next(m_segments.begin(), i)->second->adjacent_segments().size() + 1;
+					const auto group_size = segment.second->adjacent_segments().size() + 1;
 
-					for (auto j = 0U; j < group_size; ++j, ++index)
+					if (segment.second->has_train())
 					{
-						std::cout << std::setw(1) /*<< std::boolalpha*/ << v_out[index] << ' ';
-					}
+						for (auto j = 0U; j < group_size; ++j, ++index)
+						{
+							std::cout << std::setw(1) /*<< std::boolalpha*/ << v_out[index] << ' ';
+						}
 
-					std::cout << std::endl;
+						std::cout << std::endl;
+					}
+					else
+					{
+						index += group_size;
+					}
 				}
 
 				std::cout << std::endl;
 
-				std::cout << "v_out size: " << v_out.size() << std::endl << std::endl;
+				// std::cout << "v_out size: " << v_out.size() << std::endl << std::endl;
 			}
 			catch (const std::exception & exception)
 			{
@@ -518,6 +570,8 @@ namespace solution
 
 			try
 			{
+				assert(command.size() >= 2);
+
 				Train::State command_type = static_cast < Train::State > (command.at(0));
 
 				const auto bias = 1U;
@@ -532,8 +586,10 @@ namespace solution
 				}
 				case Train::State::move:
 				{
-					const auto next_segment_id = m_segments.at(id)->adjacent_segments().at(static_cast < std::size_t > (
-						std::distance(std::find(std::next(command.begin(), bias), command.end(), 1), std::next(command.begin(), bias))));
+					const auto adjacent_segment_index = static_cast < std::size_t > (
+						std::distance(std::next(command.begin(), bias), std::find(std::next(command.begin(), bias), command.end(), 1)));
+
+					const auto next_segment_id = m_segments.at(id)->adjacent_segments().at(adjacent_segment_index);
 
 					if (can_goto_segment(id, next_segment_id))
 					{
@@ -566,8 +622,15 @@ namespace solution
 
 			try
 			{
-				return (m_segments.at(next_segment_id)->is_available_to_move() &&
-					m_trains.at(m_segments.at(current_segment_id)->train_id())->previous_segment_id() != next_segment_id);
+				bool is_next_segment_available_to_move = m_segments.at(next_segment_id)->is_available_to_move();
+				bool are_differentl_previous_and_next_segment_ids = 
+					(m_trains.at(m_segments.at(current_segment_id)->train_id())->previous_segment_id() != next_segment_id);
+				bool is_train_previous_segment_id_nil = m_trains.at(m_segments.at(current_segment_id)->train_id())->previous_segment_id().is_nil();
+				bool has_next_segment_empty_name = m_segments.at(next_segment_id)->name().empty(); // only stations have names
+
+				return (is_next_segment_available_to_move && are_differentl_previous_and_next_segment_ids && 
+					(is_train_previous_segment_id_nil || (has_next_segment_empty_name || (m_segments.at(next_segment_id)->name() !=
+						m_segments.at(m_trains.at(m_segments.at(current_segment_id)->train_id())->previous_segment_id())->name()))));
 			}
 			catch (const std::exception & exception)
 			{
@@ -587,7 +650,29 @@ namespace solution
 
 				m_trains.at(m_segments.at(next_segment_id)->train_id())->update_current_segment_id(next_segment_id);
 
-				m_trains.at(m_segments.at(next_segment_id)->train_id())->update_state(Train::State::move);
+				switch (m_segments.at(next_segment_id)->type())
+				{
+				case Segment::Type::railway:
+				{
+					m_trains.at(m_segments.at(next_segment_id)->train_id())->update_state(Train::State::move);
+
+					break;
+				}
+				case Segment::Type::station:
+				{
+					m_trains.at(m_segments.at(next_segment_id)->train_id())->update_state(Train::State::wait);
+
+					m_trains.at(m_segments.at(next_segment_id)->train_id())->update_deviation(m_segments.at(next_segment_id)->name());
+
+					break;
+				}
+				default:
+				{
+					throw std::logic_error("unknown segment type: " + std::to_string(static_cast < int > (m_segments.at(next_segment_id)->type())));
+
+					break;
+				}
+				}
 			}
 			catch (const std::exception & exception)
 			{
@@ -595,19 +680,64 @@ namespace solution
 			}
 		}
 
-		void System::continue_movement() const
+		void System::continue_action() const
 		{
 			RUN_LOGGER(logger);
 
 			try
 			{
+				const std::time_t delta = 1;
+
 				for (auto & train : m_trains)
 				{
-					if (train.second->state() == Train::State::move)
+					switch (train.second->state())
+					{
+					case Train::State::move:
 					{
 						train.second->continue_movement(m_segments.at(train.second->current_segment_id())->length());
+
+						train.second->reduce_route_time(delta);
+
+						break;
+					}
+					case Train::State::wait:
+					{
+						train.second->reduce_route_time(delta, m_segments.at(train.second->current_segment_id())->name());
+
+						break;
+					}
+					case Train::State::stop_move: // impossible here
+					case Train::State::stop_wait:
+					{
+						train.second->reduce_route_time(delta);
+
+						break;
+					}
+					default:
+					{
+						break;
+					}
 					}
 				}
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		void System::print_deviations() const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				for (const auto & train : m_trains)
+				{
+					std::cout << std::setw(5) << std::right << train.second->name() << " deviation = " << train.second->deviation() << " (min)\n";
+				}
+
+				std::cout << std::endl;
 			}
 			catch (const std::exception & exception)
 			{

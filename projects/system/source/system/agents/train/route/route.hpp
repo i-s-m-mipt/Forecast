@@ -103,6 +103,12 @@ namespace solution
 
 				bool empty() const;
 
+				void reduce_time_on_railway(std::time_t delta);
+
+				bool reduce_time_on_station(std::time_t delta, const std::string & current_station);
+
+				std::time_t reduce_time_on_station_arrival(const std::string & current_station);
+
 			public:
 
 				static boost::uuids::string_generator string_generator;

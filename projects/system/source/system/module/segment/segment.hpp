@@ -88,7 +88,17 @@ namespace solution
 					return m_id;
 				}
 
-				const auto & length() const noexcept 
+				const auto type() const noexcept
+				{
+					return m_type;
+				}
+
+				const auto & name() const noexcept
+				{
+					return m_name;
+				}
+
+				const auto length() const noexcept 
 				{
 					return m_length;
 				}

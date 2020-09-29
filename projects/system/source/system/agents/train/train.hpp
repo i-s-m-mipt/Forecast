@@ -86,6 +86,11 @@ namespace solution
 					return m_id;
 				}
 
+				const auto & name() const noexcept
+				{
+					return m_name;
+				}
+
 				const auto & route_id() const noexcept
 				{
 					return m_route_id;
@@ -101,7 +106,12 @@ namespace solution
 					return m_previous_segment_id;
 				}
 
-				const auto & route() const noexcept
+				const auto deviation() const noexcept
+				{
+					return m_deviation;
+				}
+
+				const auto route() const noexcept
 				{
 					return m_route;
 				}
@@ -128,6 +138,10 @@ namespace solution
 				void update_current_segment_id(const id_t & next_segment_id);
 
 				void continue_movement(std::size_t segment_length);
+
+				void reduce_route_time(std::time_t delta, const std::string & current_station = "");
+
+				void update_deviation(const std::string & current_station);
 
 			public:
 

@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <chrono>
 #include <exception>
 #include <filesystem>
 #include <fstream>
@@ -16,6 +17,7 @@
 #include <iostream>
 #include <iterator>
 #include <numeric>
+#include <random>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -160,13 +162,14 @@ namespace solution
 
 			using v_in_t = std::vector < v_in_element_t > ;
 
-			using v_out_element = int;
+			using v_out_element_t = int;
 
-			using v_out_t = std::vector < v_out_element > ;
+			using v_out_t = std::vector < v_out_element_t > ;
 
 		public:
 
-			System()
+			System() : 
+				m_generator(static_cast < unsigned int > (std::chrono::system_clock::now().time_since_epoch().count()))
 			{
 				initialize();
 			}
@@ -217,7 +220,9 @@ namespace solution
 
 			void goto_segment(const Segment::id_t & current_segment_id, const Segment::id_t & next_segment_id) const;
 
-			void continue_movement() const;
+			void continue_action() const;
+
+			void print_deviations() const;
 
 		private:
 
@@ -230,6 +235,10 @@ namespace solution
 			trains_container_t m_trains;
 
 			routes_container_t m_routes;
+
+		private:
+
+			mutable std::default_random_engine m_generator;
 		};
 
 	} // namespace system

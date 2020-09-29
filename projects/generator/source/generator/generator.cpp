@@ -313,7 +313,7 @@ namespace solution
 
 					for (auto i = 0U; i < m_stations.size(); ++i)
 					{
-						route.records.push_back({ m_stations[i], i * 20 + i * delay, i * 20 + (i + 1) * delay });
+						route.records.push_back({ m_stations[i], i * 20 + i * delay, delay });
 					}
 
 					m_routes["ALPHA"] = std::move(route);
@@ -328,7 +328,7 @@ namespace solution
 
 					for (int i = static_cast < int > (m_stations.size()) - 1, j = 0; i >= 0; --i, ++j)
 					{
-						route.records.push_back({ m_stations[i], j * 10 + j * delay, j * 10 + (j + 1) * delay });
+						route.records.push_back({ m_stations[i], j * 10 + j * delay, delay });
 					}
 
 					std::reverse(route.records.begin(), route.records.end());
@@ -345,7 +345,7 @@ namespace solution
 
 					for (auto i = 0U; i < m_stations.size(); ++i)
 					{
-						route.records.push_back({ m_stations[i], i * 10 + i * delay, i * 10 + (i + 1) * delay });
+						route.records.push_back({ m_stations[i], i * 10 + i * delay, delay });
 					}
 
 					m_routes["ECHO"] = std::move(route);
