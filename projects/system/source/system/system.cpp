@@ -257,6 +257,8 @@ namespace solution
 
 				if (getchar() == 'y')
 				{
+					std::cout << std::endl;
+
 					std::time_t t = 0;
 
 					for (; t < limit_time && has_train_on_route(); ++t)

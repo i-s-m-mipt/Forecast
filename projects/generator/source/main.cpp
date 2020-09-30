@@ -16,17 +16,23 @@ int main(int argc, char** argv)
 
 		generator.run();
 
+		system("pause");
+
 		return EXIT_SUCCESS;
 	}
 	catch (const std::exception & exception)
 	{
 		logger.write(Logger::Severity::fatal, exception.what());
 
+		system("pause");
+
 		return EXIT_FAILURE;
 	}
 	catch (...)
 	{
 		logger.write(Logger::Severity::fatal, "unknown exception");
+
+		system("pause");
 
 		return EXIT_FAILURE;
 	}

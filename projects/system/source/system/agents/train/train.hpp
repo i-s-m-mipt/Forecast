@@ -91,6 +91,11 @@ namespace solution
 					return m_name;
 				}
 
+				const auto weight_k() const noexcept
+				{
+					return m_weight_k;
+				}
+
 				const auto & route_id() const noexcept
 				{
 					return m_route_id;
