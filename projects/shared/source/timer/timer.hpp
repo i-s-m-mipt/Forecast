@@ -74,7 +74,7 @@ namespace solution
 
 		public:
 
-			double elapsed() const;
+			void elapsed() const;
 
 		private:
 

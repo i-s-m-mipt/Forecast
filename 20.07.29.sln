@@ -7,6 +7,22 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "generator", "projects\gener
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "system", "projects\system\project\system.vcxproj", "{961A081E-83A2-44C5-A247-36F19B23D55A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{FC96F53A-7DC7-4CA7-8F3E-B5BED6F949C6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "source", "source", "{1541577C-F61F-4B29-8FA6-6B20ECA16074}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "logger", "logger", "{CF51220F-E9C8-4C42-86BF-DF9E2992A690}"
+	ProjectSection(SolutionItems) = preProject
+		projects\shared\source\logger\logger.cpp = projects\shared\source\logger\logger.cpp
+		projects\shared\source\logger\logger.hpp = projects\shared\source\logger\logger.hpp
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "timer", "timer", "{F1FC99E1-57F5-48F5-8029-0E5CB5469027}"
+	ProjectSection(SolutionItems) = preProject
+		projects\shared\source\timer\timer.cpp = projects\shared\source\timer\timer.cpp
+		projects\shared\source\timer\timer.hpp = projects\shared\source\timer\timer.hpp
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -34,6 +50,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1541577C-F61F-4B29-8FA6-6B20ECA16074} = {FC96F53A-7DC7-4CA7-8F3E-B5BED6F949C6}
+		{CF51220F-E9C8-4C42-86BF-DF9E2992A690} = {1541577C-F61F-4B29-8FA6-6B20ECA16074}
+		{F1FC99E1-57F5-48F5-8029-0E5CB5469027} = {1541577C-F61F-4B29-8FA6-6B20ECA16074}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {64B0536F-DB42-4B5B-8F78-50334CE5925B}

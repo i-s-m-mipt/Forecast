@@ -98,19 +98,23 @@ namespace solution
 				}
 			}
 
-			void Train::compute_final_deviation()
+			std::time_t Train::current_total_deviation() const
 			{
 				RUN_LOGGER(logger);
 
 				try
 				{
+					std::time_t deviation = m_deviation;
+
 					for (const auto & record : m_route->records())
 					{
 						if (record.arrival < 0)
 						{
-							m_deviation += std::abs(record.arrival);
+							deviation += std::abs(record.arrival);
 						}
 					}
+
+					return deviation;
 				}
 				catch (const std::exception & exception)
 				{

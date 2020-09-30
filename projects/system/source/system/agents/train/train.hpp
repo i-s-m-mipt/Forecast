@@ -148,7 +148,7 @@ namespace solution
 
 				void update_deviation(const std::string & current_station);
 
-				void compute_final_deviation();
+				std::time_t current_total_deviation() const;
 
 			public:
 

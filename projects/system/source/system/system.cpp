@@ -261,55 +261,41 @@ namespace solution
 
 					std::time_t t = 0;
 
-					for (; t < limit_time && has_train_on_route(); ++t)
 					{
-						bool flag = has_ready_train_on_route();
+						shared::Timer timer("MODEL", std::cout);
 
-						// std::cout << "Trains ready on route: " << std::boolalpha << flag << std::endl << std::endl; // debug
+						std::cout << std::endl;
 
-						if (flag)
+						for (; t < limit_time && has_train_on_route(); ++t)
 						{
-							auto v_in = make_input_vector();
+							if (has_ready_train_on_route())
+							{
+								auto v_in = make_input_vector();
+								auto v_out = make_output_vector();
 
-							// print_input_vector(v_in); // debug
+								apply_output_vector(v_out);
 
-							auto v_out = make_output_vector();
+								if (ENABLE_DEBUG_CONSOLE_OUTPUT)
+								{
+									print_input_vector(v_in);
+									print_output_vector(v_out);
 
-							// print_output_vector(v_out); // debug
+									print_current_deviations();
+								}
+							}
 
-							apply_output_vector(v_out);
+							continue_action();
 
-							v_in = make_input_vector();
-
-							// print_deviations(); // debug
+							if (t % 60 == 0)
+							{
+								std::cout << "t = " << t << std::endl;
+							}
 						}
 
-						continue_action();
-						/*
-						if (t && (t % 300 == 0)) // debug
-						{
-							std::cout << "t = " << t << ", exiting main cycle to compute residual deviations ... \n" << std::endl; // debug
-
-							break; // debug
-						}
-						*/
-						if (t % 60 == 0)
-						{
-							std::cout << "t = " << t << std::endl;
-						}
+						std::cout << std::endl;
 					}
 
-					std::cout << "t = " << t << ", exiting main cycle to compute residual deviations ... \n" << std::endl; // debug
-
-					std::cout << std::boolalpha << "Has train on route: " << has_train_on_route() << std::endl << std::endl; // debug
-
-					auto v_in = make_input_vector();
-
-					print_input_vector(v_in);
-
-					compute_final_deviations();
-
-					print_deviations(); // debug
+					print_result(t);
 				}
 			}
 			catch (const std::exception & exception)
@@ -745,7 +731,7 @@ namespace solution
 			}
 		}
 
-		void System::print_deviations() const
+		void System::print_current_deviations() const
 		{
 			RUN_LOGGER(logger);
 
@@ -766,16 +752,42 @@ namespace solution
 			}
 		}
 
-		void System::compute_final_deviations() const
+		double System::current_total_deviation() const
 		{
 			RUN_LOGGER(logger);
 
 			try
 			{
+				double deviation = 0.0;
+
 				for (auto & train : m_trains)
 				{
-					train.second->compute_final_deviation();
+					deviation += (train.second->current_total_deviation() * train.second->weight_k());
 				}
+
+				return deviation;
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		void System::print_result(std::time_t elapsed_time) const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				std::cout << std::endl << "Result (t = " << elapsed_time << ") :" << std::endl << std::endl;
+
+				std::cout << std::boolalpha << "Has train on route: " << has_train_on_route() << std::endl << std::endl; // debug
+
+				auto v_in = make_input_vector();
+
+				print_input_vector(v_in);
+
+				std::cout << "Deviation: " << std::setprecision(3) << std::fixed << current_total_deviation() << std::endl << std::endl;
 			}
 			catch (const std::exception & exception)
 			{

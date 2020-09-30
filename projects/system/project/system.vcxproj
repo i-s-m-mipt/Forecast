@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\source\logger\logger.cpp" />
+    <ClCompile Include="..\..\shared\source\timer\timer.cpp" />
     <ClCompile Include="..\source\main.cpp" />
     <ClCompile Include="..\source\system\agents\train\route\route.cpp" />
     <ClCompile Include="..\source\system\agents\train\train.cpp" />
@@ -28,6 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\source\logger\logger.hpp" />
+    <ClInclude Include="..\..\shared\source\timer\timer.hpp" />
     <ClInclude Include="..\source\system\agents\train\route\route.hpp" />
     <ClInclude Include="..\source\system\agents\train\train.hpp" />
     <ClInclude Include="..\source\system\module\segment\segment.hpp" />

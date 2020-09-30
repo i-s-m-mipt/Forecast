@@ -26,6 +26,9 @@
     <Filter Include="source\system\agents\train\route">
       <UniqueIdentifier>{607a97f5-24d0-4a01-8b14-f892c6402a79}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\timer">
+      <UniqueIdentifier>{946ded84-058a-42f1-934f-85455838229b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\source\logger\logger.cpp">
@@ -46,6 +49,9 @@
     <ClCompile Include="..\source\system\agents\train\route\route.cpp">
       <Filter>source\system\agents\train\route</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\source\timer\timer.cpp">
+      <Filter>source\timer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\source\logger\logger.hpp">
@@ -62,6 +68,9 @@
     </ClInclude>
     <ClInclude Include="..\source\system\agents\train\route\route.hpp">
       <Filter>source\system\agents\train\route</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\source\timer\timer.hpp">
+      <Filter>source\timer</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

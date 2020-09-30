@@ -26,9 +26,7 @@ namespace solution
 
 			try
 			{
-				
-
-				std::cout <<  << std::endl;
+				elapsed();
 			}
 			catch (const std::exception & exception)
 			{
@@ -36,7 +34,7 @@ namespace solution
 			}
 		}
 
-		double Timer::elapsed() const
+		void Timer::elapsed() const
 		{
 			RUN_LOGGER(logger);
 
@@ -45,7 +43,8 @@ namespace solution
 				auto end = clock_t::now();
 
 				m_stream << "Timer \"" << m_name << "\" elapsed " << std::setprecision(6) << std::fixed <<
-					static_cast < double > (std::chrono::duration_cast < std::chrono::microseconds > (end - m_begin).count()) << " (seconds)" << std::endl;
+					static_cast < double > (std::chrono::duration_cast < std::chrono::microseconds > 
+						(end - m_begin).count()) / 1'000'000.0 << " (seconds)" << std::endl;
 			}
 			catch (const std::exception & exception)
 			{

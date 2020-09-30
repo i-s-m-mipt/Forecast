@@ -7,6 +7,12 @@
 #  pragma once
 #endif // #ifdef BOOST_HAS_PRAGMA_ONCE
 
+#if !defined(NDEBUG)
+#  define ENABLE_DEBUG_CONSOLE_OUTPUT false
+#else
+#  define ENABLE_DEBUG_CONSOLE_OUTPUT false
+#endif
+
 #include <algorithm>
 #include <cassert>
 #include <chrono>
@@ -31,6 +37,7 @@
 #include <boost/uuid/uuid_io.hpp>
 
 #include "../../../shared/source/logger/logger.hpp"
+#include "../../../shared/source/timer/timer.hpp"
 
 #include "module/segment/segment.hpp"
 #include "agents/train/train.hpp"
@@ -222,9 +229,11 @@ namespace solution
 
 			void continue_action() const;
 
-			void print_deviations() const;
+			void print_current_deviations() const;
 
-			void compute_final_deviations() const;
+			double current_total_deviation() const;
+
+			void print_result(std::time_t elapsed_time) const;
 
 		private:
 
