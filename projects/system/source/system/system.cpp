@@ -271,17 +271,19 @@ namespace solution
 							if (has_ready_train_on_route())
 							{
 								auto v_in = make_input_vector();
+
+								if (ENABLE_DEBUG_CONSOLE_OUTPUT)
+									print_input_vector(v_in);
+
 								auto v_out = make_output_vector();
+
+								if (ENABLE_DEBUG_CONSOLE_OUTPUT)
+									print_output_vector(v_out);
 
 								apply_output_vector(v_out);
 
 								if (ENABLE_DEBUG_CONSOLE_OUTPUT)
-								{
-									print_input_vector(v_in);
-									print_output_vector(v_out);
-
 									print_current_deviations();
-								}
 							}
 
 							continue_action();
@@ -408,7 +410,7 @@ namespace solution
 
 				for (auto i = 0U; i < m_segments.size(); ++i)
 				{
-					// if (std::next(m_segments.begin(), i)->second->has_train())
+					if (std::next(m_segments.begin(), i)->second->has_train())
 					{
 						for (auto j = 0U; j < segment_data_size; ++j)
 						{
