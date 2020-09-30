@@ -23,6 +23,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "timer", "timer", "{F1FC99E1
 		projects\shared\source\timer\timer.hpp = projects\shared\source\timer\timer.hpp
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "python", "python", "{B865DB4D-622F-42CC-9BCD-44DD1F9946C2}"
+	ProjectSection(SolutionItems) = preProject
+		projects\shared\source\python\python.cpp = projects\shared\source\python\python.cpp
+		projects\shared\source\python\python.hpp = projects\shared\source\python\python.hpp
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -55,6 +61,7 @@ Global
 		{1541577C-F61F-4B29-8FA6-6B20ECA16074} = {FC96F53A-7DC7-4CA7-8F3E-B5BED6F949C6}
 		{CF51220F-E9C8-4C42-86BF-DF9E2992A690} = {1541577C-F61F-4B29-8FA6-6B20ECA16074}
 		{F1FC99E1-57F5-48F5-8029-0E5CB5469027} = {1541577C-F61F-4B29-8FA6-6B20ECA16074}
+		{B865DB4D-622F-42CC-9BCD-44DD1F9946C2} = {1541577C-F61F-4B29-8FA6-6B20ECA16074}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {64B0536F-DB42-4B5B-8F78-50334CE5925B}

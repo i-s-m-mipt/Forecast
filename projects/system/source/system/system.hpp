@@ -8,7 +8,7 @@
 #endif // #ifdef BOOST_HAS_PRAGMA_ONCE
 
 #if !defined(NDEBUG)
-#  define ENABLE_DEBUG_CONSOLE_OUTPUT false
+#  define ENABLE_DEBUG_CONSOLE_OUTPUT true
 #else
 #  define ENABLE_DEBUG_CONSOLE_OUTPUT false
 #endif
@@ -29,14 +29,18 @@
 #include <unordered_map>
 #include <vector>
 
+#define BOOST_PYTHON_STATIC_LIB
+
 #include <boost/extended/serialization/json.hpp>
 #include <boost/functional/hash.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/python.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 
 #include "../../../shared/source/logger/logger.hpp"
+#include "../../../shared/source/python/python.hpp"
 #include "../../../shared/source/timer/timer.hpp"
 
 #include "module/segment/segment.hpp"

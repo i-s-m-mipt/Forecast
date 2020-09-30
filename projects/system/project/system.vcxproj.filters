@@ -29,6 +29,9 @@
     <Filter Include="source\timer">
       <UniqueIdentifier>{946ded84-058a-42f1-934f-85455838229b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\python">
+      <UniqueIdentifier>{19a7d31a-33e3-46d4-ae62-4181ac6636f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\source\logger\logger.cpp">
@@ -52,6 +55,9 @@
     <ClCompile Include="..\..\shared\source\timer\timer.cpp">
       <Filter>source\timer</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\source\python\python.cpp">
+      <Filter>source\python</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\source\logger\logger.hpp">
@@ -71,6 +77,9 @@
     </ClInclude>
     <ClInclude Include="..\..\shared\source\timer\timer.hpp">
       <Filter>source\timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\shared\source\python\python.hpp">
+      <Filter>source\python</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
