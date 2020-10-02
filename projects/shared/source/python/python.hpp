@@ -73,7 +73,7 @@ namespace solution
 
 		public:
 
-			std::string exception() noexcept;
+			std::string exception() const noexcept;
 
 		private:
 

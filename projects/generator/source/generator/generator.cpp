@@ -18,7 +18,7 @@ namespace solution
 
 					json_t adjacent_segments;
 
-					for (const auto& id : segment.adjacent_segments)
+					for (const auto & id : segment.adjacent_segments)
 					{
 						adjacent_segments.push_back(boost::uuids::to_string(id));
 					}
@@ -34,7 +34,7 @@ namespace solution
 
 				save(File::segments_data, array);
 			}
-			catch (const std::exception& exception)
+			catch (const std::exception & exception)
 			{
 				shared::catch_handler < generator_exception > (logger, exception);
 			}

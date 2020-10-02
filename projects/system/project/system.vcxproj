@@ -27,6 +27,7 @@
     <ClCompile Include="..\source\system\agents\train\train.cpp" />
     <ClCompile Include="..\source\system\module\segment\segment.cpp" />
     <ClCompile Include="..\source\system\system.cpp" />
+    <ClCompile Include="..\source\teacher\teacher.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\source\logger\logger.hpp" />
@@ -36,6 +37,7 @@
     <ClInclude Include="..\source\system\agents\train\train.hpp" />
     <ClInclude Include="..\source\system\module\segment\segment.hpp" />
     <ClInclude Include="..\source\system\system.hpp" />
+    <ClInclude Include="..\source\teacher\teacher.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -146,7 +148,7 @@
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>C:\Libraries\boost;C:\Libraries\python\include;</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4715; 26451; 26495</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4715; 26451; 26495; 26812;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -166,7 +168,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>C:\Libraries\boost;C:\Libraries\python\include;</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <DisableSpecificWarnings>4715; 26451; 26495</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4715; 26451; 26495; 26812;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

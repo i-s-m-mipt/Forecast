@@ -48,7 +48,7 @@ namespace solution
 
 			template < typename Name, typename Enable = 
 				std::enable_if_t < std::is_convertible_v < Name, std::string > > >
-			Timer(Name && name, std::ostream & stream) : 
+			explicit Timer(Name && name, std::ostream & stream) :
 				m_name(std::forward < Name > (name)), m_stream(stream), m_begin(clock_t::now())
 			{
 				initialize();

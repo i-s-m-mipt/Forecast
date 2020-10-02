@@ -197,15 +197,10 @@ namespace solution
 			try
 			{
 				Data::load(m_segments);
-				logger.write(Severity::debug, std::to_string(m_segments.size()) + " segments");
-
 				Data::load(m_trains);
-				logger.write(Severity::debug, std::to_string(m_trains.size()) + " trains");
-
 				Data::load(m_routes);
-				logger.write(Severity::debug, std::to_string(m_routes.size()) + " routes");
 
-				Data::save_segments_order(m_segments);
+				// Data::save_segments_order(m_segments); // debug
 			}
 			catch (const std::exception & exception)
 			{
@@ -247,58 +242,15 @@ namespace solution
 			}
 		}
 
-		void System::run()
+		void System::reinitialize()
 		{
 			RUN_LOGGER(logger);
 
 			try
 			{
-				std::cout << "Run system ? (y/n) ";
+				clear();
 
-				if (getchar() == 'y')
-				{
-					std::cout << std::endl;
-
-					std::time_t t = 0;
-
-					{
-						shared::Timer timer("MODEL", std::cout);
-
-						std::cout << std::endl;
-
-						for (; t < limit_time && has_train_on_route(); ++t)
-						{
-							if (has_ready_train_on_route())
-							{
-								auto v_in = make_input_vector();
-
-								if (ENABLE_DEBUG_CONSOLE_OUTPUT)
-									print_input_vector(v_in);
-
-								auto v_out = make_output_vector();
-
-								if (ENABLE_DEBUG_CONSOLE_OUTPUT)
-									print_output_vector(v_out);
-
-								apply_output_vector(v_out);
-
-								if (ENABLE_DEBUG_CONSOLE_OUTPUT)
-									print_current_deviations();
-							}
-
-							continue_action();
-
-							if (t % 60 == 0)
-							{
-								std::cout << "t = " << t << std::endl;
-							}
-						}
-
-						std::cout << std::endl;
-					}
-
-					print_result(t);
-				}
+				initialize();
 			}
 			catch (const std::exception & exception)
 			{
@@ -306,7 +258,56 @@ namespace solution
 			}
 		}
 
-		void System::stop()
+		void System::clear()
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				m_segments.clear();
+				m_trains.clear();
+				m_routes.clear();
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		void System::run() const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				for (std::time_t t = 0; t < limit_time && has_train_on_route(); ++t)
+				{
+					if (has_ready_train_on_route())
+					{
+						auto v_in = make_input_vector();
+
+						std::string result = boost::python::extract < std::string > (
+							m_module(to_string(v_in).c_str(), boost::uuids::to_string(m_id).c_str()));
+
+						auto v_out = from_string(result);
+
+						apply_output_vector(v_out);
+					}
+
+					continue_action();
+				}
+			}
+			catch (const boost::python::error_already_set &)
+			{
+				logger.write(Severity::error, m_python.exception());
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		void System::stop() const
 		{
 			RUN_LOGGER(logger);
 
@@ -438,7 +439,58 @@ namespace solution
 			}
 		}
 
-		System::v_out_t System::make_output_vector() const
+		std::string System::to_string(const v_in_t & v_in) const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				std::stringstream sout;
+
+				for (auto element : v_in)
+				{
+					sout << element << ' ';
+				}
+
+				return sout.str();
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		System::v_out_t System::from_string(const std::string & string) const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				std::size_t total_adjacent_segments_size = 0U;
+
+				for (const auto & segment : m_segments)
+				{
+					total_adjacent_segments_size += segment.second->adjacent_segments().size();
+				}
+
+				v_out_t v_out(total_adjacent_segments_size + m_segments.size(), 0);
+
+				std::stringstream sin(string);
+
+				for (auto & element : v_out)
+				{
+					sin >> element;
+				}
+
+				return v_out;
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		System::v_out_t System::make_random_output_vector() const
 		{
 			RUN_LOGGER(logger);
 
@@ -796,6 +848,8 @@ namespace solution
 				shared::catch_handler < system_exception > (logger, exception);
 			}
 		}
+
+		boost::uuids::random_generator System::random_generator;
 
 	} // namespace system
 

@@ -48,7 +48,7 @@ namespace solution
 			}
 		}
 
-		std::string Python::exception() noexcept
+		std::string Python::exception() const noexcept
 		{
 			PyObject * error;
 			PyObject * value;

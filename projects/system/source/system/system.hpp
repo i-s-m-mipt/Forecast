@@ -22,8 +22,10 @@
 #include <iomanip>
 #include <iostream>
 #include <iterator>
+#include <memory>
 #include <numeric>
 #include <random>
+#include <sstream>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -179,8 +181,11 @@ namespace solution
 
 		public:
 
-			System() : 
-				m_generator(static_cast < unsigned int > (std::chrono::system_clock::now().time_since_epoch().count()))
+			template < typename Id, typename Enable =
+				std::enable_if_t < std::is_convertible_v < Id, id_t > > >
+			explicit System(Id && id, shared::Python & python, boost::python::object & module) :
+				m_id(std::forward < Id > (id)), m_python(python), m_module(module), m_generator(static_cast < unsigned int > (
+					std::chrono::system_clock::now().time_since_epoch().count()))
 			{
 				initialize();
 			}
@@ -203,9 +208,24 @@ namespace solution
 
 		public:
 
-			void run();
+			void reinitialize();
 
-			void stop();
+		private:
+
+			void clear();
+
+		public:
+
+			const auto & id() const noexcept
+			{
+				return m_id;
+			}
+
+		public:
+
+			void run() const;
+
+			void stop() const;
 
 		private:
 
@@ -215,13 +235,17 @@ namespace solution
 
 			v_in_t make_input_vector() const;
 
-			void print_input_vector(const v_in_t & v_in) const;
+			void print_input_vector(const v_in_t & v_in) const; // debug
 
-			v_out_t make_output_vector() const;
+			std::string to_string(const v_in_t & v_in) const;
 
-			void print_output_vector(const v_out_t & v_out) const;
+			v_out_t from_string(const std::string & string) const;
 
-			void apply_output_vector(const v_out_t & v_out) const;
+			v_out_t make_random_output_vector() const;
+
+			void print_output_vector(const v_out_t & v_out) const; // debug
+
+			void apply_output_vector(const v_out_t & v_out) const; 
 
 			bool can_execute_command(const Segment::id_t & id) const;
 
@@ -233,15 +257,27 @@ namespace solution
 
 			void continue_action() const;
 
-			void print_current_deviations() const;
+			void print_current_deviations() const; // debug
+
+		public:
 
 			double current_total_deviation() const;
 
-			void print_result(std::time_t elapsed_time) const;
+		private:
+
+			void print_result(std::time_t elapsed_time) const; // debug
+
+		public:
+
+			static boost::uuids::random_generator random_generator;
 
 		private:
 
-			const std::time_t limit_time = 60 * 24;
+			static inline const std::time_t limit_time = 60 * 24;
+
+		private:
+
+			const id_t m_id;
 
 		private:
 
@@ -250,6 +286,12 @@ namespace solution
 			trains_container_t m_trains;
 
 			routes_container_t m_routes;
+
+		private:
+
+			shared::Python & m_python;
+
+			boost::python::object & m_module;
 
 		private:
 
