@@ -73,11 +73,13 @@ namespace solution
 
 		public:
 
-			std::string exception() const noexcept;
+			static std::string exception() noexcept;
 
 		private:
 
-			static inline wchar_t directory[] = L"C:/Libraries/anaconda/envs/environment";
+			static inline wchar_t directory[] = L"C:/Libraries/python";
+
+			// static inline wchar_t directory[] = L"C:/Users/frolo/Desktop/keras/env2/Scripts";
 
 		private:
 
@@ -122,7 +124,9 @@ namespace solution
 
 		private:
 
-			static inline wchar_t directory[] = L"C:/Libraries/anaconda/envs/environment";
+			static inline wchar_t directory[] = L"C:/Libraries/python";
+
+			// static inline wchar_t directory[] = L"C:/Users/frolo/Desktop/keras/env2/Scripts";
 
 		private:
 
