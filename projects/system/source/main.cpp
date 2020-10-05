@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 
 	try
 	{
-		solution::system::Teacher(10U, 100U).run();
+		solution::system::Teacher(20U, 100U).run();
 
 		system("pause");
 
