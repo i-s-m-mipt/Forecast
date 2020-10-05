@@ -280,6 +280,12 @@ namespace solution
 
 			try
 			{
+				// shared::Python_Inner_Interpreter interpreter;
+
+				// global = boost::python::import("__main__").attr("__dict__");
+
+				// boost::python::exec("from script import f", global, global);
+
 				for (std::time_t t = 0; t < limit_time && has_train_on_route(); ++t)
 				{
 					if (has_ready_train_on_route())
@@ -299,7 +305,7 @@ namespace solution
 			}
 			catch (const boost::python::error_already_set &)
 			{
-				logger.write(Severity::error, m_python.exception());
+				logger.write(Severity::error, shared::Python::exception());
 			}
 			catch (const std::exception & exception)
 			{
@@ -535,7 +541,7 @@ namespace solution
 			}
 		}
 
-		void System::print_output_vector(const v_out_t & v_out) const
+		void System::print_output_vector(const v_out_t & v_out, bool print_full = true) const
 		{
 			RUN_LOGGER(logger);
 
@@ -547,7 +553,7 @@ namespace solution
 				{
 					const auto group_size = segment.second->adjacent_segments().size() + 1;
 
-					if (segment.second->has_train())
+					if (segment.second->has_train() || print_full)
 					{
 						for (auto j = 0U; j < group_size; ++j, ++index)
 						{
@@ -645,18 +651,27 @@ namespace solution
 				}
 				case Train::State::move:
 				{
-					const auto adjacent_segment_index = static_cast < std::size_t > (
-						std::distance(std::next(command.begin(), bias), std::find(std::next(command.begin(), bias), command.end(), 1)));
+					auto iterator = std::find(std::next(command.begin(), bias), command.end(), 1);
 
-					const auto next_segment_id = m_segments.at(id)->adjacent_segments().at(adjacent_segment_index);
-
-					if (can_goto_segment(id, next_segment_id))
+					if (iterator == command.end())
 					{
-						goto_segment(id, next_segment_id);
+						m_trains.at(m_segments.at(id)->train_id())->update_state(Train::State::stop_wait);
 					}
 					else
 					{
-						m_trains.at(m_segments.at(id)->train_id())->update_state(Train::State::stop_wait);
+						const auto adjacent_segment_index = static_cast <std::size_t> (
+							std::distance(std::next(command.begin(), bias), iterator));
+
+						const auto next_segment_id = m_segments.at(id)->adjacent_segments().at(adjacent_segment_index);
+
+						if (can_goto_segment(id, next_segment_id))
+						{
+							goto_segment(id, next_segment_id);
+						}
+						else
+						{
+							m_trains.at(m_segments.at(id)->train_id())->update_state(Train::State::stop_wait);
+						}
 					}
 
 					break;

@@ -183,8 +183,8 @@ namespace solution
 
 			template < typename Id, typename Enable =
 				std::enable_if_t < std::is_convertible_v < Id, id_t > > >
-			explicit System(Id && id, shared::Python & python, boost::python::object & module) :
-				m_id(std::forward < Id > (id)), m_python(python), m_module(module), m_generator(static_cast < unsigned int > (
+			explicit System(Id && id, boost::python::object & module) :
+				m_id(std::forward < Id > (id)), m_module(module), m_generator(static_cast < unsigned int > (
 					std::chrono::system_clock::now().time_since_epoch().count()))
 			{
 				initialize();
@@ -288,8 +288,6 @@ namespace solution
 			routes_container_t m_routes;
 
 		private:
-
-			shared::Python & m_python;
 
 			boost::python::object & m_module;
 
