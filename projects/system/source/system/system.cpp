@@ -407,7 +407,7 @@ namespace solution
 			}
 		}
 
-		void System::print_input_vector(const v_in_t & v_in) const
+		void System::print_input_vector(const v_in_t & v_in, bool print_full) const
 		{
 			RUN_LOGGER(logger);
 
@@ -417,7 +417,7 @@ namespace solution
 
 				for (auto i = 0U; i < m_segments.size(); ++i)
 				{
-					if (std::next(m_segments.begin(), i)->second->has_train())
+					if (std::next(m_segments.begin(), i)->second->has_train() || print_full)
 					{
 						for (auto j = 0U; j < segment_data_size; ++j)
 						{
@@ -541,7 +541,7 @@ namespace solution
 			}
 		}
 
-		void System::print_output_vector(const v_out_t & v_out, bool print_full = true) const
+		void System::print_output_vector(const v_out_t & v_out, bool print_full) const
 		{
 			RUN_LOGGER(logger);
 

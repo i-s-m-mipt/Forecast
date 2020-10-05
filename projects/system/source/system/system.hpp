@@ -235,7 +235,7 @@ namespace solution
 
 			v_in_t make_input_vector() const;
 
-			void print_input_vector(const v_in_t & v_in) const; // debug
+			void print_input_vector(const v_in_t & v_in, bool print_full = true) const; // debug
 
 			std::string to_string(const v_in_t & v_in) const;
 
@@ -243,7 +243,7 @@ namespace solution
 
 			v_out_t make_random_output_vector() const;
 
-			void print_output_vector(const v_out_t & v_out) const; // debug
+			void print_output_vector(const v_out_t & v_out, bool print_full = true) const; // debug
 
 			void apply_output_vector(const v_out_t & v_out) const; 
 
