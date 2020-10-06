@@ -9,23 +9,43 @@
 
 #include <algorithm>
 #include <exception>
+#include <filesystem>
+#include <fstream>
+#include <future>
 #include <iomanip>
 #include <iostream>
 #include <memory>
+#include <mutex>
 #include <numeric>
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <thread>
+#include <unordered_map>
 #include <vector>
 
 #define BOOST_PYTHON_STATIC_LIB
+#define BOOST_USE_WINDOWS_H
 
+//#include <boost/asio.hpp>
 #include <boost/extended/serialization/json.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/functional/hash.hpp>
+#include <boost/interprocess/allocators/allocator.hpp>
+#include <boost/interprocess/containers/deque.hpp>
+#include <boost/interprocess/containers/string.hpp>
+#include <boost/interprocess/managed_shared_memory.hpp>
+#include <boost/interprocess/sync/interprocess_mutex.hpp>
+#include <boost/interprocess/sync/named_mutex.hpp>
+#include <boost/interprocess/sync/scoped_lock.hpp>
+#include <boost/interprocess/managed_windows_shared_memory.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/python.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
+
+#include <Windows.h>
 
 #include "../../../shared/source/logger/logger.hpp"
 #include "../../../shared/source/python/python.hpp"
@@ -56,7 +76,7 @@ namespace solution
 		{
 		private:
 
-			using systems_container_t = std::vector < System > ;
+			using systems_container_t = std::unordered_map < System::id_t, double, boost::hash < System::id_t > > ;
 
 			using json_t = boost::extended::serialization::json;
 
@@ -67,6 +87,10 @@ namespace solution
 				static inline const std::string id		  = "id";
 				static inline const std::string deviation = "deviation";
 			};
+
+		public:
+
+			using shared_memory_t = boost::interprocess::managed_shared_memory;
 
 		public:
 
@@ -82,6 +106,14 @@ namespace solution
 
 			void initialize(std::size_t n_systems);
 
+			void uninitialize();
+
+		private:
+
+			void make_initialization_data() const;
+
+			void send_initialization_data(const std::string & data) const;
+
 		public:
 
 			void run();
@@ -90,7 +122,9 @@ namespace solution
 
 		private:
 
-			void run_systems() const;
+			void run_systems();
+
+			void extract_generation_deviations();
 
 			void evaluate_systems(std::size_t generation_index) const;
 
@@ -99,7 +133,14 @@ namespace solution
 
 			void send_evaluation_data(const std::string & data) const;
 
-			void reinitialize_systems();
+		private:
+
+			static inline const std::string process_name = "system";
+
+		public:
+
+			static inline const std::string shared_memory_name = "generation";
+			static inline const std::size_t shared_memory_size = 65536U;
 
 		private:
 
@@ -111,9 +152,13 @@ namespace solution
 
 			shared::Python m_python;
 
-			boost::python::object m_module_f;
 			boost::python::object m_module_g;
+			boost::python::object m_module_h;
+
+			shared_memory_t m_shared_memory;
 		};
+
+		void save_system_deviation(const System & system);
 
 	} // namespace system
 
