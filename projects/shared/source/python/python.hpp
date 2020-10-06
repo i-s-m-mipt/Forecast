@@ -79,8 +79,6 @@ namespace solution
 
 			static inline wchar_t directory[] = L"C:/Libraries/python";
 
-			// static inline wchar_t directory[] = L"C:/Users/frolo/Desktop/keras/env2/Scripts";
-
 		private:
 
 			static std::once_flag is_initialized_once;
@@ -126,8 +124,6 @@ namespace solution
 
 			static inline wchar_t directory[] = L"C:/Libraries/python";
 
-			// static inline wchar_t directory[] = L"C:/Users/frolo/Desktop/keras/env2/Scripts";
-
 		private:
 
 			PyGILState_STATE m_gil_state;
@@ -168,9 +164,9 @@ namespace solution
 			PyGILState_STATE m_outer_interpreter_gil_state;
 			PyGILState_STATE m_inner_interpreter_gil_state;
 
-			PyThreadState * m_outer_interpreter_thread_state;
-			PyThreadState * m_inner_interpreter_thread_state;
+			PyThreadState * m_thread_state;
 
+			PyThreadState * m_old_thread_state;
 			PyThreadState * m_new_thread_state;
 		};
 

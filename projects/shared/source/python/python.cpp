@@ -120,12 +120,13 @@ namespace solution
 			try
 			{
 				m_outer_interpreter_gil_state = PyGILState_Ensure();
-				m_outer_interpreter_thread_state = PyThreadState_Get();
 
+				m_old_thread_state = PyThreadState_Get();
 				m_new_thread_state = Py_NewInterpreter();
 				PyThreadState_Swap(m_new_thread_state);
 
-				m_inner_interpreter_thread_state = PyEval_SaveThread();
+				m_thread_state = PyEval_SaveThread();
+
 				m_inner_interpreter_gil_state = PyGILState_Ensure();
 			}
 			catch (const std::exception & exception)
@@ -141,11 +142,12 @@ namespace solution
 			try
 			{
 				PyGILState_Release(m_inner_interpreter_gil_state);
-				PyEval_RestoreThread(m_inner_interpreter_thread_state);
+
+				PyEval_RestoreThread(m_thread_state);
 
 				Py_EndInterpreter(m_new_thread_state);
+				PyThreadState_Swap(m_old_thread_state);
 
-				PyThreadState_Swap(m_outer_interpreter_thread_state);
 				PyGILState_Release(m_outer_interpreter_gil_state);
 			}
 			catch (const std::exception & exception)
