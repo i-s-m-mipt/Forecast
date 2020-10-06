@@ -10,7 +10,7 @@ namespace solution
 
 			try
 			{
-				m_stream << "Timer \"" << m_name << "\" launched ... " << std::endl;
+				m_stream << "Timer \"" << m_name << "\" launched ... " << std::endl << std::endl;
 			}
 			catch (const std::exception & exception)
 			{
@@ -44,7 +44,7 @@ namespace solution
 
 				m_stream << "Timer \"" << m_name << "\" elapsed " << std::setprecision(6) << std::fixed <<
 					static_cast < double > (std::chrono::duration_cast < std::chrono::microseconds > 
-						(end - m_begin).count()) / 1'000'000.0 << " (seconds)" << std::endl;
+						(end - m_begin).count()) / 1'000'000.0 << " (seconds)" << std::endl << std::endl;
 			}
 			catch (const std::exception & exception)
 			{
