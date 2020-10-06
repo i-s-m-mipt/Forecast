@@ -280,11 +280,13 @@ namespace solution
 
 			try
 			{
-				// shared::Python_Inner_Interpreter interpreter;
+				boost::python::exec("from script import f", m_python.global(), m_python.global());
+				boost::python::exec("from script import h", m_python.global(), m_python.global());
 
-				// global = boost::python::import("__main__").attr("__dict__");
+				boost::python::object module_f = m_python.global()["f"];
+				boost::python::object module_h = m_python.global()["h"];
 
-				// boost::python::exec("from script import f", global, global);
+				module_h();
 
 				for (std::time_t t = 0; t < limit_time && has_train_on_route(); ++t)
 				{
@@ -293,7 +295,7 @@ namespace solution
 						auto v_in = make_input_vector();
 
 						std::string result = boost::python::extract < std::string > (
-							m_module(to_string(v_in).c_str(), boost::uuids::to_string(m_id).c_str()));
+							module_f(to_string(v_in).c_str()/*, boost::uuids::to_string(m_id).c_str()*/));
 
 						auto v_out = from_string(result);
 
@@ -865,6 +867,7 @@ namespace solution
 		}
 
 		boost::uuids::random_generator System::random_generator;
+		boost::uuids::string_generator System::string_generator;
 
 	} // namespace system
 

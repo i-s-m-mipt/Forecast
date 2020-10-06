@@ -28,6 +28,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <vector>
 
@@ -70,9 +71,11 @@ namespace solution
 
 		class System
 		{
-		private:
+		public:
 
 			using id_t = boost::uuids::uuid;
+
+		private:
 
 			using Segment = module::Segment;
 
@@ -183,8 +186,8 @@ namespace solution
 
 			template < typename Id, typename Enable =
 				std::enable_if_t < std::is_convertible_v < Id, id_t > > >
-			explicit System(Id && id, boost::python::object & module) :
-				m_id(std::forward < Id > (id)), m_module(module), m_generator(static_cast < unsigned int > (
+			explicit System(Id && id) :
+				m_id(std::forward < Id > (id)), m_generator(static_cast < unsigned int > (
 					std::chrono::system_clock::now().time_since_epoch().count()))
 			{
 				initialize();
@@ -270,10 +273,11 @@ namespace solution
 		public:
 
 			static boost::uuids::random_generator random_generator;
+			static boost::uuids::string_generator string_generator;
 
 		private:
 
-			static inline const std::time_t limit_time = 60 * 24;
+			static inline const std::time_t limit_time = 60 * 6;
 
 		private:
 
@@ -287,9 +291,7 @@ namespace solution
 
 			routes_container_t m_routes;
 
-		private:
-
-			boost::python::object & m_module;
+			shared::Python m_python;
 
 		private:
 
