@@ -129,6 +129,7 @@ namespace solution
 						static inline const std::string id				  = "id";
 						static inline const std::string type			  = "type";
 						static inline const std::string name			  = "name";
+						static inline const std::string station			  = "station";
 						static inline const std::string length			  = "length";
 						static inline const std::string adjacent_segments = "adjacent_segments";
 					};

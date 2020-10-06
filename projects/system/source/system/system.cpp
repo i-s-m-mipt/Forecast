@@ -21,6 +21,7 @@ namespace solution
 					auto id                    = element[Key::Segment::id               ].get < std::string > ();
 					auto type                  = element[Key::Segment::type             ].get < std::size_t > ();
 					auto name                  = element[Key::Segment::name             ].get < std::string > ();
+					auto station			   = element[Key::Segment::station			].get < std::string > ();
 					auto length                = element[Key::Segment::length           ].get < std::size_t > ();
 					auto adjacent_segments_raw = element[Key::Segment::adjacent_segments].get < std::vector < std::string > > ();
 
@@ -34,7 +35,7 @@ namespace solution
 
 					auto segment = std::make_shared < Segment > (
 						std::move(Segment::string_generator(std::move(id))), static_cast < Segment::Type > (type), 
-						std::move(name), length, std::move(adjacent_segments));
+						std::move(name), std::move(station), length, std::move(adjacent_segments));
 
 					segments[segment->id()] = segment;
 
@@ -699,14 +700,14 @@ namespace solution
 			try
 			{
 				bool is_next_segment_available_to_move = m_segments.at(next_segment_id)->is_available_to_move();
-				bool are_differentl_previous_and_next_segment_ids = 
+				bool are_different_previous_and_next_segment_ids = 
 					(m_trains.at(m_segments.at(current_segment_id)->train_id())->previous_segment_id() != next_segment_id);
 				bool is_train_previous_segment_id_nil = m_trains.at(m_segments.at(current_segment_id)->train_id())->previous_segment_id().is_nil();
-				bool has_next_segment_empty_name = m_segments.at(next_segment_id)->name().empty(); // only stations have names
+				bool is_segment_railway = (m_segments.at(next_segment_id)->type() == Segment::Type::railway);
 
-				return (is_next_segment_available_to_move && are_differentl_previous_and_next_segment_ids && 
-					(is_train_previous_segment_id_nil || (has_next_segment_empty_name || (m_segments.at(next_segment_id)->name() !=
-						m_segments.at(m_trains.at(m_segments.at(current_segment_id)->train_id())->previous_segment_id())->name()))));
+				return (is_next_segment_available_to_move && are_different_previous_and_next_segment_ids && 
+					(is_train_previous_segment_id_nil || (is_segment_railway || (m_segments.at(next_segment_id)->station() !=
+						m_segments.at(m_trains.at(m_segments.at(current_segment_id)->train_id())->previous_segment_id())->station()))));
 			}
 			catch (const std::exception & exception)
 			{
