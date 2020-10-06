@@ -74,8 +74,8 @@ namespace solution
 						std::is_convertible_v < Name, std::string > &&
 						std::is_convertible_v < Adjacent_Segments, segments_container_t > > >
 				explicit Segment(
-					Id && id, Type type, Name && name, std::size_t length, Adjacent_Segments && adjacent_segments) :
-						m_id(std::forward < Id > (id)), m_type(type), m_name(std::forward < Name > (name)), 
+					Id && id, Type type, Name && name, Name && station, std::size_t length, Adjacent_Segments && adjacent_segments) :
+						m_id(std::forward < Id > (id)), m_type(type), m_name(std::forward < Name > (name)), m_station(std::forward < Name > (station)),
 						m_length(length), m_adjacent_segments(std::forward < Adjacent_Segments > (adjacent_segments))
 				{}
 
@@ -96,6 +96,11 @@ namespace solution
 				const auto & name() const noexcept
 				{
 					return m_name;
+				}
+
+				const auto & station() const noexcept
+				{
+					return m_station;
 				}
 
 				const auto length() const noexcept 
@@ -139,6 +144,7 @@ namespace solution
 				const id_t m_id;
 				const Type m_type;
 				const std::string m_name;
+				const std::string m_station;
 				const std::size_t m_length; // (m)
 				const segments_container_t m_adjacent_segments;
 
