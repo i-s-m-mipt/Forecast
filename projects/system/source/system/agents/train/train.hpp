@@ -182,6 +182,8 @@ namespace solution
 				State m_state = State::wait;
 
 				std::time_t m_movement_time = 0; // (min)
+
+				std::time_t m_total_movement_time = 0; // (min)
 			};
 
 		} // namespace agents

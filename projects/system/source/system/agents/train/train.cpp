@@ -45,6 +45,8 @@ namespace solution
 					{
 						++m_movement_time;
 
+						++m_total_movement_time;
+
 						if (m_speed * m_movement_time >= segment_length)
 						{
 							m_movement_time = 0;
@@ -113,6 +115,8 @@ namespace solution
 							deviation += std::abs(record.arrival);
 						}
 					}
+
+					deviation -= m_total_movement_time;
 
 					return deviation;
 				}
