@@ -96,6 +96,8 @@ namespace solution
 
 			using routes_container_t = std::unordered_map < id_t, std::shared_ptr < Route >, boost::hash < id_t > > ;
 
+			using json_t = boost::extended::serialization::json;
+
 		private:
 
 			class Data
@@ -245,6 +247,8 @@ namespace solution
 			void save() const;
 
 		private:
+
+			std::string make_initialization_data() const;
 
 			bool has_train_on_route() const;
 

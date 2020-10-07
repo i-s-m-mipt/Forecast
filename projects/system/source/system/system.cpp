@@ -12,25 +12,25 @@ namespace solution
 
 			try
 			{
-				json_t array;
+				json_t raw_segments;
 				
-				load(File::segments_data, array);
+				load(File::segments_data, raw_segments);
 
-				for (const auto & element : array)
+				for (const auto & raw_segment : raw_segments)
 				{
-					auto id                    = element[Key::Segment::id               ].get < std::string > ();
-					auto type                  = element[Key::Segment::type             ].get < std::size_t > ();
-					auto name                  = element[Key::Segment::name             ].get < std::string > ();
-					auto station			   = element[Key::Segment::station			].get < std::string > ();
-					auto length                = element[Key::Segment::length           ].get < std::size_t > ();
-					auto adjacent_segments_raw = element[Key::Segment::adjacent_segments].get < std::vector < std::string > > ();
+					auto id                    = raw_segment[Key::Segment::id               ].get < std::string > ();
+					auto type                  = raw_segment[Key::Segment::type             ].get < std::size_t > ();
+					auto name                  = raw_segment[Key::Segment::name             ].get < std::string > ();
+					auto station			   = raw_segment[Key::Segment::station			].get < std::string > ();
+					auto length                = raw_segment[Key::Segment::length           ].get < std::size_t > ();
+					auto raw_adjacent_segments = raw_segment[Key::Segment::adjacent_segments].get < std::vector < std::string > > ();
 
-					Segment::segments_container_t adjacent_segments(adjacent_segments_raw.size());
+					Segment::segments_container_t adjacent_segments(raw_adjacent_segments.size());
 
-					std::transform(adjacent_segments_raw.begin(), adjacent_segments_raw.end(), adjacent_segments.begin(),
-						[](const auto & adjacent_segment_raw)
+					std::transform(raw_adjacent_segments.begin(), raw_adjacent_segments.end(), adjacent_segments.begin(),
+						[](const auto & raw_adjacent_segment)
 					{
-						return Segment::string_generator(adjacent_segment_raw);
+						return Segment::string_generator(raw_adjacent_segment);
 					});
 
 					auto segment = std::make_shared < Segment > (
@@ -54,22 +54,22 @@ namespace solution
 
 			try
 			{
-				json_t array;
+				json_t raw_trains;
 
-				load(File::trains_data, array);
+				load(File::trains_data, raw_trains);
 
-				for (const auto & element : array)
+				for (const auto & raw_train : raw_trains)
 				{
-					auto id					 = element[Key::Train::id				  ].get < std::string > ();
-					auto name				 = element[Key::Train::name				  ].get < std::string > ();
-					auto code				 = element[Key::Train::code				  ].get < std::string > ();
-					auto type				 = element[Key::Train::type				  ].get < std::string > ();
-					auto weight_k			 = element[Key::Train::weight_k			  ].get < double > ();
-					auto route_id			 = element[Key::Train::route_id			  ].get < std::string > ();
-					auto speed				 = element[Key::Train::speed			  ].get < std::size_t > ();
-					auto length				 = element[Key::Train::length			  ].get < std::size_t > ();
-					auto current_segment_id  = element[Key::Train::current_segment_id ].get < std::string > ();
-					auto previous_segment_id = element[Key::Train::previous_segment_id].get < std::string > ();
+					auto id					 = raw_train[Key::Train::id				    ].get < std::string > ();
+					auto name				 = raw_train[Key::Train::name				].get < std::string > ();
+					auto code				 = raw_train[Key::Train::code				].get < std::string > ();
+					auto type				 = raw_train[Key::Train::type				].get < std::string > ();
+					auto weight_k			 = raw_train[Key::Train::weight_k			].get < double > ();
+					auto route_id			 = raw_train[Key::Train::route_id			].get < std::string > ();
+					auto speed				 = raw_train[Key::Train::speed			    ].get < std::size_t > ();
+					auto length				 = raw_train[Key::Train::length			    ].get < std::size_t > ();
+					auto current_segment_id  = raw_train[Key::Train::current_segment_id ].get < std::string > ();
+					auto previous_segment_id = raw_train[Key::Train::previous_segment_id].get < std::string > ();
 
 					auto train = std::make_shared < Train > (
 						std::move(Train::string_generator(std::move(id))), std::move(name), std::move(code), std::move(type), weight_k, 
@@ -94,24 +94,24 @@ namespace solution
 
 			try
 			{
-				json_t array;
+				json_t raw_routes;
 
-				load(File::routes_data, array);
+				load(File::routes_data, raw_routes);
 
-				for (const auto & element : array)
+				for (const auto & raw_route : raw_routes)
 				{
-					auto id          = element[Key::Route::id].get < std::string > ();
-					auto records_raw = element[Key::Route::records];
+					auto id          = raw_route[Key::Route::id].get < std::string > ();
+					auto raw_records = raw_route[Key::Route::records];
 
-					Route::records_container_t records(records_raw.size());
+					Route::records_container_t records(raw_records.size());
 
-					std::transform(records_raw.begin(), records_raw.end(), records.begin(),
-						[](const auto & record_raw)
+					std::transform(raw_records.begin(), raw_records.end(), records.begin(),
+						[](const auto & raw_record)
 					{
 						return Route::Record(
-							record_raw[Key::Route::station  ].get < std::string > (),
-							record_raw[Key::Route::arrival  ].get < std::time_t > (),
-							record_raw[Key::Route::departure].get < std::time_t > ());
+							raw_record[Key::Route::station  ].get < std::string > (),
+							raw_record[Key::Route::arrival  ].get < std::time_t > (),
+							raw_record[Key::Route::departure].get < std::time_t > ());
 					});
 
 					auto route = std::make_shared < Route > (std::move(Route::string_generator(std::move(id))), std::move(records));
@@ -121,9 +121,9 @@ namespace solution
 					// routes.push_back(route);
 				}
 			}
-			catch (const std::exception& exception)
+			catch (const std::exception & exception)
 			{
-				shared::catch_handler < system_exception >(logger, exception);
+				shared::catch_handler < system_exception > (logger, exception);
 			}
 		}
 
@@ -133,32 +133,32 @@ namespace solution
 
 			try
 			{
-				auto array = json_t::array();
+				auto raw_trains = json_t::array();
 
 				for (const auto & train : trains)
 				{
-					json_t train_raw;
+					json_t raw_train;
 
-					train_raw[Key::Train::name] = train.second->name();
+					raw_train[Key::Train::name] = train.second->name();
 
-					json_t thread;
+					json_t raw_thread;
 
 					for (const auto & record : train.second->thread())
 					{
-						json_t record_raw;
+						json_t raw_record;
 
-						record_raw[Key::Segment::name] = segments.at(record.first)->name();
-						record_raw[Key::Segment::time] = record.second;
+						raw_record[Key::Segment::name] = segments.at(record.first)->name();
+						raw_record[Key::Segment::time] = record.second;
 
-						thread.push_back(record_raw);
+						raw_thread.push_back(raw_record);
 					}
 
-					train_raw[Key::Train::thread] = thread;
+					raw_train[Key::Train::thread] = raw_thread;
 
-					array.push_back(train_raw);
+					raw_trains.push_back(raw_train);
 				}
 
-				save(File::gid_data, array);
+				save(File::gid_data, raw_trains);
 			}
 			catch (const std::exception & exception)
 			{
@@ -347,7 +347,7 @@ namespace solution
 				boost::python::object module_f = m_python.global()["f"];
 				boost::python::object module_h = m_python.global()["h"];
 
-				module_h();
+				module_h(make_initialization_data().c_str(), 0);
 
 				for (std::time_t t = 0; t < limit_time && has_train_on_route(); ++t)
 				{
@@ -356,7 +356,7 @@ namespace solution
 						auto v_in = make_input_vector();
 
 						std::string result = boost::python::extract < std::string > (
-							module_f(to_string(v_in).c_str()/*, boost::uuids::to_string(m_id).c_str()*/));
+							module_f(to_string(v_in).c_str(), boost::uuids::to_string(m_id).c_str()));
 
 						auto v_out = from_string(result);
 
@@ -397,6 +397,28 @@ namespace solution
 			try
 			{
 				Data::save(m_trains, m_segments);
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		std::string System::make_initialization_data() const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				auto array = json_t::array();
+
+				array.push_back(boost::uuids::to_string(m_id));
+
+				std::stringstream sout;
+
+				sout << array;
+
+				return sout.str();
 			}
 			catch (const std::exception & exception)
 			{
@@ -777,10 +799,10 @@ namespace solution
 				bool are_different_previous_and_next_segment_ids = 
 					(m_trains.at(m_segments.at(current_segment_id)->train_id())->previous_segment_id() != next_segment_id);
 				bool is_train_previous_segment_id_nil = m_trains.at(m_segments.at(current_segment_id)->train_id())->previous_segment_id().is_nil();
-				bool is_segment_railway = (m_segments.at(next_segment_id)->type() == Segment::Type::railway);
+				bool is_next_segment_railway = (m_segments.at(next_segment_id)->type() == Segment::Type::railway);
 
 				return (is_next_segment_available_to_move && are_different_previous_and_next_segment_ids && 
-					(is_train_previous_segment_id_nil || (is_segment_railway || (m_segments.at(next_segment_id)->station() !=
+					(is_train_previous_segment_id_nil || (is_next_segment_railway || (m_segments.at(next_segment_id)->station() !=
 						m_segments.at(m_trains.at(m_segments.at(current_segment_id)->train_id())->previous_segment_id())->station()))));
 			}
 			catch (const std::exception & exception)
@@ -813,7 +835,7 @@ namespace solution
 				{
 					m_trains.at(m_segments.at(next_segment_id)->train_id())->update_state(Train::State::wait);
 
-					m_trains.at(m_segments.at(next_segment_id)->train_id())->update_deviation(m_segments.at(next_segment_id)->name());
+					m_trains.at(m_segments.at(next_segment_id)->train_id())->update_deviation(m_segments.at(next_segment_id)->station());
 
 					break;
 				}
@@ -853,8 +875,8 @@ namespace solution
 					}
 					case Train::State::wait:
 					{
-						train.second->reduce_route_time(delta, m_segments.at(train.second->current_segment_id())->name());
-
+						train.second->reduce_route_time(delta, m_segments.at(train.second->current_segment_id())->station());
+						
 						break;
 					}
 					case Train::State::stop_move: // impossible here
