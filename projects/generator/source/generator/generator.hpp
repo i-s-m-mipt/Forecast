@@ -68,6 +68,7 @@ namespace solution
 				id_t id;
 				Type type;
 				std::string name;
+				std::string station;
 				std::size_t length;
 
 				segments_container_t adjacent_segments;
@@ -162,6 +163,7 @@ namespace solution
 						static inline const std::string id                = "id";
 						static inline const std::string type              = "type";
 						static inline const std::string name              = "name";
+						static inline const std::string station			  = "station";
 						static inline const std::string length            = "length";
 						static inline const std::string adjacent_segments = "adjacent_segments";
 					};
