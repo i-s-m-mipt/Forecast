@@ -26,6 +26,7 @@ namespace solution
 					element[Key::Segment::id]                = boost::uuids::to_string(segment.id);
 					element[Key::Segment::type]              = static_cast < std::size_t > (segment.type);
 					element[Key::Segment::name]              = segment.name;
+					element[Key::Segment::station]			 = segment.station;
 					element[Key::Segment::length]            = segment.length;
 					element[Key::Segment::adjacent_segments] = adjacent_segments;
 
@@ -167,14 +168,21 @@ namespace solution
 
 			try
 			{
-				const auto n_stations = 10U; // количество станций на линейном графе, фикс.
+				const auto n_stations = 6U; // количество станций на линейном графе, фикс.
 
 				m_stations.reserve(n_stations);
 
-				for (auto i = 0U; i < n_stations; ++i)
-				{
-					m_stations.push_back("Station_" + std::to_string(i));
-				}
+				//for (auto i = 0U; i < n_stations; ++i)
+				//{
+				//	m_stations.push_back("Station_" + std::to_string(i));
+				//}
+
+				m_stations.push_back("BAG");
+				m_stations.push_back("MAA");
+				m_stations.push_back("AGU");
+				m_stations.push_back("NAE");
+				m_stations.push_back("OOR");
+				m_stations.push_back("LUN");
 			}
 			catch (const std::exception & exception)
 			{
@@ -189,11 +197,13 @@ namespace solution
 			try
 			{
 				const auto n_stations = m_stations.size();
+				boost::uuids::random_generator generator;
 
+				/*
 				const auto n_reserves = 3U;  // количество станционных путей на станции, фикс.
 				const auto n_railways = 10U; // количество блок-участков на перегоне, фикс.
 
-				boost::uuids::random_generator_mt19937 generator;
+				boost::uuids::random_generator generator;
 				Segment::Type type = Segment::Type::station;
 				auto station_index = 0U;
 				const auto length = 1000U; // (m)
@@ -223,6 +233,233 @@ namespace solution
 
 					m_segments.push_back(segment);
 				}
+				*/
+
+				Segment segment;
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS1P_BAG";
+				segment.station = "BAG";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS2P_BAG";
+				segment.station = "BAG";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS3P_BAG";
+				segment.station = "BAG";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS4P_BAG";
+				segment.station = "BAG";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS5P_BAG";
+				segment.station = "BAG";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS6P_BAG";
+				segment.station = "BAG";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::railway;
+				segment.name = "SLZ_GPC@MAA";
+				segment.station = "";
+				segment.length = 10000;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS1P@MAA";
+				segment.station = "MAA";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS2P@MAA";
+				segment.station = "MAA";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS3P@MAA";
+				segment.station = "MAA";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS4P@MAA";
+				segment.station = "MAA";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS5P@MAA";
+				segment.station = "MAA";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::railway;
+				segment.name = "SLZ_GPC@AGU";
+				segment.station = "";
+				segment.length = 10000;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS1P@AGU";
+				segment.station = "AGU";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS2P@AGU";
+				segment.station = "AGU";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS3P@AGU";
+				segment.station = "AGU";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::railway;
+				segment.name = "SLZ_GPC_NAE";
+				segment.station = "";
+				segment.length = 10000;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS1P_NAE";
+				segment.station = "NAE";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS2P_NAE";
+				segment.station = "NAE";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS3P_NAE";
+				segment.station = "NAE";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::railway;
+				segment.name = "SLZ_GPC@OOR";
+				segment.station = "";
+				segment.length = 10000;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS1P@OOR";
+				segment.station = "OOR";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS2P@OOR";
+				segment.station = "OOR";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS3P@OOR";
+				segment.station = "OOR";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::railway;
+				segment.name = "SLZ_GPC@LUN";
+				segment.station = "";
+				segment.length = 10000;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS1P@LUN";
+				segment.station = "LUN";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS2P@LUN";
+				segment.station = "LUN";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
+
+				segment.id = generator();
+				segment.type = Segment::Type::station;
+				segment.name = "TS3P@LUN";
+				segment.station = "LUN";
+				segment.length = 600;
+
+				m_segments.push_back(segment);
 			}
 			catch (const std::exception & exception)
 			{
@@ -236,6 +473,7 @@ namespace solution
 
 			try
 			{
+				/*
 				for (auto i = 0U; i < m_segments.size(); ++i)
 				{
 					if (m_segments[i].type == Segment::Type::station)
@@ -285,6 +523,92 @@ namespace solution
 						}
 					}
 				}
+				*/
+
+				m_segments[0].adjacent_segments.push_back(m_segments[6].id);
+				m_segments[1].adjacent_segments.push_back(m_segments[6].id);
+				m_segments[2].adjacent_segments.push_back(m_segments[6].id);
+				m_segments[3].adjacent_segments.push_back(m_segments[6].id);
+				m_segments[4].adjacent_segments.push_back(m_segments[6].id);
+				m_segments[5].adjacent_segments.push_back(m_segments[6].id);
+
+				m_segments[6].adjacent_segments.push_back(m_segments[0].id);
+				m_segments[6].adjacent_segments.push_back(m_segments[1].id);
+				m_segments[6].adjacent_segments.push_back(m_segments[2].id);
+				m_segments[6].adjacent_segments.push_back(m_segments[3].id);
+				m_segments[6].adjacent_segments.push_back(m_segments[4].id);
+				m_segments[6].adjacent_segments.push_back(m_segments[5].id);
+				m_segments[6].adjacent_segments.push_back(m_segments[7].id);
+				m_segments[6].adjacent_segments.push_back(m_segments[8].id);
+				m_segments[6].adjacent_segments.push_back(m_segments[9].id);
+				m_segments[6].adjacent_segments.push_back(m_segments[10].id);
+				m_segments[6].adjacent_segments.push_back(m_segments[11].id);
+
+				m_segments[7].adjacent_segments.push_back(m_segments[6].id);
+				m_segments[7].adjacent_segments.push_back(m_segments[12].id);
+				m_segments[8].adjacent_segments.push_back(m_segments[6].id);
+				m_segments[8].adjacent_segments.push_back(m_segments[12].id);
+				m_segments[9].adjacent_segments.push_back(m_segments[6].id);
+				m_segments[9].adjacent_segments.push_back(m_segments[12].id);
+				m_segments[10].adjacent_segments.push_back(m_segments[6].id);
+				m_segments[10].adjacent_segments.push_back(m_segments[12].id);
+				m_segments[11].adjacent_segments.push_back(m_segments[6].id);
+				m_segments[11].adjacent_segments.push_back(m_segments[12].id);
+
+				m_segments[12].adjacent_segments.push_back(m_segments[7].id);
+				m_segments[12].adjacent_segments.push_back(m_segments[8].id);
+				m_segments[12].adjacent_segments.push_back(m_segments[9].id);
+				m_segments[12].adjacent_segments.push_back(m_segments[10].id);
+				m_segments[12].adjacent_segments.push_back(m_segments[11].id);
+				m_segments[12].adjacent_segments.push_back(m_segments[13].id);
+				m_segments[12].adjacent_segments.push_back(m_segments[14].id);
+				m_segments[12].adjacent_segments.push_back(m_segments[15].id);
+
+				m_segments[13].adjacent_segments.push_back(m_segments[12].id);
+				m_segments[13].adjacent_segments.push_back(m_segments[16].id);
+				m_segments[14].adjacent_segments.push_back(m_segments[12].id);
+				m_segments[14].adjacent_segments.push_back(m_segments[16].id);
+				m_segments[15].adjacent_segments.push_back(m_segments[12].id);
+				m_segments[15].adjacent_segments.push_back(m_segments[16].id);
+
+				m_segments[16].adjacent_segments.push_back(m_segments[13].id);
+				m_segments[16].adjacent_segments.push_back(m_segments[14].id);
+				m_segments[16].adjacent_segments.push_back(m_segments[15].id);
+				m_segments[16].adjacent_segments.push_back(m_segments[17].id);
+				m_segments[16].adjacent_segments.push_back(m_segments[18].id);
+				m_segments[16].adjacent_segments.push_back(m_segments[19].id);
+
+				m_segments[17].adjacent_segments.push_back(m_segments[20].id);
+				m_segments[17].adjacent_segments.push_back(m_segments[16].id);
+				m_segments[18].adjacent_segments.push_back(m_segments[20].id);
+				m_segments[18].adjacent_segments.push_back(m_segments[16].id);
+				m_segments[19].adjacent_segments.push_back(m_segments[20].id);
+				m_segments[19].adjacent_segments.push_back(m_segments[16].id);
+
+				m_segments[20].adjacent_segments.push_back(m_segments[21].id);
+				m_segments[20].adjacent_segments.push_back(m_segments[22].id);
+				m_segments[20].adjacent_segments.push_back(m_segments[23].id);
+				m_segments[20].adjacent_segments.push_back(m_segments[17].id);
+				m_segments[20].adjacent_segments.push_back(m_segments[18].id);
+				m_segments[20].adjacent_segments.push_back(m_segments[19].id);
+
+				m_segments[21].adjacent_segments.push_back(m_segments[20].id);
+				m_segments[21].adjacent_segments.push_back(m_segments[24].id);
+				m_segments[22].adjacent_segments.push_back(m_segments[20].id);
+				m_segments[22].adjacent_segments.push_back(m_segments[24].id);
+				m_segments[23].adjacent_segments.push_back(m_segments[20].id);
+				m_segments[23].adjacent_segments.push_back(m_segments[24].id);
+
+				m_segments[24].adjacent_segments.push_back(m_segments[21].id);
+				m_segments[24].adjacent_segments.push_back(m_segments[22].id);
+				m_segments[24].adjacent_segments.push_back(m_segments[23].id);
+				m_segments[24].adjacent_segments.push_back(m_segments[25].id);
+				m_segments[24].adjacent_segments.push_back(m_segments[26].id);
+				m_segments[24].adjacent_segments.push_back(m_segments[27].id);
+
+				m_segments[25].adjacent_segments.push_back(m_segments[24].id);
+				m_segments[26].adjacent_segments.push_back(m_segments[24].id);
+				m_segments[27].adjacent_segments.push_back(m_segments[24].id);
 			}
 			catch (const std::exception & exception)
 			{
