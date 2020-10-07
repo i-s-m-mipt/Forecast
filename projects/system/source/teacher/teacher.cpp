@@ -292,14 +292,13 @@ namespace solution
 			}
 		}
 
-		void save_system_deviation(const System & system)
+		void Teacher::save_system_deviation(const System & system)
 		{
 			RUN_LOGGER(logger);
 
 			try
 			{
-				Teacher::shared_memory_t shared_memory(
-					boost::interprocess::open_only, Teacher::shared_memory_name.c_str());
+				shared_memory_t shared_memory(boost::interprocess::open_only, shared_memory_name.c_str());
 
 				*((shared_memory.find < double > (
 					boost::uuids::to_string(system.id()).c_str())).first) = system.current_total_deviation();

@@ -88,7 +88,7 @@ namespace solution
 				static inline const std::string deviation = "deviation";
 			};
 
-		public:
+		private:
 
 			using shared_memory_t = boost::interprocess::managed_shared_memory;
 
@@ -133,11 +133,15 @@ namespace solution
 
 			void send_evaluation_data(const std::string & data) const;
 
+		public:
+
+			static void save_system_deviation(const System & system);
+
 		private:
 
 			static inline const std::string process_name = "system";
 
-		public:
+		private:
 
 			static inline const std::string shared_memory_name = "generation";
 			static inline const std::size_t shared_memory_size = 65536U;
