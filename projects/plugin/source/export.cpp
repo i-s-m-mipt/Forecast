@@ -41,6 +41,7 @@ extern "C" __declspec(dllexport) void zssetZapretZ(int, std::vector < Zapret > &
 extern "C" __declspec(dllexport) void zsclearZapret() {} // verify
 extern "C" __declspec(dllexport) void zscalcZapretData() {} // verify
 extern "C" __declspec(dllexport) void zssetConfig(int, int, std::vector < int >) {} // verify
-extern "C" __declspec(dllexport) void zsNitkaWork(std::vector < Nitka > & dummy, std::vector < std::vector < Nitka > > & result); // verify
+extern "C" __declspec(dllexport) void zsNitkaWork(
+    std::vector < Nitka > & dummy, std::vector < std::vector < Nitka > > & result); // verify
 
 // =============================================================================
