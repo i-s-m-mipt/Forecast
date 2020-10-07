@@ -4,10 +4,30 @@
     <Filter Include="source">
       <UniqueIdentifier>{41bc5e35-5f83-4178-898b-3d646c58ec11}</UniqueIdentifier>
     </Filter>
+    <Filter Include="source\logger">
+      <UniqueIdentifier>{c921ed32-6021-4792-b215-73f8f4ff3deb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\controller">
+      <UniqueIdentifier>{ac4425ff-dee0-4606-805b-034992aace01}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\source\export.cpp">
       <Filter>source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\shared\source\logger\logger.cpp">
+      <Filter>source\logger</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\controller\controller.cpp">
+      <Filter>source\controller</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\shared\source\logger\logger.hpp">
+      <Filter>source\logger</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\controller\controller.hpp">
+      <Filter>source\controller</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

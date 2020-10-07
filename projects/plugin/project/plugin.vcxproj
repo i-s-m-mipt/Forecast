@@ -19,7 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\shared\source\logger\logger.cpp" />
+    <ClCompile Include="..\source\controller\controller.cpp" />
     <ClCompile Include="..\source\export.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\shared\source\logger\logger.hpp" />
+    <ClInclude Include="..\source\controller\controller.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -137,7 +143,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>C:\Libraries\boost;</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4101;4715</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4101;4715;6277</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -158,7 +164,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>C:\Libraries\boost;</AdditionalIncludeDirectories>
-      <DisableSpecificWarnings>4101;4715</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4101;4715;6277</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
