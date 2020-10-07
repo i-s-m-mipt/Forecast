@@ -91,7 +91,7 @@ namespace solution
 
 			try
 			{
-				m_module_h(/*data.c_str()*/);
+				m_module_h(data.c_str(), 1);
 			}
 			catch (const boost::python::error_already_set &)
 			{
