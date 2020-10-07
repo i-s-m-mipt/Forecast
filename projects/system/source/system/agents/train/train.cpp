@@ -12,7 +12,7 @@ namespace solution
 
 				try
 				{
-					m_gid.emplace_back(m_current_segment_id, 0);
+					m_thread.emplace_back(m_current_segment_id, 0);
 				}
 				catch (const std::exception & exception)
 				{
@@ -43,7 +43,7 @@ namespace solution
 					m_previous_segment_id = m_current_segment_id;
 					m_current_segment_id = next_segment_id;
 
-					m_gid.emplace_back(m_current_segment_id, 0);
+					m_thread.emplace_back(m_current_segment_id, 0);
 				}
 				catch (const std::exception & exception)
 				{
@@ -87,7 +87,7 @@ namespace solution
 
 				try
 				{
-					++m_gid.back().second;
+					++m_thread.back().second;
 
 					if (current_station.empty())
 					{

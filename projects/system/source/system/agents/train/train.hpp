@@ -60,6 +60,10 @@ namespace solution
 					stop_move
 				};
 
+			private:
+
+				using thread_t = std::vector < std::pair < id_t, std::time_t > > ;
+
 			public:
 
 				template < typename Id, typename Name, typename Code, typename Type, typename Enable =
@@ -137,9 +141,9 @@ namespace solution
 					return m_movement_time;
 				}
 
-				const auto & gid() const noexcept
+				const auto & thread() const noexcept
 				{
-					return m_gid;
+					return m_thread;
 				}
 
 			public:
@@ -196,7 +200,7 @@ namespace solution
 
 				std::time_t m_total_movement_time = 0; // (min)
 
-				std::vector < std::pair < id_t, std::time_t > > m_gid;
+				thread_t m_thread; // нитка ГИД
 			};
 
 		} // namespace agents

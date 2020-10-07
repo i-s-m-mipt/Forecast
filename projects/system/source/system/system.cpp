@@ -127,6 +127,45 @@ namespace solution
 			}
 		}
 
+		void System::Data::save(const trains_container_t & trains, const segments_container_t & segments)
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				auto array = json_t::array();
+
+				for (const auto & train : trains)
+				{
+					json_t train_raw;
+
+					train_raw[Key::Train::name] = train.second->name();
+
+					json_t thread;
+
+					for (const auto & record : train.second->thread())
+					{
+						json_t record_raw;
+
+						record_raw[Key::Segment::name] = segments.at(record.first)->name();
+						record_raw[Key::Segment::time] = record.second;
+
+						thread.push_back(record_raw);
+					}
+
+					train_raw[Key::Train::thread] = thread;
+
+					array.push_back(train_raw);
+				}
+
+				save(File::gid_data, array);
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
 		void System::Data::save_segments_order(const segments_container_t & segments)
 		{
 			RUN_LOGGER(logger);
@@ -167,6 +206,27 @@ namespace solution
 				}
 
 				object = json_t::parse(fin);
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		void System::Data::save(const path_t & path, const json_t & object)
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				std::fstream fout(path.string(), std::ios::out);
+
+				if (!fout)
+				{
+					throw system_exception("cannot open file " + path.string());
+				}
+
+				fout << std::setw(4) << object;
 			}
 			catch (const std::exception & exception)
 			{
@@ -323,6 +383,20 @@ namespace solution
 			try
 			{
 				// ...
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		void System::save() const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				Data::save(m_trains, m_segments);
 			}
 			catch (const std::exception & exception)
 			{

@@ -20,15 +20,28 @@ int main(int argc, char ** argv)
 	{
 		if (argc > 1)
 		{
-			System system(System::string_generator(std::string(argv[1])));
+			const std::string argument(argv[1]);
 
-			system.run();
+			if (argument == "plugin")
+			{
+				System system(System::random_generator());
 
-			save_system_deviation(system);
+				system.run();
+
+				system.save();
+			}
+			else
+			{
+				System system(System::string_generator(argument));
+
+				system.run();
+
+				Teacher::save_deviation(system);
+			}
 		}
 		else
 		{
-			Teacher(64U, 100U).run();
+			Teacher(64U, 1000U).run();
 		}
 
 		return EXIT_SUCCESS;

@@ -114,6 +114,8 @@ namespace solution
 					static inline const path_t trains_data   = "system/data/trains.data";
 
 					static inline const path_t segments_order_txt = "segments_order.txt";
+
+					static inline const path_t gid_data = "gid.data";
 				};
 
 			private:
@@ -132,6 +134,8 @@ namespace solution
 						static inline const std::string station			  = "station";
 						static inline const std::string length			  = "length";
 						static inline const std::string adjacent_segments = "adjacent_segments";
+
+						static inline const std::string time = "time"; // время в записи нитки ГИД
 					};
 
 					struct Route
@@ -155,6 +159,8 @@ namespace solution
 						static inline const std::string length				= "length";
 						static inline const std::string current_segment_id	= "current_segment_id";
 						static inline const std::string previous_segment_id	= "previous_segment_id";
+
+						static inline const std::string thread = "thread"; // нитка ГИД
 					};
 				};
 
@@ -166,11 +172,15 @@ namespace solution
 
 				static void load(routes_container_t & routes);
 
+				static void save(const trains_container_t & trains, const segments_container_t & segments);
+
 				static void save_segments_order(const segments_container_t & segments);
 
 			private:
 
 				static void load(const path_t & path, json_t & object);
+
+				static void save(const path_t & path, const json_t & object);
 			};
 
 		private:
@@ -230,6 +240,8 @@ namespace solution
 			void run() const;
 
 			void stop() const;
+
+			void save() const;
 
 		private:
 

@@ -135,7 +135,7 @@ namespace solution
 
 		public:
 
-			static void save_system_deviation(const System & system);
+			static void save_deviation(const System & system);
 
 		private:
 
@@ -161,8 +161,6 @@ namespace solution
 
 			shared_memory_t m_shared_memory;
 		};
-
-		void save_system_deviation(const System & system);
 
 	} // namespace system
 

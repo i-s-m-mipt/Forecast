@@ -292,7 +292,7 @@ namespace solution
 			}
 		}
 
-		void Teacher::save_system_deviation(const System & system)
+		void Teacher::save_deviation(const System & system)
 		{
 			RUN_LOGGER(logger);
 
