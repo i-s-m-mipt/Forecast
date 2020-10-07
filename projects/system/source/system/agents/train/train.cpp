@@ -6,6 +6,20 @@ namespace solution
 	{
 		namespace agents
 		{
+			void Train::initialize()
+			{
+				RUN_LOGGER(logger);
+
+				try
+				{
+					m_gid.emplace_back(m_current_segment_id, 0);
+				}
+				catch (const std::exception & exception)
+				{
+					shared::catch_handler < train_exception > (logger, exception);
+				}
+			}
+
 			void Train::update_state(State state)
 			{
 				RUN_LOGGER(logger);
@@ -28,6 +42,8 @@ namespace solution
 				{
 					m_previous_segment_id = m_current_segment_id;
 					m_current_segment_id = next_segment_id;
+
+					m_gid.emplace_back(m_current_segment_id, 0);
 				}
 				catch (const std::exception & exception)
 				{
@@ -71,6 +87,8 @@ namespace solution
 
 				try
 				{
+					++m_gid.back().second;
+
 					if (current_station.empty())
 					{
 						m_route->reduce_time_on_railway(delta);

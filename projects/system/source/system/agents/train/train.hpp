@@ -75,9 +75,15 @@ namespace solution
 						m_type(std::forward < Type > (type)), m_weight_k(weight_k), m_route_id(std::forward < Id > (route_id)), 
 						m_speed(speed), m_length(length), m_current_segment_id(std::forward < Id > (current_segment_id)),
 						m_previous_segment_id(std::forward < Id > (previous_segment_id))
-				{}
+				{
+					initialize();
+				}
 
 				~Train() noexcept = default;
+
+			private:
+
+				void initialize();
 
 			public:
 
@@ -129,6 +135,11 @@ namespace solution
 				const auto movement_time() const noexcept
 				{
 					return m_movement_time;
+				}
+
+				const auto & gid() const noexcept
+				{
+					return m_gid;
 				}
 
 			public:
@@ -184,6 +195,8 @@ namespace solution
 				std::time_t m_movement_time = 0; // (min)
 
 				std::time_t m_total_movement_time = 0; // (min)
+
+				std::vector < std::pair < id_t, std::time_t > > m_gid;
 			};
 
 		} // namespace agents
