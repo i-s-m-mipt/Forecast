@@ -77,7 +77,32 @@ namespace solution
 
 				sout << array;
 
+				save_initialization_data(array);
+
 				send_initialization_data(sout.str());
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < teacher_exception > (logger, exception);
+			}
+		}
+
+		void Teacher::save_initialization_data(const json_t & data) const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				path_t path = File::initialization_data;
+
+				std::fstream fout(path.string(), std::ios::out);
+
+				if (!fout)
+				{
+					throw system_exception("cannot open file " + path.string());
+				}
+
+				fout << std::setw(4) << data;
 			}
 			catch (const std::exception & exception)
 			{

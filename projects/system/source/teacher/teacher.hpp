@@ -93,6 +93,19 @@ namespace solution
 
 			using shared_memory_t = boost::interprocess::managed_shared_memory;
 
+		private:
+
+			struct File
+			{
+				using path_t = std::filesystem::path;
+
+				static inline const path_t initialization_data = "teacher/initialization.data";
+			};
+
+		private:
+
+			using path_t = File::path_t;
+
 		public:
 
 			explicit Teacher(std::size_t n_systems, std::size_t n_generations = 1000U) :
@@ -112,6 +125,8 @@ namespace solution
 		private:
 
 			void make_initialization_data() const;
+
+			void save_initialization_data(const json_t & data) const;
 
 			void send_initialization_data(const std::string & data) const;
 

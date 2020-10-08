@@ -186,9 +186,9 @@ namespace solution
 					fout << boost::uuids::to_string(segment.second->id()) << std::endl;
 				}
 			}
-			catch (const std::exception& exception)
+			catch (const std::exception & exception)
 			{
-				shared::catch_handler < system_exception >(logger, exception);
+				shared::catch_handler < system_exception > (logger, exception);
 			}
 		}
 
