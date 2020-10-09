@@ -105,7 +105,7 @@ namespace solution
 
 				ZeroMemory(&process_information, sizeof(process_information));
 
-				std::string command_line = "system plugin";
+				std::string command_line = "system -plugin";
 
 				if (!CreateProcessA(NULL, (LPSTR)(command_line.c_str()),
 					NULL, NULL, FALSE, 0, NULL, NULL, &startup_information, &process_information))
