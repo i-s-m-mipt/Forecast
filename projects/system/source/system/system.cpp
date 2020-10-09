@@ -369,6 +369,8 @@ namespace solution
 			catch (const boost::python::error_already_set &)
 			{
 				logger.write(Severity::error, shared::Python::exception());
+
+				shared::catch_handler < system_exception > (logger);
 			}
 			catch (const std::exception & exception)
 			{

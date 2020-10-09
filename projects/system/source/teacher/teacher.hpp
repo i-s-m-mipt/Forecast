@@ -164,8 +164,6 @@ namespace solution
 			void print_generation_statistics(std::size_t generation_index, 
 				const std::vector < double > & deviations) const;
 
-			void send_evaluation_data(const std::string & data) const;
-
 		public:
 
 			static void save_deviation(const System & system);
@@ -189,11 +187,13 @@ namespace solution
 
 			shared::Python m_python;
 
-			boost::python::object m_module_g;
 			boost::python::object m_module_h;
 
 			shared_memory_t m_shared_memory;
 		};
+
+		void apply_genetic_algorithm(const std::string & function_name, 
+			const std::string & model_id_1, const std::string & model_id_2 = "");
 
 	} // namespace system
 

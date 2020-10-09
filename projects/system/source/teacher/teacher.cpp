@@ -106,10 +106,8 @@ namespace solution
 
 			try
 			{
-				boost::python::exec("from script import g", m_python.global(), m_python.global());
 				boost::python::exec("from script import h", m_python.global(), m_python.global());
 
-				m_module_g = m_python.global()["g"];
 				m_module_h = m_python.global()["h"];
 
 				Data::load(m_systems, n_systems);
@@ -132,6 +130,8 @@ namespace solution
 			catch (const boost::python::error_already_set &)
 			{
 				logger.write(Severity::error, shared::Python::exception());
+
+				shared::catch_handler < teacher_exception > (logger);
 			}
 			catch (const std::exception & exception)
 			{
@@ -317,7 +317,7 @@ namespace solution
 
 				sout << array;
 
-				send_evaluation_data(sout.str());
+				
 			}
 			catch (const std::exception & exception)
 			{
@@ -349,24 +349,6 @@ namespace solution
 			}
 		}
 
-		void Teacher::send_evaluation_data(const std::string & data) const
-		{
-			RUN_LOGGER(logger);
-
-			try
-			{
-				m_module_g(data.c_str());
-			}
-			catch (const boost::python::error_already_set &)
-			{
-				logger.write(Severity::error, shared::Python::exception());
-			}
-			catch (const std::exception & exception)
-			{
-				shared::catch_handler < teacher_exception > (logger, exception);
-			}
-		}
-
 		void Teacher::save_deviation(const System & system)
 		{
 			RUN_LOGGER(logger);
@@ -377,6 +359,41 @@ namespace solution
 
 				*((shared_memory.find < double > (
 					boost::uuids::to_string(system.id()).c_str())).first) = system.current_total_deviation();
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < teacher_exception > (logger, exception);
+			}
+		}
+
+		void apply_genetic_algorithm(const std::string & function_name, 
+			const std::string & model_id_1, const std::string & model_id_2)
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				shared::Python python;
+
+				boost::python::exec(("from script import " + function_name).c_str(), 
+					python.global(), python.global());
+
+				boost::python::object function = python.global()[function_name.c_str()];
+
+				if (model_id_2.empty())
+				{
+					function(model_id_1.c_str());
+				}
+				else
+				{
+					function(model_id_1.c_str(), model_id_2.c_str());
+				}
+			}
+			catch (const boost::python::error_already_set &)
+			{
+				logger.write(Severity::error, shared::Python::exception());
+
+				shared::catch_handler < teacher_exception > (logger);
 			}
 			catch (const std::exception & exception)
 			{
