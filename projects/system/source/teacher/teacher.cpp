@@ -6,6 +6,100 @@ namespace solution
 	{
 		using Severity = shared::Logger::Severity;
 
+		void Teacher::Data::load(systems_container_t & systems, std::size_t n_systems)
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				json_t raw_systems;
+
+				load(File::systems_data, raw_systems);
+
+				std::size_t index = 0U;
+
+				if (!raw_systems.empty())
+				{
+					for (; index < raw_systems.size() && index < n_systems; ++index)
+					{
+						systems[System::string_generator(raw_systems.at(index).get < std::string > ())] = 0.0;
+					}
+				}
+
+				for (; index < n_systems; ++index)
+				{
+					systems[System::random_generator()] = 0.0;
+				}
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < teacher_exception > (logger, exception);
+			}
+		}
+
+		void Teacher::Data::save(const systems_container_t & systems)
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				auto raw_systems = json_t::array();
+
+				for (const auto & system : systems)
+				{
+					raw_systems.push_back(boost::uuids::to_string(system.first));
+				}
+
+				save(File::systems_data, raw_systems);
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < teacher_exception > (logger, exception);
+			}
+		}
+
+		void Teacher::Data::load(const path_t & path, json_t & object)
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				std::fstream fin(path.string(), std::ios::in);
+
+				if (!fin)
+				{
+					throw system_exception("cannot open file " + path.string());
+				}
+
+				object = json_t::parse(fin);
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < teacher_exception > (logger, exception);
+			}
+		}
+
+		void Teacher::Data::save(const path_t & path, const json_t & object)
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				std::fstream fout(path.string(), std::ios::out);
+
+				if (!fout)
+				{
+					throw system_exception("cannot open file " + path.string());
+				}
+
+				fout << std::setw(4) << object;
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < teacher_exception > (logger, exception);
+			}
+		}
+
 		void Teacher::initialize(std::size_t n_systems)
 		{
 			RUN_LOGGER(logger);
@@ -18,12 +112,11 @@ namespace solution
 				m_module_g = m_python.global()["g"];
 				m_module_h = m_python.global()["h"];
 
-				for (auto i = 0U; i < n_systems; ++i)
-				{
-					m_systems[System::random_generator()] = 0.0;
-				}
+				Data::load(m_systems, n_systems);
 
-				make_initialization_data();
+				m_module_h(make_initialization_data().c_str(), 0);
+
+				Data::save(m_systems);
 
 				boost::interprocess::shared_memory_object::remove(shared_memory_name.c_str());
 
@@ -60,7 +153,7 @@ namespace solution
 			}
 		}
 
-		void Teacher::make_initialization_data() const
+		std::string Teacher::make_initialization_data() const
 		{
 			RUN_LOGGER(logger);
 
@@ -77,50 +170,7 @@ namespace solution
 
 				sout << array;
 
-				save_initialization_data(array);
-
-				send_initialization_data(sout.str());
-			}
-			catch (const std::exception & exception)
-			{
-				shared::catch_handler < teacher_exception > (logger, exception);
-			}
-		}
-
-		void Teacher::save_initialization_data(const json_t & data) const
-		{
-			RUN_LOGGER(logger);
-
-			try
-			{
-				path_t path = File::initialization_data;
-
-				std::fstream fout(path.string(), std::ios::out);
-
-				if (!fout)
-				{
-					throw system_exception("cannot open file " + path.string());
-				}
-
-				fout << std::setw(4) << data;
-			}
-			catch (const std::exception & exception)
-			{
-				shared::catch_handler < teacher_exception > (logger, exception);
-			}
-		}
-
-		void Teacher::send_initialization_data(const std::string & data) const
-		{
-			RUN_LOGGER(logger);
-
-			try
-			{
-				m_module_h(data.c_str(), 1);
-			}
-			catch (const boost::python::error_already_set &)
-			{
-				logger.write(Severity::error, shared::Python::exception());
+				return sout.str();
 			}
 			catch (const std::exception & exception)
 			{

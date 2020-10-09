@@ -95,16 +95,37 @@ namespace solution
 
 		private:
 
-			struct File
+			class Data
 			{
-				using path_t = std::filesystem::path;
+			private:
 
-				static inline const path_t initialization_data = "teacher/initialization.data";
+				using json_t = boost::extended::serialization::json;
+
+			private:
+
+				struct File
+				{
+					using path_t = std::filesystem::path;
+
+					static inline const path_t systems_data = "teacher/data/systems.data";
+				};
+
+			private:
+
+				using path_t = File::path_t;
+
+			public:
+
+				static void load(systems_container_t & systems, std::size_t n_systems);
+
+				static void save(const systems_container_t & systems);
+
+			private:
+
+				static void load(const path_t & path, json_t & object);
+
+				static void save(const path_t & path, const json_t & object);
 			};
-
-		private:
-
-			using path_t = File::path_t;
 
 		public:
 
@@ -124,11 +145,7 @@ namespace solution
 
 		private:
 
-			void make_initialization_data() const;
-
-			void save_initialization_data(const json_t & data) const;
-
-			void send_initialization_data(const std::string & data) const;
+			std::string make_initialization_data() const;
 
 		public:
 
