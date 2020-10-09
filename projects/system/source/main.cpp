@@ -5,10 +5,13 @@
 #include <string>
 
 #include "../../shared/source/logger/logger.hpp"
+#include "../../shared/source/python/python.hpp"
 
+#include "system/system.hpp"
 #include "teacher/teacher.hpp"
 
 using Logger  = solution::shared::Logger;
+using Python  = solution::shared::Python;
 using System  = solution::system::System;
 using Teacher = solution::system::Teacher;
 
@@ -22,26 +25,34 @@ int main(int argc, char ** argv)
 		{
 			const std::string argument(argv[1]);
 
-			if (argument == "plugin")
+			if (argument == "-plugin")
 			{
-				System system(System::random_generator());
+				System system(System::random_generator()); // model
 
 				system.run();
-
 				system.save();
 			}
 			else
 			{
-				System system(System::string_generator(argument));
+				if (argument == "-function")
+				{
+					solution::system::apply_genetic_algorithm(argv[2], argv[3], ((argc == 4) ? "" : argv[4]));
+				}
+				else
+				{
+					System system(System::string_generator(argument));
 
-				system.run();
+					system.run();
 
-				Teacher::save_deviation(system);
+					Teacher::save_deviation(system);
+				}
 			}
 		}
 		else
 		{
-			Teacher(64U, 1000U).run();
+			Teacher(64U, 256U).run();
+
+			system("pause");
 		}
 
 		return EXIT_SUCCESS;
