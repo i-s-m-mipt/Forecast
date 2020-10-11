@@ -36,7 +36,14 @@ int main(int argc, char ** argv)
 			{
 				if (argument == "-function")
 				{
-					solution::system::apply_genetic_algorithm(argv[2], argv[3], ((argc == 4) ? "" : argv[4]));
+					if (argc - 3 == 2)
+					{
+						solution::system::apply_genetic_algorithm(argv[2], argv[3], argv[4]);
+					}
+					else
+					{
+						solution::system::apply_genetic_algorithm(argv[2], argv[3], argv[5], argv[4], argv[6]);
+					}
 				}
 				else
 				{
@@ -50,7 +57,7 @@ int main(int argc, char ** argv)
 		}
 		else
 		{
-			Teacher(64U, 256U).run();
+			Teacher(1024U).run();
 
 			system("pause");
 		}

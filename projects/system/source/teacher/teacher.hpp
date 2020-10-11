@@ -8,6 +8,7 @@
 #endif // #ifdef BOOST_HAS_PRAGMA_ONCE
 
 #include <algorithm>
+#include <chrono>
 #include <exception>
 #include <filesystem>
 #include <fstream>
@@ -17,6 +18,7 @@
 #include <memory>
 #include <mutex>
 #include <numeric>
+#include <random>
 #include <sstream>
 #include <stdexcept>
 #include <string>
@@ -79,6 +81,8 @@ namespace solution
 
 			using systems_container_t = std::unordered_map < System::id_t, double, boost::hash < System::id_t > > ;
 
+			using system_descriptor_t = std::pair < System::id_t, double > ;
+
 			using json_t = boost::extended::serialization::json;
 
 		private:
@@ -129,17 +133,17 @@ namespace solution
 
 		public:
 
-			explicit Teacher(std::size_t n_systems, std::size_t n_generations = 1000U) :
+			explicit Teacher(std::size_t n_generations = 1000U) :
 				m_n_generations(n_generations)
 			{
-				initialize(n_systems);
+				initialize();
 			}
 
 			~Teacher() noexcept = default;
 
 		private:
 
-			void initialize(std::size_t n_systems);
+			void initialize();
 
 			void uninitialize();
 
@@ -157,11 +161,21 @@ namespace solution
 
 			void run_systems();
 
+			void print_generation_statistics(std::size_t generation_index) const;
+
 			void extract_generation_deviations();
 
-			void evaluate_systems(std::size_t generation_index) const;
+			void evaluate_systems() const;
 
-			void print_generation_statistics(std::size_t generation_index) const;
+			void run_genetic_algorithm(
+				std::vector < system_descriptor_t > && top_systems,
+				std::vector < system_descriptor_t > && random_systems, std::vector < std::string > && files) const;
+
+			void run_copy_mutation(const std::vector < system_descriptor_t > & systems, std::vector < std::string > & files,
+				STARTUPINFOA & startup_information, std::vector < PROCESS_INFORMATION > & processes) const;
+
+			void run_crossover(std::vector < system_descriptor_t > systems, std::vector < std::string > & files,
+				STARTUPINFOA & startup_information, std::vector < PROCESS_INFORMATION > & processes) const;
 
 		public:
 
@@ -169,9 +183,9 @@ namespace solution
 
 		private:
 
-			static inline const std::string process_name = "system";
+			static inline const std::size_t n_systems = 64U;
 
-		private:
+			static inline const std::string process_name = "system";
 
 			static inline const std::string shared_memory_name = "generation";
 			static inline const std::size_t shared_memory_size = 65536U;
@@ -192,7 +206,8 @@ namespace solution
 		};
 
 		void apply_genetic_algorithm(const std::string & function_name, 
-			const std::string & model_id_1, const std::string & model_id_2 = "");
+			const std::string & model_id_1,      const std::string & file_1, 
+			const std::string & model_id_2 = "", const std::string & file_2 = "");
 
 	} // namespace system
 

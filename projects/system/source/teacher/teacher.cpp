@@ -100,7 +100,7 @@ namespace solution
 			}
 		}
 
-		void Teacher::initialize(std::size_t n_systems)
+		void Teacher::initialize()
 		{
 			RUN_LOGGER(logger);
 
@@ -112,7 +112,7 @@ namespace solution
 
 				Data::load(m_systems, n_systems);
 
-				m_module_h(make_initialization_data().c_str(), 0);
+				m_module_h(make_initialization_data().c_str(), 1);
 
 				Data::save(m_systems);
 
@@ -196,7 +196,9 @@ namespace solution
 
 						run_systems();
 
-						evaluate_systems(i);
+						print_generation_statistics(i);
+
+						evaluate_systems();
 					}
 				}
 			}
@@ -269,6 +271,36 @@ namespace solution
 			}
 		}
 
+		void Teacher::print_generation_statistics(std::size_t generation_index) const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				auto min_max = std::minmax_element(m_systems.begin(), m_systems.end(),
+					[](const auto & lhs, const auto & rhs) { return lhs.second < rhs.second; });
+
+				auto avg = std::transform_reduce(m_systems.begin(), m_systems.end(), 0.0,
+					std::plus < double > (), [](const auto & system) { return system.second; }) / m_systems.size();
+
+				std::cout << "Generation: " << generation_index << " of " << m_n_generations << std::endl << std::endl;
+
+				std::cout << "Minimum deviation: " << std::setprecision(3) << std::fixed << min_max.first->second  << std::endl;
+				std::cout << "Average deviation: " << std::setprecision(3) << std::fixed << avg					   << std::endl;
+				std::cout << "Maximum deviation: " << std::setprecision(3) << std::fixed << min_max.second->second << std::endl;
+
+				std::cout << std::endl;
+
+				std::cout << "Best fitness: " << boost::uuids::to_string(min_max.first->first) << std::endl;
+
+				std::cout << std::endl;
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < teacher_exception > (logger, exception);
+			}
+		}
+
 		void Teacher::extract_generation_deviations()
 		{
 			RUN_LOGGER(logger);
@@ -287,20 +319,38 @@ namespace solution
 			}
 		}
 
-		void Teacher::evaluate_systems(std::size_t generation_index) const
+		void Teacher::evaluate_systems() const
 		{
 			RUN_LOGGER(logger);
 
 			try
 			{
-				print_generation_statistics(generation_index);
-
-				std::vector systems(m_systems.begin(), m_systems.end());
+				std::vector < system_descriptor_t > systems(m_systems.begin(), m_systems.end());
 
 				std::sort(systems.begin(), systems.end(),
-					[](const auto & lhs, const auto & rhs) { return lhs.second > rhs.second; });
+					[](const auto & lhs, const auto & rhs) { return lhs.second < rhs.second; });
 
+				const auto group_size = 8U;
 
+				std::vector top_systems(systems.begin(), std::next(systems.begin(), group_size));
+
+				systems.erase(systems.begin(), std::next(systems.begin(), group_size));
+
+				const auto seed = static_cast < unsigned int > (
+					std::chrono::system_clock::now().time_since_epoch().count());
+
+				std::shuffle(systems.begin(), systems.end(), std::default_random_engine(seed));
+
+				std::vector random_systems(systems.begin(), std::next(systems.begin(), group_size));
+
+				systems.erase(systems.begin(), std::next(systems.begin(), group_size));
+
+				std::vector < std::string > files(systems.size());
+
+				std::transform(systems.begin(), systems.end(), files.begin(),
+					[](const auto & system) { return boost::uuids::to_string(system.first); });
+
+				run_genetic_algorithm(std::move(top_systems), std::move(random_systems), std::move(files));
 			}
 			catch (const std::exception & exception)
 			{
@@ -308,25 +358,120 @@ namespace solution
 			}
 		}
 
-		void Teacher::print_generation_statistics(std::size_t generation_index) const
+		void Teacher::run_genetic_algorithm(
+			std::vector < system_descriptor_t > && top_systems,
+			std::vector < system_descriptor_t > && random_systems, std::vector < std::string > && files) const
 		{
 			RUN_LOGGER(logger);
 
 			try
 			{
-				auto min_max = std::minmax_element(m_systems.begin(), m_systems.end(), 
-					[](const auto & lhs, const auto & rhs) { return lhs.second < rhs.second; });
+				STARTUPINFOA startup_information;
 
-				auto avg = std::transform_reduce(m_systems.begin(), m_systems.end(), 0.0, 
-					std::plus < double > (), [](const auto & system) { return system.second; }) / m_systems.size();
+				ZeroMemory(&startup_information, sizeof(startup_information));
 
-				std::cout << "Generation: " << generation_index << " of " << m_n_generations << std::endl << std::endl;
+				startup_information.cb = sizeof(startup_information);
 
-				std::cout << "Minimum deviation: " << std::setprecision(3) << std::fixed << min_max.first->second  << std::endl;
-				std::cout << "Average deviation: " << std::setprecision(3) << std::fixed << avg					   << std::endl;
-				std::cout << "Maximum deviation: " << std::setprecision(3) << std::fixed << min_max.second->second << std::endl;
+				std::vector < PROCESS_INFORMATION > processes;
 
-				std::cout << std::endl;
+				processes.reserve(top_systems.size() * 4U);
+
+				run_copy_mutation(top_systems,    files, startup_information, processes);
+				run_copy_mutation(random_systems, files, startup_information, processes);
+
+				run_crossover(top_systems,    files, startup_information, processes);
+				run_crossover(random_systems, files, startup_information, processes);
+
+				top_systems.insert(top_systems.end(), random_systems.begin(), random_systems.end());
+
+				run_crossover(top_systems, files, startup_information, processes);
+
+				for (auto & process : processes)
+				{
+					WaitForSingleObject(process.hProcess, INFINITE);
+
+					CloseHandle(process.hProcess);
+					CloseHandle(process.hThread);
+				}
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < teacher_exception > (logger, exception);
+			}
+		}
+
+		void Teacher::run_copy_mutation(const std::vector < system_descriptor_t > & systems, std::vector < std::string > & files,
+			STARTUPINFOA & startup_information, std::vector < PROCESS_INFORMATION > & processes) const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				for (const auto & system : systems)
+				{
+					PROCESS_INFORMATION process_information;
+
+					ZeroMemory(&process_information, sizeof(process_information));
+
+					processes.push_back(process_information);
+
+					auto command_line = (process_name + " -function copy_mutation " +
+						boost::uuids::to_string(system.first) + " " + files.back());
+
+					files.pop_back();
+
+					if (!CreateProcessA(NULL, (LPSTR)(command_line.c_str()),
+						NULL, NULL, FALSE, 0, NULL, NULL, &startup_information, &processes.back()))
+					{
+						throw teacher_exception("CreateProcessA error");
+					}
+				}
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < teacher_exception > (logger, exception);
+			}
+		}
+
+		void Teacher::run_crossover(std::vector < system_descriptor_t > systems, std::vector < std::string > & files,
+			STARTUPINFOA & startup_information, std::vector < PROCESS_INFORMATION > & processes) const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				if (systems.size() % 2 != 0)
+				{
+					throw std::logic_error("invalid systems quantity for crossover");
+				}
+
+				const auto seed = static_cast < unsigned int > (
+					std::chrono::system_clock::now().time_since_epoch().count());
+
+				std::shuffle(systems.begin(), systems.end(), std::default_random_engine(seed));
+
+				for (auto i = 0U; i < systems.size(); i += 2U)
+				{
+					PROCESS_INFORMATION process_information;
+
+					ZeroMemory(&process_information, sizeof(process_information));
+
+					processes.push_back(process_information);
+
+					auto command_line = (process_name + " -function crossover " +
+						boost::uuids::to_string(systems[i + 0].first) + " " +
+						boost::uuids::to_string(systems[i + 1].first) + " " +
+						files[files.size() - 1] + " " + files[files.size() - 2]);
+
+					files.pop_back();
+					files.pop_back();
+
+					if (!CreateProcessA(NULL, (LPSTR)(command_line.c_str()),
+						NULL, NULL, FALSE, 0, NULL, NULL, &startup_information, &processes.back()))
+					{
+						throw teacher_exception("CreateProcessA error");
+					}
+				}
 			}
 			catch (const std::exception & exception)
 			{
@@ -352,7 +497,8 @@ namespace solution
 		}
 
 		void apply_genetic_algorithm(const std::string & function_name, 
-			const std::string & model_id_1, const std::string & model_id_2)
+			const std::string & model_id_1, const std::string & file_1,
+			const std::string & model_id_2, const std::string & file_2)
 		{
 			RUN_LOGGER(logger);
 
@@ -367,11 +513,11 @@ namespace solution
 
 				if (model_id_2.empty())
 				{
-					function(model_id_1.c_str());
+					function(model_id_1.c_str(), file_1.c_str());
 				}
 				else
 				{
-					function(model_id_1.c_str(), model_id_2.c_str());
+					function(model_id_1.c_str(), model_id_2.c_str(), file_1.c_str(), file_2.c_str());
 				}
 			}
 			catch (const boost::python::error_already_set &)
