@@ -293,31 +293,14 @@ namespace solution
 
 			try
 			{
-				std::vector < double > deviations;
+				print_generation_statistics(generation_index);
 
-				deviations.reserve(m_systems.size());
+				std::vector systems(m_systems.begin(), m_systems.end());
 
-				auto array = json_t::array();
+				std::sort(systems.begin(), systems.end(),
+					[](const auto & lhs, const auto & rhs) { return lhs.second > rhs.second; });
 
-				for (const auto & system : m_systems)
-				{
-					json_t element;
 
-					deviations.push_back(system.second);
-
-					element[Key::id]		= boost::uuids::to_string(system.first);
-					element[Key::deviation] = deviations.back();
-
-					array.push_back(element);
-				}
-
-				print_generation_statistics(generation_index, deviations);
-
-				std::stringstream sout;
-
-				sout << array;
-
-				
 			}
 			catch (const std::exception & exception)
 			{
@@ -325,21 +308,23 @@ namespace solution
 			}
 		}
 
-		void Teacher::print_generation_statistics(std::size_t generation_index, const std::vector < double > & deviations) const
+		void Teacher::print_generation_statistics(std::size_t generation_index) const
 		{
 			RUN_LOGGER(logger);
 
 			try
 			{
-				auto min_max = std::minmax_element(deviations.begin(), deviations.end());
+				auto min_max = std::minmax_element(m_systems.begin(), m_systems.end(), 
+					[](const auto & lhs, const auto & rhs) { return lhs.second < rhs.second; });
 
-				auto avg = std::accumulate(deviations.begin(), deviations.end(), 0.0) / deviations.size();
+				auto avg = std::transform_reduce(m_systems.begin(), m_systems.end(), 0.0, 
+					std::plus < double > (), [](const auto & system) { return system.second; }) / m_systems.size();
 
 				std::cout << "Generation: " << generation_index << " of " << m_n_generations << std::endl << std::endl;
 
-				std::cout << "Minimum deviation: " << std::setprecision(3) << std::fixed << *min_max.first << std::endl;
-				std::cout << "Average deviation: " << std::setprecision(3) << std::fixed << avg << std::endl;
-				std::cout << "Maximum deviation: " << std::setprecision(3) << std::fixed << *min_max.second << std::endl;
+				std::cout << "Minimum deviation: " << std::setprecision(3) << std::fixed << min_max.first->second  << std::endl;
+				std::cout << "Average deviation: " << std::setprecision(3) << std::fixed << avg					   << std::endl;
+				std::cout << "Maximum deviation: " << std::setprecision(3) << std::fixed << min_max.second->second << std::endl;
 
 				std::cout << std::endl;
 			}

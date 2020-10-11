@@ -161,8 +161,7 @@ namespace solution
 
 			void evaluate_systems(std::size_t generation_index) const;
 
-			void print_generation_statistics(std::size_t generation_index, 
-				const std::vector < double > & deviations) const;
+			void print_generation_statistics(std::size_t generation_index) const;
 
 		public:
 
