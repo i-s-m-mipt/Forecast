@@ -31,6 +31,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "python", "python", "{B865DB
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "plugin", "projects\plugin\project\plugin.vcxproj", "{8EC61F86-7740-446B-BFA1-6266D4956F8B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "teacher", "projects\teacher\teacher.vcxproj", "{10316B28-F61C-45C4-8F20-AB9C4498F443}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -63,6 +65,12 @@ Global
 		{8EC61F86-7740-446B-BFA1-6266D4956F8B}.Release|x64.Build.0 = Release|x64
 		{8EC61F86-7740-446B-BFA1-6266D4956F8B}.Release|x86.ActiveCfg = Release|Win32
 		{8EC61F86-7740-446B-BFA1-6266D4956F8B}.Release|x86.Build.0 = Release|Win32
+		{10316B28-F61C-45C4-8F20-AB9C4498F443}.Debug|x64.ActiveCfg = Debug|x64
+		{10316B28-F61C-45C4-8F20-AB9C4498F443}.Debug|x64.Build.0 = Debug|x64
+		{10316B28-F61C-45C4-8F20-AB9C4498F443}.Debug|x86.ActiveCfg = Debug|x64
+		{10316B28-F61C-45C4-8F20-AB9C4498F443}.Release|x64.ActiveCfg = Release|x64
+		{10316B28-F61C-45C4-8F20-AB9C4498F443}.Release|x64.Build.0 = Release|x64
+		{10316B28-F61C-45C4-8F20-AB9C4498F443}.Release|x86.ActiveCfg = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
