@@ -309,10 +309,6 @@ namespace solution
 
 				progress.setWindowModality(Qt::WindowModal);
 
-				progress.setValue(0);
-
-				progress.show();
-
 				const std::string process_name = "module";
 
 				STARTUPINFOA startup_information;
@@ -326,8 +322,8 @@ namespace solution
 				ZeroMemory(&process_information, sizeof(process_information));
 
 				auto command_line = (process_name + 
-					" " + m_line_data->text().toStdString() +
-					" " + m_line_model->text().toStdString());
+					" \"" + m_line_data->text().toStdString() +
+					"\" \"" + m_line_model->text().toStdString()) + "\"";
 
 				if (!CreateProcessA(NULL, (LPSTR)(command_line.c_str()),
 					NULL, NULL, FALSE, 0, NULL, NULL, &startup_information, &process_information))
@@ -337,33 +333,49 @@ namespace solution
 
 				const std::filesystem::path file = "progress";
 
-				int i = 0;
+				std::atomic < int > i(0);
 
-				while (i < 100)
-				{
-					if (std::filesystem::exists(file))
+				std::thread thread([&i, &file]()
 					{
-						std::fstream fin(file.string(), std::ios::in);
-						
-						if (!fin)
+						while (i.load() < 100)
 						{
-							throw std::logic_error("cannot open file " + file.string());
+							if (std::filesystem::exists(file))
+							{
+								std::fstream fin(file.string(), std::ios::in);
+
+								if (!fin)
+								{
+									throw std::logic_error("cannot open file " + file.string());
+								}
+
+								int value = 0;
+
+								fin >> value;
+
+								i.store(std::max(value, i.load()));
+							}
 						}
+					});
 
-						fin >> i;
-
-						std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-						progress.setValue(i);
-					}
-
+				while (i.load() < 100)
+				{
 					if (progress.wasCanceled())
 					{
 						TerminateProcess(process_information.hProcess, 0);
 
+						i.store(100);
+
 						break;
 					}
+
+					progress.setValue(i.load());
+
+					progress.show();
+
+					QCoreApplication::processEvents();
 				}
+
+				thread.join();
 
 				if (!progress.wasCanceled())
 				{

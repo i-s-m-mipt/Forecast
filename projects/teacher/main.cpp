@@ -18,7 +18,7 @@ int main(int argc, char ** argv)
 
 	try
 	{
-		QCoreApplication::addLibraryPath("C:/Libraries/qt/5.15.1/msvc2019_64/plugins");
+		QCoreApplication::addLibraryPath("plugins");
 
 		QApplication application(argc, argv);
 
