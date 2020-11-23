@@ -98,9 +98,9 @@ namespace solution
 					QRect(text_delta, text_delta, text_width, text_height));
 
 				QStringList modules = { 
-					QString::fromLocal8Bit("Интеллектуальный модуль 1"), 
-					QString::fromLocal8Bit("Интеллектуальный модуль 2"),
-					QString::fromLocal8Bit("Интеллектуальный модуль 3"), };
+					QString::fromLocal8Bit("Синтез расписания на основе ГИД"), 
+					/*QString::fromLocal8Bit("Интеллектуальный модуль 2"),
+					QString::fromLocal8Bit("Интеллектуальный модуль 3"),*/ };
 
 				m_combo_modules = new QComboBox(this);
 				m_combo_modules->addItems(modules);
