@@ -295,49 +295,49 @@ namespace solution
 				m_label_error->setStyleSheet("QLabel { color : green; }");
 				m_label_error->setText(QString::fromLocal8Bit("процесс обучения запущен ... "));
 
-				QProgressDialog progress(
+				m_progress = new QProgressDialog(
 					QString::fromLocal8Bit("Обучение интеллектуального модуля ..."),
 					QString::fromLocal8Bit("Прервать"), 0, 100, this);
 
-				progress.setMinimumWidth(250);
-				progress.setFixedWidth(250);
-				progress.setMinimumHeight(100);
-				progress.setFixedHeight(100);
-				progress.setWindowIcon(QIcon("main.jpg"));
-				progress.setWindowTitle(QString::fromLocal8Bit("IMT (version 20.11.09)"));
-				progress.setWhatsThis(QString::fromLocal8Bit("Процесс обучения интеллектуального модуля"));
+				m_progress->setMinimumWidth(250);
+				m_progress->setFixedWidth(250);
+				m_progress->setMinimumHeight(100);
+				m_progress->setFixedHeight(100);
+				m_progress->setWindowIcon(QIcon("main.jpg"));
+				m_progress->setWindowTitle(QString::fromLocal8Bit("IMT (version 20.11.09)"));
+				m_progress->setWhatsThis(QString::fromLocal8Bit("Процесс обучения интеллектуального модуля"));
 
-				progress.setWindowModality(Qt::WindowModal);
+				m_progress->setWindowModality(Qt::WindowModal);
 
 				const std::string process_name = "module";
 
-				STARTUPINFOA startup_information;
+				ZeroMemory(&m_startup_information, sizeof(m_startup_information));
 
-				ZeroMemory(&startup_information, sizeof(startup_information));
+				m_startup_information.cb = sizeof(m_startup_information);
 
-				startup_information.cb = sizeof(startup_information);
-
-				PROCESS_INFORMATION process_information;
-
-				ZeroMemory(&process_information, sizeof(process_information));
+				ZeroMemory(&m_process_information, sizeof(m_process_information));
 
 				auto command_line = (process_name + 
 					" \"" + m_line_data->text().toStdString() +
 					"\" \"" + m_line_model->text().toStdString()) + "\"";
 
 				if (!CreateProcessA(NULL, (LPSTR)(command_line.c_str()),
-					NULL, NULL, FALSE, 0, NULL, NULL, &startup_information, &process_information))
+					NULL, NULL, FALSE, 0, NULL, NULL, &m_startup_information, &m_process_information))
 				{
 					throw teacher_exception("CreateProcessA error");
 				}
 
 				const std::filesystem::path file = "progress";
 
-				std::atomic < int > i(0);
+				progress_value.store(0);
 
-				std::thread thread([&i, &file]()
+				m_progress->show();
+
+				std::thread([this, file]()
 					{
-						while (i.load() < 100)
+						int value = 0;
+
+						while (progress_value.load() < 100)
 						{
 							if (std::filesystem::exists(file))
 							{
@@ -348,52 +348,50 @@ namespace solution
 									throw std::logic_error("cannot open file " + file.string());
 								}
 
-								int value = 0;
-
 								fin >> value;
 
-								i.store(std::max(value, i.load()));
+								m_progress->setValue(value);
+
+								progress_value.store(std::max(value, progress_value.load()));
 							}
+
+							std::this_thread::sleep_for(std::chrono::milliseconds(100));
 						}
-					});
 
-				while (i.load() < 100)
-				{
-					if (progress.wasCanceled())
-					{
-						TerminateProcess(process_information.hProcess, 0);
+						std::filesystem::remove(file);
 
-						i.store(100);
+						if (value == 100)
+						{
+							m_label_error->setStyleSheet("QLabel { color : green; }");
+							m_label_error->setText(QString::fromLocal8Bit("процесс обучения завершен"));
+						
+							WaitForSingleObject(m_process_information.hProcess, INFINITE);
 
-						break;
-					}
+							CloseHandle(m_process_information.hProcess);
+							CloseHandle(m_process_information.hThread);
+						}
+					}).detach();
 
-					progress.setValue(i.load());
+				connect(m_progress, &QProgressDialog::canceled, this, &Teacher::cancel);
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < teacher_exception > (logger, exception);
+			}
+		}
 
-					progress.show();
+		void Teacher::cancel()
+		{
+			RUN_LOGGER(logger);
 
-					QCoreApplication::processEvents();
-				}
+			try
+			{
+				progress_value.store(100);
 
-				thread.join();
+				TerminateProcess(m_process_information.hProcess, 0);
 
-				if (!progress.wasCanceled())
-				{
-					m_label_error->setStyleSheet("QLabel { color : green; }");
-					m_label_error->setText(QString::fromLocal8Bit("процесс обучения завершен"));
-
-					WaitForSingleObject(process_information.hProcess, INFINITE);
-
-					CloseHandle(process_information.hProcess);
-					CloseHandle(process_information.hThread);
-				}
-				else
-				{
-					m_label_error->setStyleSheet("QLabel { color : red; }");
-					m_label_error->setText(QString::fromLocal8Bit("процесс обучения прерван"));
-				}
-
-				std::filesystem::remove(file);
+				m_label_error->setStyleSheet("QLabel { color : red; }");
+				m_label_error->setText(QString::fromLocal8Bit("процесс обучения прерван"));
 			}
 			catch (const std::exception & exception)
 			{

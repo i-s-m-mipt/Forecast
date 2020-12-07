@@ -87,6 +87,8 @@ namespace solution
 
 			void run();
 
+			void cancel();
+
 		private:
 
 			QLabel      * m_label_modules;
@@ -104,6 +106,15 @@ namespace solution
 			QPushButton * m_button_verify;
 			QPushButton * m_button_remove;
 			QPushButton * m_button_help;
+
+			QProgressDialog * m_progress;
+
+			STARTUPINFOA m_startup_information;
+			PROCESS_INFORMATION m_process_information;
+
+		private:
+
+			mutable std::atomic < int > progress_value;
 		};
 
 	} // namespace teacher
