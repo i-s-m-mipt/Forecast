@@ -362,13 +362,18 @@ namespace solution
 
 						if (value == 100)
 						{
+							m_progress->close();
+
 							m_label_error->setStyleSheet("QLabel { color : green; }");
 							m_label_error->setText(QString::fromLocal8Bit("процесс обучения завершен"));
 						
-							WaitForSingleObject(m_process_information.hProcess, INFINITE);
+							if (m_process_information.hProcess)
+							{
+								WaitForSingleObject(m_process_information.hProcess, INFINITE);
 
-							CloseHandle(m_process_information.hProcess);
-							CloseHandle(m_process_information.hThread);
+								CloseHandle(m_process_information.hProcess);
+								CloseHandle(m_process_information.hThread);
+							}
 						}
 					}).detach();
 
