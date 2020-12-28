@@ -42,27 +42,33 @@ namespace solution
 			~teacher_exception() noexcept = default;
 		};
 
-		class Help : public QDialog
-		{
-			Q_OBJECT
-
-		public:
-
-			Help(QWidget * parent = nullptr) : QDialog(parent)
-			{
-				initialize();
-			}
-
-			~Help() noexcept = default;
-
-		private:
-
-			void initialize();
-		};
-
 		class Teacher : public QWidget
 		{
 			Q_OBJECT
+
+		private:
+
+			class Help : public QDialog
+			{
+			public:
+
+				Help(QWidget * parent = nullptr) : QDialog(parent)
+				{
+					initialize();
+				}
+
+				~Help() noexcept = default;
+
+			private:
+
+				void initialize();
+
+			private:
+
+				QLabel       * m_label;
+				QTextBrowser * m_text;
+				QPushButton  * m_button;
+			};
 
 		public:
 
@@ -81,22 +87,37 @@ namespace solution
 
 			void show_help();
 
-			void browse_filesystem_for_data();
+			void browse_filesystem_for_input();
 
 			void browse_filesystem_for_model();
 
 			void run();
 
+			bool has_correct_directories() const;
+
+			void create_progress_dialog();
+
+			void create_process_module();
+
+			void perform();
+
 			void cancel();
+
+		private:
+
+			static inline const auto outer_font_size = 12;
+			static inline const auto inner_font_size = 10;
+
+			static inline const auto max_progress_value = 100;
 
 		private:
 
 			QLabel      * m_label_modules;
 			QComboBox   * m_combo_modules;
-			QLabel      * m_label_data;
-			QLineEdit   * m_line_data;
-			QPushButton * m_button_data;
-			QCheckBox   * m_check_data;
+			QLabel      * m_label_input;
+			QLineEdit   * m_line_input;
+			QPushButton * m_button_input;
+			QCheckBox   * m_check_input;
 			QLabel      * m_label_model;
 			QLineEdit   * m_line_model;
 			QPushButton * m_button_model;
@@ -108,13 +129,14 @@ namespace solution
 			QPushButton * m_button_help;
 
 			QProgressDialog * m_progress;
+			QTimer * m_timer;
 
 			STARTUPINFOA m_startup_information;
 			PROCESS_INFORMATION m_process_information;
 
 		private:
 
-			mutable std::atomic < int > progress_value;
+			mutable std::atomic < int > m_progress_value;
 		};
 
 	} // namespace teacher

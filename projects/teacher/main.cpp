@@ -27,8 +27,11 @@ int main(int argc, char ** argv)
 		teacher.resize(410, 170);
 		teacher.setFixedWidth(410);
 		teacher.setFixedHeight(170);
-		teacher.setWindowTitle(QString::fromLocal8Bit("IMT (version 20.11.09)"));
+
+		teacher.setWindowTitle(QString::fromLocal8Bit(
+			"IMT (version 20.11.09)"));
 		teacher.setWindowIcon(QIcon("main.jpg"));
+
 		teacher.show();
 		
 		return application.exec();
