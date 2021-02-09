@@ -26,14 +26,8 @@
     <Filter Include="source\system\agents\train\route">
       <UniqueIdentifier>{607a97f5-24d0-4a01-8b14-f892c6402a79}</UniqueIdentifier>
     </Filter>
-    <Filter Include="source\timer">
-      <UniqueIdentifier>{946ded84-058a-42f1-934f-85455838229b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="source\python">
-      <UniqueIdentifier>{19a7d31a-33e3-46d4-ae62-4181ac6636f8}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="source\teacher">
-      <UniqueIdentifier>{afaf7d13-e3ea-4112-a3b9-401a84a1a329}</UniqueIdentifier>
+    <Filter Include="source\system\config">
+      <UniqueIdentifier>{550fed30-6042-4237-bbc5-7093d9d89be8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -55,14 +49,8 @@
     <ClCompile Include="..\source\system\agents\train\route\route.cpp">
       <Filter>source\system\agents\train\route</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\shared\source\timer\timer.cpp">
-      <Filter>source\timer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\shared\source\python\python.cpp">
-      <Filter>source\python</Filter>
-    </ClCompile>
-    <ClCompile Include="..\source\teacher\teacher.cpp">
-      <Filter>source\teacher</Filter>
+    <ClCompile Include="..\source\system\config\config.cpp">
+      <Filter>source\system\config</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -81,14 +69,8 @@
     <ClInclude Include="..\source\system\agents\train\route\route.hpp">
       <Filter>source\system\agents\train\route</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\shared\source\timer\timer.hpp">
-      <Filter>source\timer</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\shared\source\python\python.hpp">
-      <Filter>source\python</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\teacher\teacher.hpp">
-      <Filter>source\teacher</Filter>
+    <ClInclude Include="..\source\system\config\config.hpp">
+      <Filter>source\system\config</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
