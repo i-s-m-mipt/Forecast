@@ -117,8 +117,8 @@ namespace solution
 
 					if (m_current_staying_time > m_route->points().at(m_current_point_index).staying)
 					{
-						m_deviation += m_route->weight_k() * 1.0 *
-							(m_current_staying_time > 60LL ? 4.0 : 1.0); // TODO
+						m_deviation += (m_route->weight_k() * 1.0/* *
+							(m_current_staying_time > 60LL ? (m_current_staying_time - 60LL) : 1.0)*/);
 					}
 				}
 				catch (const std::exception & exception)

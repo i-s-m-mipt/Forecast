@@ -320,10 +320,12 @@ namespace solution
 			static inline constexpr std::size_t deviation_strategies_interface_index = 1U;
 			static inline constexpr std::size_t      time_strategies_interface_index = 2U;
 
-			static inline constexpr std::time_t time_limit = 1500LL;
+			static inline constexpr std::time_t time_limit = 1200LL;
 			static inline constexpr std::time_t time_delta = 120LL;
 
-			static inline constexpr std::size_t strategies_limit = 128U;
+			static inline constexpr std::size_t strategies_limit = 512U;
+
+			static inline constexpr std::size_t bfs_limit = 4U;
 
 		private:
 

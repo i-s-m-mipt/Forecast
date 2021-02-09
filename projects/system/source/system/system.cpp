@@ -381,6 +381,14 @@ namespace solution
 
 					active_segments_t active_segments;
 
+					if (time % 60LL == 0LL) // TODO
+					{
+						for (const auto & segment : id_segments_interface)
+						{
+							active_segments.insert(segment.id());
+						}
+					}
+
 					update_segments(segments, time, active_segments);
 
 					execute_commands(segments, trains, commands, active_segments);
@@ -450,7 +458,7 @@ namespace solution
 
 					for (const auto id : adjacent_segments)
 					{
-						if ((node.second < 4U) && (visited_nodes.find(id) != std::end(visited_nodes)))
+						if ((node.second < bfs_limit) && (visited_nodes.find(id) != std::end(visited_nodes)))
 						{
 							queue.push(std::make_pair(id, node.second + 1U));
 						}
@@ -1074,7 +1082,7 @@ namespace solution
 					m_strategies.get < deviation_strategies_interface_index > ();
 
 				return (std::distance(deviation_strategies_interface.begin(),
-					deviation_strategies_interface.lower_bound(deviation)) < strategies_limit);
+					deviation_strategies_interface.upper_bound(deviation)) < strategies_limit);
 			}
 			catch (const std::exception & exception)
 			{
