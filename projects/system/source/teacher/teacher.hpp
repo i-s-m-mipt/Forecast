@@ -171,11 +171,19 @@ namespace solution
 				std::vector < system_descriptor_t > && top_systems,
 				std::vector < system_descriptor_t > && random_systems, std::vector < std::string > && files) const;
 
+			void run_copy_mutation(const system_descriptor_t & system, const std::vector < std::string > & files,
+				STARTUPINFOA & startup_information, std::vector < PROCESS_INFORMATION > & processes) const;
+
 			void run_copy_mutation(const std::vector < system_descriptor_t > & systems, std::vector < std::string > & files,
 				STARTUPINFOA & startup_information, std::vector < PROCESS_INFORMATION > & processes) const;
 
 			void run_crossover(std::vector < system_descriptor_t > systems, std::vector < std::string > & files,
+				STARTUPINFOA & startup_information, std::vector < PROCESS_INFORMATION > & processes, int i) const;
+
+			void run_crossover_mutation(std::vector < system_descriptor_t > systems, std::vector < std::string > & files,
 				STARTUPINFOA & startup_information, std::vector < PROCESS_INFORMATION > & processes) const;
+
+			void make_genetic_variety(std::vector < system_descriptor_t > && systems) const;
 
 		public:
 
@@ -206,7 +214,7 @@ namespace solution
 		};
 
 		void apply_genetic_algorithm(const std::string & function_name, 
-			const std::string & model_id_1,      const std::string & file_1, 
+			const std::string & model_id_1 = "", const std::string & file_1 = "", 
 			const std::string & model_id_2 = "", const std::string & file_2 = "");
 
 	} // namespace system
