@@ -1,6 +1,7 @@
 #include <exception>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <boost/dll.hpp>
@@ -49,6 +50,19 @@ extern "C" __declspec(dllexport) void zssetConfig(int, int, std::vector < int >)
 extern "C" __declspec(dllexport) void zsNitkaWork(
     std::vector < Nitka > & dummy, std::vector < std::vector < Nitka > > & result) // verify
 {
+    std::unordered_map < std::string, std::string > converter;
+
+    std::fstream fin("converter.txt", std::ios::in);
+
+    for (int i = 0; i < 28; ++i)
+    {
+        std::string key, value;
+
+        fin >> key >> value;
+
+        converter[key] = value;
+    }
+
     Controller controller;
 
     controller.run();
@@ -58,11 +72,11 @@ extern "C" __declspec(dllexport) void zsNitkaWork(
     
     for (const auto & thread : controller.gid())
     {
-        Nitka nitka = { 1602597600, thread.first, 1, {} };
+        Nitka nitka = { 1602495664, thread.first, 1, {} };
 
         for (const auto & record : thread.second)
         {
-            Point point = { record.first, static_cast < unsigned int > (record.second), 0.0, 0.0, 0 };
+            Point point = { converter[record.first], static_cast < unsigned int > (record.second) * 60U, 0.0, 0.0, 0 };
 
             nitka.points.emplace_back(std::move(point));
         }
