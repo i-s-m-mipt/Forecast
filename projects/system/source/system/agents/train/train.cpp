@@ -12,7 +12,7 @@ namespace solution
 
 				try
 				{
-					m_thread.emplace_back(m_current_segment_id, 0);
+					// ...
 				}
 				catch (const std::exception & exception)
 				{
@@ -20,13 +20,15 @@ namespace solution
 				}
 			}
 
-			void Train::update_state(State state)
+			id_t Train::current_segment_id() const
 			{
 				RUN_LOGGER(logger);
 
 				try
 				{
-					m_state = state;
+					assert(m_route);
+
+					return m_route->points().at(m_current_point_index).segment_id;
 				}
 				catch (const std::exception & exception)
 				{
@@ -34,109 +36,48 @@ namespace solution
 				}
 			}
 
-			void Train::update_current_segment_id(const id_t & next_segment_id)
+			id_t Train::next_segment_id() const
 			{
 				RUN_LOGGER(logger);
 
 				try
 				{
-					m_previous_segment_id = m_current_segment_id;
-					m_current_segment_id = next_segment_id;
+					assert(m_route);
 
-					m_thread.emplace_back(m_current_segment_id, 0);
-				}
-				catch (const std::exception & exception)
-				{
-					shared::catch_handler < train_exception > (logger, exception);
-				}
-			}
-
-			void Train::continue_movement(std::size_t segment_length)
-			{
-				RUN_LOGGER(logger);
-
-				try
-				{
-					if (m_state == State::move)
+					if (!has_completed_move())
 					{
-						++m_movement_time;
-
-						++m_total_movement_time;
-
-						if (m_speed * m_movement_time >= segment_length)
-						{
-							m_movement_time = 0;
-
-							m_state = State::stop_move;
-						}
+						return m_route->points().at(m_current_point_index + 1U).segment_id;
 					}
 					else
 					{
-						throw std::logic_error("unable to continue movement");
-					}
-				}
-				catch (const std::exception & exception)
-				{
-					shared::catch_handler < train_exception > (logger, exception);
-				}
-			}
-
-			void Train::reduce_route_time(std::time_t delta, const std::string & current_station)
-			{
-				RUN_LOGGER(logger);
-
-				try
-				{
-					++m_thread.back().second;
-
-					if (current_station.empty())
-					{
-						m_route->reduce_time_on_railway(delta);
-					}
-					else
-					{
-						m_state = (m_route->reduce_time_on_station(delta, current_station) ? State::stop_wait : State::wait);
+						return generate_null_id();
 					}					
 				}
-				catch (const std::exception & exception)
+				catch (const std::exception& exception)
 				{
-					shared::catch_handler < train_exception > (logger, exception);
+					shared::catch_handler < train_exception >(logger, exception);
 				}
 			}
 
-			void Train::update_deviation(const std::string & current_station)
+			void Train::set_route(std::shared_ptr < Route > route)
 			{
 				RUN_LOGGER(logger);
 
 				try
 				{
-					m_deviation += m_route->reduce_time_on_station_arrival(current_station);
-				}
-				catch (const std::exception & exception)
-				{
-					shared::catch_handler < train_exception > (logger, exception);
-				}
-			}
+					assert(route);
 
-			std::time_t Train::current_total_deviation() const
-			{
-				RUN_LOGGER(logger);
-
-				try
-				{
-					std::time_t deviation = m_deviation;
-
-					for (const auto & record : m_route->records())
+					if (route->id() == m_route_id)
 					{
-						if (record.arrival < 0)
-						{
-							deviation += std::abs(record.arrival);
-						}
+						m_route = route;
+					}
+					else
+					{
+						throw std::invalid_argument("invalid route");
 					}
 
-					deviation -= m_total_movement_time;
-
-					return deviation;
+					m_gid.push_back(Point(m_route->points().at(m_current_point_index).segment_id, 
+						m_route->start_time(), 0LL));
 				}
 				catch (const std::exception & exception)
 				{
@@ -144,7 +85,103 @@ namespace solution
 				}
 			}
 
-			boost::uuids::string_generator Train::string_generator;
+			bool Train::is_ready() const
+			{
+				RUN_LOGGER(logger);
+
+				try
+				{
+					assert(m_route);
+
+					return (m_current_staying_time >= m_route->points().at(m_current_point_index).staying);
+				}
+				catch (const std::exception & exception)
+				{
+					shared::catch_handler < train_exception > (logger, exception);
+				}
+			}
+
+			void Train::stay()
+			{
+				RUN_LOGGER(logger);
+
+				try
+				{
+					assert(m_route);
+
+					++m_current_staying_time;
+
+					++m_total_movement_time;
+
+					++m_gid.back().staying;
+
+					if (m_current_staying_time > m_route->points().at(m_current_point_index).staying)
+					{
+						m_deviation += m_route->weight_k() * 1.0 *
+							(m_current_staying_time > 60LL ? 4.0 : 1.0); // TODO
+					}
+				}
+				catch (const std::exception & exception)
+				{
+					shared::catch_handler < train_exception > (logger, exception);
+				}
+			}
+
+			void Train::move()
+			{
+				RUN_LOGGER(logger);
+
+				try
+				{
+					if (!has_completed_move())
+					{
+						++m_current_point_index;
+
+						m_current_staying_time = 0LL;
+
+						m_gid.push_back(Point(m_route->points().at(m_current_point_index).segment_id, 
+							m_gid.front().arrival + m_total_movement_time, 0LL));
+					}
+					else
+					{
+						throw std::runtime_error("bad move");
+					}
+				}
+				catch (const std::exception & exception)
+				{
+					shared::catch_handler < train_exception > (logger, exception);
+				}
+			}
+
+			bool Train::has_completed_move() const
+			{
+				RUN_LOGGER(logger);
+
+				try
+				{
+					assert(m_route);
+
+					return (m_current_point_index + 1 == std::size(m_route->points()));
+				}
+				catch (const std::exception & exception)
+				{
+					shared::catch_handler < train_exception > (logger, exception);
+				}
+			}
+
+			bool Train::has_completed_route() const
+			{
+				RUN_LOGGER(logger);
+
+				try
+				{
+					return (has_completed_move() && is_ready());
+				}
+				catch (const std::exception & exception)
+				{
+					shared::catch_handler < train_exception > (logger, exception);
+				}
+			}
 
 		} // namespace agents
 
