@@ -7,19 +7,13 @@
 #  pragma once
 #endif // #ifdef BOOST_HAS_PRAGMA_ONCE
 
-#include <algorithm>
 #include <exception>
-#include <memory>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
-#include <utility>
 #include <vector>
 
-#include <boost/lexical_cast.hpp>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
+#include "../../../config/config.hpp"
 
 #include "../../../../shared/source/logger/logger.hpp"
 
@@ -46,44 +40,58 @@ namespace solution
 
 			class Route
 			{
-			private:
-
-				using id_t = boost::uuids::uuid;
-
 			public:
 
-				struct Record
+				enum class Direction
 				{
-					Record() noexcept = default;
-
-					template < typename Station, typename Enable =
-						std::enable_if_t < std::is_convertible_v < Station, std::string > > >
-					explicit Record(Station && station_v, std::time_t arrival_v, std::time_t departure_v) :
-						station(std::forward < Station > (station_v)), arrival(arrival_v), departure(departure_v)
-					{}
-
-					~Record() noexcept = default;
-
-					std::string station;
-
-					std::time_t arrival   = 0;
-					std::time_t departure = 0;
+					south,
+					north,
 				};
 
 			public:
 
-				using records_container_t = std::vector < Record > ;
+				enum class Type
+				{
+					casual,
+					special,
+				};
+
+			public:
+
+				struct Point
+				{
+					Point() noexcept = default;
+
+					template < typename Id, typename Enable =
+						std::enable_if_t < std::is_convertible_v < Id, id_t > > >
+					explicit Point(Id && segment_id_v, std::time_t arrival_v, std::time_t staying_v) :
+						segment_id(std::forward < Id > (segment_id_v)), arrival(arrival_v), staying(staying_v)
+					{}
+
+					~Point() noexcept = default;
+
+					id_t segment_id;
+
+					std::time_t arrival;
+					std::time_t staying;
+				};
+
+			public:
+
+				using points_container_t = std::vector < Point > ;
 
 			public:
 
 				Route() noexcept = default;
 
-				template < typename Id, typename Records, typename Enable = 
+				template < typename Id, typename Points, typename Enable = 
 					std::enable_if_t < 
 						std::is_convertible_v < Id, id_t > &&
-						std::is_convertible_v < Records, records_container_t > > >
-				explicit Route(Id && id, Records && records) :
-					m_id(std::forward < Id > (id)), m_records(std::forward < Records > (records))
+						std::is_convertible_v < Points, points_container_t > > >
+				explicit Route(Id && id, std::time_t start_time, Direction direction, 
+					double weight_k, Points && points, Type type = Type::casual) :
+						m_id(std::forward < Id > (id)), m_start_time(start_time), m_direction(direction),
+						m_weight_k(weight_k), m_points(std::forward < Points > (points)), m_type(type)
 				{}
 
 				~Route() noexcept = default;
@@ -95,32 +103,39 @@ namespace solution
 					return m_id;
 				}
 
-				const auto & records() const noexcept
+				const auto start_time() const noexcept
 				{
-					return m_records;
+					return m_start_time;
 				}
 
-			public:
+				const auto direction() const noexcept
+				{
+					return m_direction;
+				}
 
-				bool empty() const;
+				const auto weight_k() const noexcept
+				{
+					return m_weight_k;
+				}
 
-				void reduce_time_on_railway(std::time_t delta);
+				const auto & points() const noexcept
+				{
+					return m_points;
+				}
 
-				bool reduce_time_on_station(std::time_t delta, const std::string & current_station);
-
-				std::time_t reduce_time_on_station_arrival(const std::string & current_station);
-
-			public:
-
-				static boost::uuids::string_generator string_generator;
+				const auto type() const noexcept
+				{
+					return m_type;
+				}
 
 			private:
 
-				const id_t m_id;
-
-			private:
-
-				records_container_t m_records;
+				id_t m_id;
+				std::time_t m_start_time;
+				Direction m_direction;
+				double m_weight_k;
+				points_container_t m_points;
+				Type m_type;
 			};
 
 		} // namespace agents
