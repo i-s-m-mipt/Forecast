@@ -14,38 +14,42 @@
 #endif
 
 #include <algorithm>
-#include <cassert>
-#include <chrono>
+#include <atomic>
+#include <deque>
 #include <exception>
 #include <filesystem>
 #include <fstream>
+#include <future>
 #include <iomanip>
 #include <iostream>
 #include <iterator>
 #include <memory>
-#include <numeric>
-#include <random>
-#include <sstream>
+#include <mutex>
+#include <queue>
+#include <set>
+#include <shared_mutex>
 #include <stdexcept>
 #include <string>
 #include <thread>
 #include <type_traits>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
-#define BOOST_PYTHON_STATIC_LIB
-
+#include <boost/bimap.hpp>
 #include <boost/extended/serialization/json.hpp>
-#include <boost/functional/hash.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/python.hpp>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index/identity.hpp>
+#include <boost/multi_index/member.hpp>
+#include <boost/multi_index/mem_fun.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index/random_access_index.hpp>
+#include <boost/multi_index/sequenced_index.hpp>
+
+#include <SFML/Graphics.hpp>
 
 #include "../../../shared/source/logger/logger.hpp"
-#include "../../../shared/source/python/python.hpp"
-#include "../../../shared/source/timer/timer.hpp"
 
 #include "module/segment/segment.hpp"
 #include "agents/train/train.hpp"
@@ -72,31 +76,67 @@ namespace solution
 
 		class System
 		{
-		public:
-
-			using id_t = boost::uuids::uuid;
-
 		private:
 
 			using Segment = module::Segment;
 
-			// using segments_container_t = std::vector < std::shared_ptr < Segment > > ;
-
-			using segments_container_t = std::unordered_map < id_t, std::shared_ptr < Segment >, boost::hash < id_t > > ;
+			using segments_container_t = boost::multi_index::multi_index_container <
+				Segment, boost::multi_index::indexed_by <
+					boost::multi_index::hashed_unique < boost::multi_index::const_mem_fun <
+						Segment, const id_t &, &Segment::id >, detail::id_hash_t >,
+					boost::multi_index::hashed_unique < boost::multi_index::const_mem_fun <
+						Segment, const std::string &, &Segment::name > > > > ;
 
 			using Train = agents::Train;
 
-			// using trains_container_t = std::vector < std::shared_ptr < Train > >;
-
-			using trains_container_t = std::unordered_map < id_t, std::shared_ptr < Train >, boost::hash < id_t > > ;
+			using trains_container_t = std::unordered_map < id_t, Train, detail::id_hash_t > ;
 
 			using Route = agents::Route;
 
-			// using routes_container_t = std::vector < std::shared_ptr < Route > >;
+			using routes_container_t = std::unordered_map < id_t, std::shared_ptr < Route >, detail::id_hash_t > ;
 
-			using routes_container_t = std::unordered_map < id_t, std::shared_ptr < Route >, boost::hash < id_t > > ;
+			using active_segments_t = std::unordered_set < id_t, detail::id_hash_t > ;
 
 			using json_t = boost::extended::serialization::json;
+
+		private:
+
+			struct Strategy
+			{
+				const id_t id;
+
+				double deviation;
+				std::time_t time;
+
+				std::shared_ptr < trains_container_t > trains;
+			};
+
+		private:
+
+			using strategies_container_t = boost::multi_index::multi_index_container <
+				Strategy, boost::multi_index::indexed_by <
+					boost::multi_index::hashed_unique < boost::multi_index::member <
+						Strategy, const id_t, &Strategy::id >, detail::id_hash_t >,
+					boost::multi_index::ordered_non_unique < boost::multi_index::member <
+						Strategy, double, &Strategy::deviation > >,
+					boost::multi_index::ordered_non_unique < boost::multi_index::member <
+						Strategy, std::time_t, &Strategy::time > > > > ;
+
+		private:
+
+			enum class Command
+			{
+				stay,
+				skip,
+				move,
+				wait,
+			};
+
+		private:
+
+			using commands_container_t = std::unordered_map < id_t, Command, detail::id_hash_t > ;
+
+			using variants_container_t = std::vector < commands_container_t > ;
 
 		private:
 
@@ -115,10 +155,6 @@ namespace solution
 					static inline const path_t segments_data = "system/data/segments.data";
 					static inline const path_t routes_data   = "system/data/routes.data";
 					static inline const path_t trains_data   = "system/data/trains.data";
-
-					static inline const path_t segments_order_txt = "segments_order.txt";
-
-					static inline const path_t gid_data = "gid.data";
 				};
 
 			private:
@@ -131,39 +167,22 @@ namespace solution
 				{
 					struct Segment
 					{
-						static inline const std::string id				  = "id";
-						static inline const std::string type			  = "type";
-						static inline const std::string name			  = "name";
-						static inline const std::string station			  = "station";
-						static inline const std::string length			  = "length";
-						static inline const std::string adjacent_segments = "adjacent_segments";
-
-						static inline const std::string time = "time"; // время в записи нитки ГИД
+						static inline const std::string id		 = "id";
+						static inline const std::string name	 = "name";
+						static inline const std::string capacity = "capacity";
+						static inline const std::string index    = "index";
 					};
 
 					struct Route
 					{
-						static inline const std::string id		  = "id";
-						static inline const std::string records	  = "records";
-						static inline const std::string station	  = "station";
-						static inline const std::string arrival	  = "arrival";
-						static inline const std::string departure = "departure";
-					};
-
-					struct Train
-					{
-						static inline const std::string id					= "id";
-						static inline const std::string name				= "name";
-						static inline const std::string code				= "code";
-						static inline const std::string type				= "type";
-						static inline const std::string weight_k			= "weight_k";
-						static inline const std::string route_id			= "route_id";
-						static inline const std::string speed				= "speed";
-						static inline const std::string length				= "length";
-						static inline const std::string current_segment_id	= "current_segment_id";
-						static inline const std::string previous_segment_id	= "previous_segment_id";
-
-						static inline const std::string thread = "thread"; // нитка ГИД
+						static inline const std::string id		   = "id";
+						static inline const std::string start_time = "start_time";
+						static inline const std::string direction  = "direction";
+						static inline const std::string weight_k   = "weight_k";
+						static inline const std::string points	   = "points";
+						static inline const std::string segment_id = "segment_id";
+						static inline const std::string arrival	   = "arrival";
+						static inline const std::string staying    = "staying";
 					};
 				};
 
@@ -171,13 +190,7 @@ namespace solution
 
 				static void load(segments_container_t & segments);
 
-				static void load(trains_container_t & trains);
-
 				static void load(routes_container_t & routes);
-
-				static void save(const trains_container_t & trains, const segments_container_t & segments);
-
-				static void save_segments_order(const segments_container_t & segments);
 
 			private:
 
@@ -188,21 +201,39 @@ namespace solution
 
 		private:
 
-			using v_in_element_t = int;
+			struct Line
+			{
+				using point_t  = sf::Vertex;
+				using vector_t = sf::Vector2f;
 
-			using v_in_t = std::vector < v_in_element_t > ;
+				explicit Line(point_t point_0, point_t point_1)				
+				{
+					points[0] = point_0;
+					points[1] = point_1;
+				}
 
-			using v_out_element_t = int;
+				~Line() noexcept = default;
 
-			using v_out_t = std::vector < v_out_element_t > ;
+				point_t points[2];
+			};
+
+		private:
+
+			struct Ban
+			{
+				id_t segment_id;
+
+				std::time_t begin;
+				std::time_t end;
+			};
+
+		private:
+
+			using bans_container_t = std::vector < Ban > ;
 
 		public:
 
-			template < typename Id, typename Enable =
-				std::enable_if_t < std::is_convertible_v < Id, id_t > > >
-			explicit System(Id && id) :
-				m_id(std::forward < Id > (id)), m_generator(static_cast < unsigned int > (
-					std::chrono::system_clock::now().time_since_epoch().count()))
+			System()
 			{
 				initialize();
 			}
@@ -215,13 +246,13 @@ namespace solution
 
 		private:
 
-			void load();
+			void generate_segments();
+
+			void generate_routes();
 
 		private:
 
-			void prepare_trains();
-
-			void prepare_segments();
+			void load();
 
 		public:
 
@@ -233,73 +264,66 @@ namespace solution
 
 		public:
 
-			const auto & id() const noexcept
-			{
-				return m_id;
-			}
-
-		public:
-
-			void run() const;
-
-			void stop() const;
-
-			void save() const;
+			void run();
 
 		private:
 
-			std::string make_initialization_data() const;
+			void process(id_t strategy_id, std::time_t time, commands_container_t commands,
+				segments_container_t segments);
 
-			bool has_train_on_route() const;
+			void register_event(const id_t & source, const segments_container_t & segments,
+				active_segments_t & active_segments) const;
 
-			bool has_ready_train_on_route() const;
+			void show(bool is_initial = true) const;
 
-			v_in_t make_input_vector() const;
+			void show_initial(std::vector < Line > & lines, float delta,
+				unsigned int width, unsigned int height) const;
 
-			void print_input_vector(const v_in_t & v_in, bool print_full = true) const; // debug
+			void show_current(std::vector < Line > & lines, float delta,
+				unsigned int width, unsigned int height) const;
 
-			std::string to_string(const v_in_t & v_in) const;
+			trains_container_t & extract_trains(const id_t & strategy_id) const;
 
-			v_out_t from_string(const std::string & string) const;
+			void make_trains(std::time_t time, const segments_container_t & segments, 
+				trains_container_t & trains, commands_container_t & commands) const;
 
-			v_out_t make_random_output_vector() const;
+			void execute_commands(const segments_container_t & segments, trains_container_t & trains, 
+				const commands_container_t & commands, active_segments_t & active_segments) const;
 
-			void print_output_vector(const v_out_t & v_out, bool print_full = true) const; // debug
+			variants_container_t make_commands(const segments_container_t & segments, const trains_container_t & trains,
+				commands_container_t & commands, const active_segments_t & active_segments) const;
 
-			void apply_output_vector(const v_out_t & v_out) const; 
+			double compute_total_deviation(const trains_container_t & trains, std::time_t time) const;
 
-			bool can_execute_command(const Segment::id_t & id) const;
+			void update_strategy(const id_t & strategy_id, double deviation, std::time_t time);
 
-			void execute_command(const Segment::id_t & id, const v_out_t & command) const;
+			void delete_strategy(const id_t & strategy_id);
 
-			bool can_goto_segment(const Segment::id_t & current_segment_id, const Segment::id_t & next_segment_id) const;
+			bool is_strategy_promising(const id_t & strategy_id, double deviation) const;
 
-			void goto_segment(const Segment::id_t & current_segment_id, const Segment::id_t & next_segment_id) const;
+			void wait(std::time_t time) const;
 
-			void continue_action() const;
+			void launch_new_strategies(const variants_container_t & variants, double deviation, 
+				std::time_t time, const trains_container_t & trains, const segments_container_t & segments);
 
-			void print_current_deviations() const; // debug
+			void enter_bans();
 
-		public:
-
-			double current_total_deviation() const;
-
-		private:
-
-			void print_result(std::time_t elapsed_time) const; // debug
-
-		public:
-
-			static boost::uuids::random_generator random_generator;
-			static boost::uuids::string_generator string_generator;
+			void update_segments(segments_container_t & segments, 
+				std::time_t time, active_segments_t & active_segments);
 
 		private:
 
-			static inline const std::time_t limit_time = 60 * 6;
+			static inline constexpr std::size_t   id_segments_interface_index = 0U;
+			static inline constexpr std::size_t name_segments_interface_index = 1U;
 
-		private:
+			static inline constexpr std::size_t        id_strategies_interface_index = 0U;
+			static inline constexpr std::size_t deviation_strategies_interface_index = 1U;
+			static inline constexpr std::size_t      time_strategies_interface_index = 2U;
 
-			const id_t m_id;
+			static inline constexpr std::time_t time_limit = 1500LL;
+			static inline constexpr std::time_t time_delta = 120LL;
+
+			static inline constexpr std::size_t strategies_limit = 128U;
 
 		private:
 
@@ -309,11 +333,15 @@ namespace solution
 
 			routes_container_t m_routes;
 
-			shared::Python m_python;
+			strategies_container_t m_strategies;
+
+			bans_container_t m_bans;
 
 		private:
 
-			mutable std::default_random_engine m_generator;
+			mutable std::mutex m_mutex;
+
+			mutable std::mutex m_mutex_bans; // TODO: make shared mutex
 		};
 
 	} // namespace system
