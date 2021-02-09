@@ -6,13 +6,18 @@ namespace solution
 	{
 		namespace module
 		{
-			void Segment::train_arrived(const id_t & train_id)
+			void Segment::train_arrived() const
 			{
 				RUN_LOGGER(logger);
 
 				try
 				{
-					m_train_id = train_id;
+					if (m_size == m_capacity)
+					{
+						throw std::overflow_error("too many trains on segment");
+					}
+
+					++m_size;
 				}
 				catch (const std::exception & exception)
 				{
@@ -20,13 +25,18 @@ namespace solution
 				}
 			}
 
-			void Segment::train_departured()
+			void Segment::train_departured() const
 			{
 				RUN_LOGGER(logger);
 
 				try
 				{
-					m_train_id = nil_generator();
+					if (m_size == 0U)
+					{
+						throw std::underflow_error("not enough trains on segment");
+					}
+
+					--m_size;
 				}
 				catch (const std::exception & exception)
 				{
@@ -34,27 +44,13 @@ namespace solution
 				}
 			}
 
-			bool Segment::has_train() const
+			bool Segment::is_available() const
 			{
 				RUN_LOGGER(logger);
 
 				try
 				{
-					return (!m_train_id.is_nil());
-				}
-				catch (const std::exception& exception)
-				{
-					shared::catch_handler < segment_exception > (logger, exception);
-				}
-			}
-
-			bool Segment::is_available_to_move() const
-			{
-				RUN_LOGGER(logger);
-
-				try
-				{
-					return (!has_train() && m_state == State::normal);
+					return (m_size < m_capacity && m_state != State::locked);
 				}
 				catch (const std::exception & exception)
 				{
@@ -62,9 +58,19 @@ namespace solution
 				}
 			}
 
-			boost::uuids::string_generator Segment::string_generator;
+			bool Segment::add_adgacent_segment(const id_t & id) const
+			{
+				RUN_LOGGER(logger);
 
-			boost::uuids::nil_generator Segment::nil_generator;
+				try
+				{
+					return m_adjacent_segments.insert(id).second;
+				}
+				catch (const std::exception & exception)
+				{
+					shared::catch_handler < segment_exception > (logger, exception);
+				}
+			}
 
 		} // namespace module
 

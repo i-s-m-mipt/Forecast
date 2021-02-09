@@ -8,17 +8,14 @@
 #endif // #ifdef BOOST_HAS_PRAGMA_ONCE
 
 #include <exception>
-#include <memory>
+#include <set>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
-#include <utility>
+#include <unordered_set>
 #include <vector>
 
-#include <boost/lexical_cast.hpp>
-#include <boost/uuid/uuid.hpp>
-#include <boost/uuid/uuid_generators.hpp>
-#include <boost/uuid/uuid_io.hpp>
+#include "../../config/config.hpp"
 
 #include "../../../../shared/source/logger/logger.hpp"
 
@@ -47,36 +44,25 @@ namespace solution
 			{
 			public:
 
-				using id_t = boost::uuids::uuid;
-
-				using segments_container_t = std::vector < id_t > ;
+				using segments_container_t = std::unordered_set < id_t, detail::id_hash_t > ;
 
 			public:
 
-				enum class Type
+				enum class State // TODO: add reduced speed
 				{
-					station,
-					railway
+					normal,
+					locked
 				};
 
 			public:
 
-				enum class State
-				{
-					normal
-				};
-
-			public:
-
-				template < typename Id, typename Name, typename Adjacent_Segments, typename Enable = 
+				template < typename Id, typename Name, typename Enable = 
 					std::enable_if_t <
 						std::is_convertible_v < Id, id_t > &&
-						std::is_convertible_v < Name, std::string > &&
-						std::is_convertible_v < Adjacent_Segments, segments_container_t > > >
-				explicit Segment(
-					Id && id, Type type, Name && name, Name && station, std::size_t length, Adjacent_Segments && adjacent_segments) :
-						m_id(std::forward < Id > (id)), m_type(type), m_name(std::forward < Name > (name)), m_station(std::forward < Name > (station)),
-						m_length(length), m_adjacent_segments(std::forward < Adjacent_Segments > (adjacent_segments))
+						std::is_convertible_v < Name, std::string > > >
+				explicit Segment(Id && id, Name && name, std::size_t capacity, std::size_t index) :
+					m_id(std::forward < Id > (id)), m_name(std::forward < Name > (name)),
+					m_size(0U), m_capacity(capacity), m_state(State::normal), m_index(index)
 				{}
 
 				~Segment() noexcept = default;
@@ -88,34 +74,19 @@ namespace solution
 					return m_id;
 				}
 
-				const auto type() const noexcept
-				{
-					return m_type;
-				}
-
 				const auto & name() const noexcept
 				{
 					return m_name;
 				}
 
-				const auto & station() const noexcept
+				const auto size() const noexcept
 				{
-					return m_station;
+					return m_size;
 				}
 
-				const auto length() const noexcept 
+				const auto capacity() const noexcept
 				{
-					return m_length;
-				}
-
-				const auto & adjacent_segments() const noexcept
-				{
-					return m_adjacent_segments;
-				}
-
-				const auto & train_id() const noexcept
-				{
-					return m_train_id;
+					return m_capacity;
 				}
 
 				const auto state() const noexcept
@@ -123,36 +94,43 @@ namespace solution
 					return m_state;
 				}
 
+				const auto index() const noexcept
+				{
+					return m_index;
+				}
+
+				const auto & adjacent_segments() const noexcept
+				{
+					return m_adjacent_segments;
+				}
+
 			public:
 
-				void train_arrived(const id_t & train_id);
+				void train_arrived() const; // TODO: remove const
 
-				void train_departured();
+				void train_departured() const; // TODO: remove const
 
-				bool has_train() const;
+				bool is_available() const;
 
-				bool is_available_to_move() const;
+				void set_state(State state) const // TODO: remove const
+				{
+					m_state = state;
+				}
 
-			public:
-
-				static boost::uuids::string_generator string_generator;
-
-				static boost::uuids::nil_generator nil_generator;
+				bool add_adgacent_segment(const id_t & id) const;
 
 			private:
 
-				const id_t m_id;
-				const Type m_type;
-				const std::string m_name;
-				const std::string m_station;
-				const std::size_t m_length; // (m)
-				const segments_container_t m_adjacent_segments;
+				id_t m_id;
+				std::string m_name;
+				std::size_t m_capacity;
+				std::size_t m_index;
 
 			private:
 
-				id_t m_train_id = nil_generator();
-
-				State m_state = State::normal;
+				mutable State m_state; // TODO: remove mutable
+				mutable std::size_t m_size; // TODO: remove mutable
+				mutable segments_container_t m_adjacent_segments;
 			};
 
 		} // namespace module
