@@ -207,6 +207,7 @@ namespace solution
 			{
 				using point_t  = sf::Vertex;
 				using vector_t = sf::Vector2f;
+				using color_t  = sf::Color;
 
 				explicit Line(point_t point_0, point_t point_1)				
 				{
@@ -284,6 +285,8 @@ namespace solution
 			void show_current(std::vector < Line > & lines, float delta,
 				unsigned int width, unsigned int height) const;
 
+			void set_color(std::vector < Line > & lines, std::shared_ptr < Route > route) const;
+
 			trains_container_t & extract_trains(const id_t & strategy_id) const;
 
 			void make_trains(std::time_t time, const segments_container_t & segments, 
@@ -325,7 +328,7 @@ namespace solution
 			static inline constexpr std::time_t time_limit = 1200LL;
 			static inline constexpr std::time_t time_delta = 120LL;
 
-			static inline constexpr std::size_t strategies_limit = 512U;
+			static inline constexpr std::size_t strategies_limit = 256U;
 
 			static inline constexpr std::size_t bfs_limit = 4U;
 

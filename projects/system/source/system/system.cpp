@@ -217,10 +217,10 @@ namespace solution
 				points.push_back(Route::Point(name_interface.find("G-H")->id(), 250U, 30U));
 				points.push_back(Route::Point(name_interface.find("H"  )->id(), 280U, 10U));
 
-				for (auto i = 1U; i <= 5U; ++i)
+				for (auto i = 1U; i <= 8U; ++i)
 				{
 					auto route = std::make_shared < Route > (
-						generate_random_id(), i * 60U, Route::Direction::south, 1.0, points);
+						generate_random_id(), i * 60U, Route::Direction::south, 1.0, points, Route::Type::type_green);
 
 					m_routes[route->id()] = route;
 				}
@@ -243,10 +243,10 @@ namespace solution
 				points.push_back(Route::Point(name_interface.find("A-B")->id(), 250U, 30U));
 				points.push_back(Route::Point(name_interface.find("A"  )->id(), 280U, 10U));
 
-				for (auto i = 1U; i <= 5U; ++i)
+				for (auto i = 1U; i <= 8U; ++i)
 				{
 					auto route = std::make_shared < Route > (
-						generate_random_id(), i * 60U, Route::Direction::north, 0.5, points);
+						generate_random_id(), i * 60U, Route::Direction::north, 0.4, points, Route::Type::type_red);
 
 					m_routes[route->id()] = route;
 				}
@@ -262,7 +262,7 @@ namespace solution
 				points.push_back(Route::Point(name_interface.find("E"  )->id(), 210U, 20U));
 
 				auto route_1 = std::make_shared < Route > (
-					generate_random_id(), 50U, Route::Direction::south, 0.8, points, Route::Type::special);
+					generate_random_id(), 50U, Route::Direction::south, 0.8, points, Route::Type::type_blue);
 
 				m_routes[route_1->id()] = route_1;
 
@@ -275,9 +275,46 @@ namespace solution
 				points.push_back(Route::Point(name_interface.find("D"  )->id(), 30U,  5U));
 
 				auto route_2 = std::make_shared < Route > (
-					generate_random_id(), 300U, Route::Direction::north, 0.8, points, Route::Type::special);
+					generate_random_id(), 300U, Route::Direction::north, 0.6, points, Route::Type::type_yellow);
 
 				m_routes[route_2->id()] = route_2;
+
+				points.clear();
+
+				points.push_back(Route::Point(name_interface.find("B"  )->id(), 0U,   15U));
+				points.push_back(Route::Point(name_interface.find("B-C")->id(), 15U,  15U));
+				points.push_back(Route::Point(name_interface.find("C"  )->id(), 30U,  15U));
+				points.push_back(Route::Point(name_interface.find("C-D")->id(), 45U,  15U));
+				points.push_back(Route::Point(name_interface.find("D"  )->id(), 60U,  15U));
+				points.push_back(Route::Point(name_interface.find("D-E")->id(), 75U,  15U));
+				points.push_back(Route::Point(name_interface.find("E"  )->id(), 90U,  15U));
+				points.push_back(Route::Point(name_interface.find("E"  )->id(), 105U, 15U));
+				points.push_back(Route::Point(name_interface.find("E-F")->id(), 120U, 15U));
+				points.push_back(Route::Point(name_interface.find("F"  )->id(), 135U, 15U));
+				points.push_back(Route::Point(name_interface.find("F-G")->id(), 150U, 15U));
+				points.push_back(Route::Point(name_interface.find("G"  )->id(), 165U, 15U));
+
+				auto route_3 = std::make_shared < Route > (
+					generate_random_id(), 460U, Route::Direction::south, 0.8, points, Route::Type::type_blue);
+
+				m_routes[route_3->id()] = route_3;
+
+				points.clear();
+
+				points.push_back(Route::Point(name_interface.find("H"  )->id(), 0U,   12U));
+				points.push_back(Route::Point(name_interface.find("G-H")->id(), 12U,  18U));
+				points.push_back(Route::Point(name_interface.find("G"  )->id(), 30U,  12U));
+				points.push_back(Route::Point(name_interface.find("F-G")->id(), 42U,  18U));
+				points.push_back(Route::Point(name_interface.find("F"  )->id(), 60U,  12U));
+				points.push_back(Route::Point(name_interface.find("E-F")->id(), 72U,  18U));
+				points.push_back(Route::Point(name_interface.find("E"  )->id(), 90U,  12U));
+				points.push_back(Route::Point(name_interface.find("D-E")->id(), 102U, 18U));
+				points.push_back(Route::Point(name_interface.find("D"  )->id(), 120U, 12U));
+
+				auto route_4 = std::make_shared < Route >(
+					generate_random_id(), 500U, Route::Direction::north, 0.6, points, Route::Type::type_yellow);
+
+				m_routes[route_4->id()] = route_4;
 			}
 			catch (const std::exception & exception)
 			{
@@ -688,9 +725,6 @@ namespace solution
 								Line::point_t(Line::vector_t(delta + route->start_time() + point.arrival + point.staying,
 									2.0f * delta + ((index + 1U) / 2U) * 100.0f)));
 
-							lines.back().points[0].color = sf::Color::Green;
-							lines.back().points[1].color = sf::Color::Green;
-
 							break;
 						}
 						case Route::Direction::north:
@@ -700,9 +734,6 @@ namespace solution
 									2.0f * delta + ((index + 1U) / 2U) * 100.0f)),
 								Line::point_t(Line::vector_t(delta + route->start_time() + point.arrival + point.staying,
 									2.0f * delta + (index / 2U) * 100.0f)));
-
-							lines.back().points[0].color = sf::Color::Red;
-							lines.back().points[1].color = sf::Color::Red;
 
 							break;
 						}
@@ -715,11 +746,7 @@ namespace solution
 						}
 						}
 
-						if (route->type() == Route::Type::special)
-						{
-							lines.back().points[0].color = sf::Color::Blue;
-							lines.back().points[1].color = sf::Color::Blue;
-						}
+						set_color(lines, route);
 					}
 				}
 			}
@@ -774,9 +801,6 @@ namespace solution
 								Line::point_t(Line::vector_t(delta + point.arrival + point.staying,
 									2.0f * delta + ((index + 1U) / 2U) * 100.0f)));
 
-							lines.back().points[0].color = sf::Color::Green;
-							lines.back().points[1].color = sf::Color::Green;
-
 							break;
 						}
 						case Route::Direction::north:
@@ -786,9 +810,6 @@ namespace solution
 									2.0f * delta + ((index + 1U) / 2U) * 100.0f)),
 								Line::point_t(Line::vector_t(delta + point.arrival + point.staying,
 									2.0f * delta + (index / 2U) * 100.0f)));
-
-							lines.back().points[0].color = sf::Color::Red;
-							lines.back().points[1].color = sf::Color::Red;
 
 							break;
 						}
@@ -801,12 +822,59 @@ namespace solution
 						}
 						}
 
-						if (train.route()->type() == Route::Type::special)
-						{
-							lines.back().points[0].color = sf::Color::Blue;
-							lines.back().points[1].color = sf::Color::Blue;
-						}
+						set_color(lines, train.route());
 					}
+				}
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
+		void System::set_color(std::vector < Line > & lines, std::shared_ptr < Route > route) const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				switch (route->type())
+				{
+				case Route::Type::type_green:
+				{
+					lines.back().points[0].color = sf::Color::Green;
+					lines.back().points[1].color = sf::Color::Green;
+
+					break;
+				}
+				case Route::Type::type_red:
+				{
+					lines.back().points[0].color = sf::Color::Red;
+					lines.back().points[1].color = sf::Color::Red;
+
+					break;
+				}
+				case Route::Type::type_blue:
+				{
+					lines.back().points[0].color = sf::Color::Blue;
+					lines.back().points[1].color = sf::Color::Blue;
+
+					break;
+				}
+				case Route::Type::type_yellow:
+				{
+					lines.back().points[0].color = sf::Color::Yellow;
+					lines.back().points[1].color = sf::Color::Yellow;
+
+					break;
+				}
+				default:
+				{
+					throw std::runtime_error("unknown route direction: " +
+						static_cast < int > (route->direction()));
+
+					break;
+				}
 				}
 			}
 			catch (const std::exception & exception)

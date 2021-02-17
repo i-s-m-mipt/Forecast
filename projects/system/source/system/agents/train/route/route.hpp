@@ -52,8 +52,10 @@ namespace solution
 
 				enum class Type
 				{
-					casual,
-					special,
+					type_red,
+					type_green,
+					type_blue,
+					type_yellow
 				};
 
 			public:
@@ -89,7 +91,7 @@ namespace solution
 						std::is_convertible_v < Id, id_t > &&
 						std::is_convertible_v < Points, points_container_t > > >
 				explicit Route(Id && id, std::time_t start_time, Direction direction, 
-					double weight_k, Points && points, Type type = Type::casual) :
+					double weight_k, Points && points, Type type = Type::type_green) :
 						m_id(std::forward < Id > (id)), m_start_time(start_time), m_direction(direction),
 						m_weight_k(weight_k), m_points(std::forward < Points > (points)), m_type(type)
 				{}
