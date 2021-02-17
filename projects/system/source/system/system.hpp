@@ -37,7 +37,6 @@
 #include <vector>
 
 #include <boost/bimap.hpp>
-#include <boost/extended/serialization/json.hpp>
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/hashed_index.hpp>
 #include <boost/multi_index/identity.hpp>
@@ -46,6 +45,9 @@
 #include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/random_access_index.hpp>
 #include <boost/multi_index/sequenced_index.hpp>
+
+#include <nlohmann/json.hpp>
+#include <nlohmann/json_fwd.hpp>
 
 #include <SFML/Graphics.hpp>
 
@@ -97,7 +99,7 @@ namespace solution
 
 			using active_segments_t = std::unordered_set < id_t, detail::id_hash_t > ;
 
-			using json_t = boost::extended::serialization::json;
+			using json_t = nlohmann::json;
 
 		private:
 
@@ -144,7 +146,7 @@ namespace solution
 			{
 			private:
 
-				using json_t = boost::extended::serialization::json;
+				using json_t = nlohmann::json;
 
 			private:
 
