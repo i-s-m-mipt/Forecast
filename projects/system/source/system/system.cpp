@@ -130,6 +130,20 @@ namespace solution
 			}
 		}
 
+		void System::uninitialize()
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				m_thread_pool.join();
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+			}
+		}
+
 		void System::generate_segments()
 		{
 			RUN_LOGGER(logger);
@@ -387,9 +401,11 @@ namespace solution
 				{
 					auto id = generate_random_id();
 
-					m_strategies.insert({ id, 0.0, 0LL, std::make_shared < trains_container_t > (m_trains) });
+					m_strategies.insert({ id, 0.0, time_begin, std::make_shared < trains_container_t > (m_trains) });
 
-					std::thread(&System::process, this, id, 0LL, commands_container_t{}, m_segments).detach();
+					Task task(this, std::move(id), time_begin, commands_container_t{}, m_segments);
+
+					boost::asio::post(m_thread_pool, std::move(task));
 
 					show(false);
 				}
@@ -400,8 +416,8 @@ namespace solution
 			}
 		}
 
-		void System::process(id_t strategy_id, std::time_t time, 
-			commands_container_t commands, segments_container_t segments)
+		void System::process(const id_t & strategy_id, std::time_t time, 
+			commands_container_t & commands, segments_container_t & segments)
 		{
 			RUN_LOGGER(logger);
 
@@ -418,7 +434,7 @@ namespace solution
 
 					active_segments_t active_segments;
 
-					if (time % 60LL == 0LL) // TODO
+					if (time % 10LL == 0LL) // TODO
 					{
 						for (const auto & segment : id_segments_interface)
 						{
@@ -1203,7 +1219,9 @@ namespace solution
 					m_strategies.insert({ id, deviation, time, 
 						std::make_shared < trains_container_t > (trains) });
 
-					std::thread(&System::process, this, id, time, variant, segments).detach();
+					Task task(this, std::move(id), time, variant, segments);
+
+					boost::asio::post(m_thread_pool, std::move(task));
 				}
 			}
 			catch (const std::exception & exception)

@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "generator", "projects\generator\project\generator.vcxproj", "{602444B9-386F-4BE2-A9D4-9A3DBAA5FFB3}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "system", "projects\system\project\system.vcxproj", "{961A081E-83A2-44C5-A247-36F19B23D55A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{FC96F53A-7DC7-4CA7-8F3E-B5BED6F949C6}"
@@ -41,14 +39,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{602444B9-386F-4BE2-A9D4-9A3DBAA5FFB3}.Debug|x64.ActiveCfg = Debug|x64
-		{602444B9-386F-4BE2-A9D4-9A3DBAA5FFB3}.Debug|x64.Build.0 = Debug|x64
-		{602444B9-386F-4BE2-A9D4-9A3DBAA5FFB3}.Debug|x86.ActiveCfg = Debug|Win32
-		{602444B9-386F-4BE2-A9D4-9A3DBAA5FFB3}.Debug|x86.Build.0 = Debug|Win32
-		{602444B9-386F-4BE2-A9D4-9A3DBAA5FFB3}.Release|x64.ActiveCfg = Release|x64
-		{602444B9-386F-4BE2-A9D4-9A3DBAA5FFB3}.Release|x64.Build.0 = Release|x64
-		{602444B9-386F-4BE2-A9D4-9A3DBAA5FFB3}.Release|x86.ActiveCfg = Release|Win32
-		{602444B9-386F-4BE2-A9D4-9A3DBAA5FFB3}.Release|x86.Build.0 = Release|Win32
 		{961A081E-83A2-44C5-A247-36F19B23D55A}.Debug|x64.ActiveCfg = Debug|x64
 		{961A081E-83A2-44C5-A247-36F19B23D55A}.Debug|x64.Build.0 = Debug|x64
 		{961A081E-83A2-44C5-A247-36F19B23D55A}.Debug|x86.ActiveCfg = Debug|Win32

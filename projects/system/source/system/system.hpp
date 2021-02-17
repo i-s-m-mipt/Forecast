@@ -36,6 +36,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include <boost/asio.hpp>
 #include <boost/bimap.hpp>
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/hashed_index.hpp>
@@ -234,18 +235,80 @@ namespace solution
 
 			using bans_container_t = std::vector < Ban > ;
 
+			using thread_pool_t = boost::asio::thread_pool;
+
+		private:
+
+			class Task
+			{
+			public:
+
+				template < typename Id, typename Enable =
+					std::enable_if_t < std::is_convertible_v < Id, id_t > > >
+				explicit Task(System * const system, Id && id, std::time_t time, 
+					const commands_container_t & commands, const segments_container_t & segments) :
+						m_system(system), m_id(std::forward < Id > (id)), m_time(time),
+						m_commands(commands), m_segments(segments)
+				{}
+
+				~Task() noexcept = default;
+
+			public:
+
+				void operator()() const
+				{
+					RUN_LOGGER(logger);
+
+					try
+					{
+						m_system->process(m_id, m_time, m_commands, m_segments);
+					}
+					catch (const std::exception & exception)
+					{
+						shared::catch_handler < system_exception > (logger, exception);
+					}
+				}
+
+			private:
+
+				System * const m_system;
+
+				const id_t m_id;
+
+			private:
+
+				std::time_t m_time;
+
+			private:
+
+				mutable commands_container_t m_commands;
+				mutable segments_container_t m_segments;
+			};
+
 		public:
 
-			System()
+			System() : m_thread_pool(2U * std::thread::hardware_concurrency())
 			{
 				initialize();
 			}
 
-			~System() noexcept = default;
+			~System() noexcept
+			{
+				try
+				{
+					uninitialize();
+				}
+				catch (...)
+				{
+					// std::abort();
+				}
+			}
 
 		private:
 
 			void initialize();
+
+			void uninitialize();
 
 		private:
 
@@ -271,8 +334,8 @@ namespace solution
 
 		private:
 
-			void process(id_t strategy_id, std::time_t time, commands_container_t commands,
-				segments_container_t segments);
+			void process(const id_t & strategy_id, std::time_t time, 
+				commands_container_t & commands, segments_container_t & segments);
 
 			void register_event(const id_t & source, const segments_container_t & segments,
 				active_segments_t & active_segments) const;
@@ -325,10 +388,11 @@ namespace solution
 			static inline constexpr std::size_t deviation_strategies_interface_index = 1U;
 			static inline constexpr std::size_t      time_strategies_interface_index = 2U;
 
+			static inline constexpr std::time_t time_begin = 0LL;
 			static inline constexpr std::time_t time_limit = 1200LL;
 			static inline constexpr std::time_t time_delta = 120LL;
 
-			static inline constexpr std::size_t strategies_limit = 256U;
+			static inline constexpr std::size_t strategies_limit = 128U;
 
 			static inline constexpr std::size_t bfs_limit = 4U;
 
@@ -343,6 +407,8 @@ namespace solution
 			strategies_container_t m_strategies;
 
 			bans_container_t m_bans;
+
+			thread_pool_t m_thread_pool;
 
 		private:
 
