@@ -186,6 +186,7 @@ namespace solution
 						static inline const std::string segment_id = "segment_id";
 						static inline const std::string arrival	   = "arrival";
 						static inline const std::string staying    = "staying";
+						static inline const std::string position   = "position";
 					};
 				};
 
@@ -342,10 +343,10 @@ namespace solution
 
 			void show(bool is_initial = true) const;
 
-			void show_initial(std::vector < Line > & lines, float delta,
+			void show_initial(std::vector < Line > & lines, float delta, float delta_left,
 				unsigned int width, unsigned int height) const;
 
-			void show_current(std::vector < Line > & lines, float delta,
+			void show_current(std::vector < Line > & lines, float delta, float delta_left,
 				unsigned int width, unsigned int height) const;
 
 			void set_color(std::vector < Line > & lines, std::shared_ptr < Route > route) const;

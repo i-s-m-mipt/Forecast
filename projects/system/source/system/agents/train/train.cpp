@@ -59,7 +59,7 @@ namespace solution
 				}
 			}
 
-			void Train::set_route(std::shared_ptr < Route > route)
+			void Train::set_route(std::shared_ptr < Route > route, std::size_t position)
 			{
 				RUN_LOGGER(logger);
 
@@ -77,7 +77,7 @@ namespace solution
 					}
 
 					m_gid.push_back(Point(m_route->points().at(m_current_point_index).segment_id, 
-						m_route->start_time(), 0LL));
+						m_route->start_time(), 0LL, position));
 				}
 				catch (const std::exception & exception)
 				{
@@ -127,7 +127,7 @@ namespace solution
 				}
 			}
 
-			void Train::move()
+			void Train::move(std::size_t position)
 			{
 				RUN_LOGGER(logger);
 
@@ -140,7 +140,7 @@ namespace solution
 						m_current_staying_time = 0LL;
 
 						m_gid.push_back(Point(m_route->points().at(m_current_point_index).segment_id, 
-							m_gid.front().arrival + m_total_movement_time, 0LL));
+							m_gid.front().arrival + m_total_movement_time, 0LL, position));
 					}
 					else
 					{

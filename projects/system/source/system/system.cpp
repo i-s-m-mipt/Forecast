@@ -57,7 +57,8 @@ namespace solution
 						points.emplace_back(generate_string_id(
 							raw_point[Key::Route::segment_id].get < std::string > ()),
 							raw_point[Key::Route::arrival   ].get < std::time_t > (),
-							raw_point[Key::Route::staying   ].get < std::time_t > ());
+							raw_point[Key::Route::staying   ].get < std::time_t > (),
+							raw_point[Key::Route::position  ].get < std::size_t > ());
 					}
 
 					auto route = std::make_shared < Route > (generate_string_id(id), 
@@ -215,21 +216,21 @@ namespace solution
 
 				Route::points_container_t points;
 
-				points.push_back(Route::Point(name_interface.find("A"  )->id(), 0U,   10U));
-				points.push_back(Route::Point(name_interface.find("A-B")->id(), 10U,  30U));
-				points.push_back(Route::Point(name_interface.find("B"  )->id(), 40U,  10U));
-				points.push_back(Route::Point(name_interface.find("B-C")->id(), 50U,  30U));
-				points.push_back(Route::Point(name_interface.find("C"  )->id(), 80U,  10U));
-				points.push_back(Route::Point(name_interface.find("C-D")->id(), 90U,  30U));
-				points.push_back(Route::Point(name_interface.find("D"  )->id(), 120U, 10U));
-				points.push_back(Route::Point(name_interface.find("D-E")->id(), 130U, 30U));
-				points.push_back(Route::Point(name_interface.find("E"  )->id(), 160U, 10U));
-				points.push_back(Route::Point(name_interface.find("E-F")->id(), 170U, 30U));
-				points.push_back(Route::Point(name_interface.find("F"  )->id(), 200U, 10U));
-				points.push_back(Route::Point(name_interface.find("F-G")->id(), 210U, 30U));
-				points.push_back(Route::Point(name_interface.find("G"  )->id(), 240U, 10U));
-				points.push_back(Route::Point(name_interface.find("G-H")->id(), 250U, 30U));
-				points.push_back(Route::Point(name_interface.find("H"  )->id(), 280U, 10U));
+				points.push_back(Route::Point(name_interface.find("A"  )->id(), 0U,   10U, 0U));
+				points.push_back(Route::Point(name_interface.find("A-B")->id(), 10U,  30U, 0U));
+				points.push_back(Route::Point(name_interface.find("B"  )->id(), 40U,  10U, 0U));
+				points.push_back(Route::Point(name_interface.find("B-C")->id(), 50U,  30U, 0U));
+				points.push_back(Route::Point(name_interface.find("C"  )->id(), 80U,  10U, 0U));
+				points.push_back(Route::Point(name_interface.find("C-D")->id(), 90U,  30U, 0U));
+				points.push_back(Route::Point(name_interface.find("D"  )->id(), 120U, 10U, 0U));
+				points.push_back(Route::Point(name_interface.find("D-E")->id(), 130U, 30U, 0U));
+				points.push_back(Route::Point(name_interface.find("E"  )->id(), 160U, 10U, 0U));
+				points.push_back(Route::Point(name_interface.find("E-F")->id(), 170U, 30U, 0U));
+				points.push_back(Route::Point(name_interface.find("F"  )->id(), 200U, 10U, 0U));
+				points.push_back(Route::Point(name_interface.find("F-G")->id(), 210U, 30U, 0U));
+				points.push_back(Route::Point(name_interface.find("G"  )->id(), 240U, 10U, 0U));
+				points.push_back(Route::Point(name_interface.find("G-H")->id(), 250U, 30U, 0U));
+				points.push_back(Route::Point(name_interface.find("H"  )->id(), 280U, 10U, 0U));
 
 				for (auto i = 1U; i <= 8U; ++i)
 				{
@@ -241,21 +242,21 @@ namespace solution
 
 				points.clear();
 
-				points.push_back(Route::Point(name_interface.find("H"  )->id(), 0U,   10U));
-				points.push_back(Route::Point(name_interface.find("G-H")->id(), 10U,  30U));
-				points.push_back(Route::Point(name_interface.find("G"  )->id(), 40U,  10U));
-				points.push_back(Route::Point(name_interface.find("F-G")->id(), 50U,  30U));
-				points.push_back(Route::Point(name_interface.find("F"  )->id(), 80U,  10U));
-				points.push_back(Route::Point(name_interface.find("E-F")->id(), 90U,  30U));
-				points.push_back(Route::Point(name_interface.find("E"  )->id(), 120U, 10U));
-				points.push_back(Route::Point(name_interface.find("D-E")->id(), 130U, 30U));
-				points.push_back(Route::Point(name_interface.find("D"  )->id(), 160U, 10U));
-				points.push_back(Route::Point(name_interface.find("C-D")->id(), 170U, 30U));
-				points.push_back(Route::Point(name_interface.find("C"  )->id(), 200U, 10U));
-				points.push_back(Route::Point(name_interface.find("B-C")->id(), 210U, 30U));
-				points.push_back(Route::Point(name_interface.find("B"  )->id(), 240U, 10U));
-				points.push_back(Route::Point(name_interface.find("A-B")->id(), 250U, 30U));
-				points.push_back(Route::Point(name_interface.find("A"  )->id(), 280U, 10U));
+				points.push_back(Route::Point(name_interface.find("H"  )->id(), 0U,   10U, 0U));
+				points.push_back(Route::Point(name_interface.find("G-H")->id(), 10U,  30U, 0U));
+				points.push_back(Route::Point(name_interface.find("G"  )->id(), 40U,  10U, 0U));
+				points.push_back(Route::Point(name_interface.find("F-G")->id(), 50U,  30U, 0U));
+				points.push_back(Route::Point(name_interface.find("F"  )->id(), 80U,  10U, 0U));
+				points.push_back(Route::Point(name_interface.find("E-F")->id(), 90U,  30U, 0U));
+				points.push_back(Route::Point(name_interface.find("E"  )->id(), 120U, 10U, 0U));
+				points.push_back(Route::Point(name_interface.find("D-E")->id(), 130U, 30U, 0U));
+				points.push_back(Route::Point(name_interface.find("D"  )->id(), 160U, 10U, 0U));
+				points.push_back(Route::Point(name_interface.find("C-D")->id(), 170U, 30U, 0U));
+				points.push_back(Route::Point(name_interface.find("C"  )->id(), 200U, 10U, 0U));
+				points.push_back(Route::Point(name_interface.find("B-C")->id(), 210U, 30U, 0U));
+				points.push_back(Route::Point(name_interface.find("B"  )->id(), 240U, 10U, 0U));
+				points.push_back(Route::Point(name_interface.find("A-B")->id(), 250U, 30U, 0U));
+				points.push_back(Route::Point(name_interface.find("A"  )->id(), 280U, 10U, 0U));
 
 				for (auto i = 1U; i <= 8U; ++i)
 				{
@@ -267,13 +268,13 @@ namespace solution
 
 				points.clear();
 
-				points.push_back(Route::Point(name_interface.find("B"  )->id(), 0U, 20U));
-				points.push_back(Route::Point(name_interface.find("B-C")->id(), 20U, 50U));
-				points.push_back(Route::Point(name_interface.find("C"  )->id(), 70U, 20U));
-				points.push_back(Route::Point(name_interface.find("C-D")->id(), 90U, 50U));
-				points.push_back(Route::Point(name_interface.find("D"  )->id(), 140U, 20U));
-				points.push_back(Route::Point(name_interface.find("D-E")->id(), 160U, 50U));
-				points.push_back(Route::Point(name_interface.find("E"  )->id(), 210U, 20U));
+				points.push_back(Route::Point(name_interface.find("B"  )->id(), 0U,   20U, 0U));
+				points.push_back(Route::Point(name_interface.find("B-C")->id(), 20U,  50U, 0U));
+				points.push_back(Route::Point(name_interface.find("C"  )->id(), 70U,  20U, 0U));
+				points.push_back(Route::Point(name_interface.find("C-D")->id(), 90U,  50U, 0U));
+				points.push_back(Route::Point(name_interface.find("D"  )->id(), 140U, 20U, 0U));
+				points.push_back(Route::Point(name_interface.find("D-E")->id(), 160U, 50U, 0U));
+				points.push_back(Route::Point(name_interface.find("E"  )->id(), 210U, 20U, 0U));
 
 				auto route_1 = std::make_shared < Route > (
 					generate_random_id(), 50U, Route::Direction::south, 0.8, points, Route::Type::type_blue);
@@ -282,11 +283,11 @@ namespace solution
 
 				points.clear();
 
-				points.push_back(Route::Point(name_interface.find("F"  )->id(), 0U,   5U));
-				points.push_back(Route::Point(name_interface.find("E-F")->id(), 5U,  10U));
-				points.push_back(Route::Point(name_interface.find("E"  )->id(), 15U,  5U));
-				points.push_back(Route::Point(name_interface.find("D-E")->id(), 20U, 10U));
-				points.push_back(Route::Point(name_interface.find("D"  )->id(), 30U,  5U));
+				points.push_back(Route::Point(name_interface.find("F"  )->id(), 0U,   5U, 0U));
+				points.push_back(Route::Point(name_interface.find("E-F")->id(), 5U,  10U, 0U));
+				points.push_back(Route::Point(name_interface.find("E"  )->id(), 15U,  5U, 0U));
+				points.push_back(Route::Point(name_interface.find("D-E")->id(), 20U, 10U, 0U));
+				points.push_back(Route::Point(name_interface.find("D"  )->id(), 30U,  5U, 0U));
 
 				auto route_2 = std::make_shared < Route > (
 					generate_random_id(), 300U, Route::Direction::north, 0.6, points, Route::Type::type_yellow);
@@ -295,18 +296,17 @@ namespace solution
 
 				points.clear();
 
-				points.push_back(Route::Point(name_interface.find("B"  )->id(), 0U,   15U));
-				points.push_back(Route::Point(name_interface.find("B-C")->id(), 15U,  15U));
-				points.push_back(Route::Point(name_interface.find("C"  )->id(), 30U,  15U));
-				points.push_back(Route::Point(name_interface.find("C-D")->id(), 45U,  15U));
-				points.push_back(Route::Point(name_interface.find("D"  )->id(), 60U,  15U));
-				points.push_back(Route::Point(name_interface.find("D-E")->id(), 75U,  15U));
-				points.push_back(Route::Point(name_interface.find("E"  )->id(), 90U,  15U));
-				points.push_back(Route::Point(name_interface.find("E"  )->id(), 105U, 15U));
-				points.push_back(Route::Point(name_interface.find("E-F")->id(), 120U, 15U));
-				points.push_back(Route::Point(name_interface.find("F"  )->id(), 135U, 15U));
-				points.push_back(Route::Point(name_interface.find("F-G")->id(), 150U, 15U));
-				points.push_back(Route::Point(name_interface.find("G"  )->id(), 165U, 15U));
+				points.push_back(Route::Point(name_interface.find("B"  )->id(), 0U,   15U, 0U));
+				points.push_back(Route::Point(name_interface.find("B-C")->id(), 15U,  15U, 0U));
+				points.push_back(Route::Point(name_interface.find("C"  )->id(), 30U,  15U, 0U));
+				points.push_back(Route::Point(name_interface.find("C-D")->id(), 45U,  15U, 0U));
+				points.push_back(Route::Point(name_interface.find("D"  )->id(), 60U,  15U, 0U));
+				points.push_back(Route::Point(name_interface.find("D-E")->id(), 75U,  15U, 0U));
+				points.push_back(Route::Point(name_interface.find("E"  )->id(), 90U,  15U, 0U));
+				points.push_back(Route::Point(name_interface.find("E-F")->id(), 105U, 15U, 0U));
+				points.push_back(Route::Point(name_interface.find("F"  )->id(), 120U, 15U, 0U));
+				points.push_back(Route::Point(name_interface.find("F-G")->id(), 135U, 15U, 0U));
+				points.push_back(Route::Point(name_interface.find("G"  )->id(), 150U, 15U, 0U));
 
 				auto route_3 = std::make_shared < Route > (
 					generate_random_id(), 460U, Route::Direction::south, 0.8, points, Route::Type::type_blue);
@@ -315,15 +315,15 @@ namespace solution
 
 				points.clear();
 
-				points.push_back(Route::Point(name_interface.find("H"  )->id(), 0U,   12U));
-				points.push_back(Route::Point(name_interface.find("G-H")->id(), 12U,  18U));
-				points.push_back(Route::Point(name_interface.find("G"  )->id(), 30U,  12U));
-				points.push_back(Route::Point(name_interface.find("F-G")->id(), 42U,  18U));
-				points.push_back(Route::Point(name_interface.find("F"  )->id(), 60U,  12U));
-				points.push_back(Route::Point(name_interface.find("E-F")->id(), 72U,  18U));
-				points.push_back(Route::Point(name_interface.find("E"  )->id(), 90U,  12U));
-				points.push_back(Route::Point(name_interface.find("D-E")->id(), 102U, 18U));
-				points.push_back(Route::Point(name_interface.find("D"  )->id(), 120U, 12U));
+				points.push_back(Route::Point(name_interface.find("H"  )->id(), 0U,   12U, 0U));
+				points.push_back(Route::Point(name_interface.find("G-H")->id(), 12U,  18U, 0U));
+				points.push_back(Route::Point(name_interface.find("G"  )->id(), 30U,  12U, 0U));
+				points.push_back(Route::Point(name_interface.find("F-G")->id(), 42U,  18U, 0U));
+				points.push_back(Route::Point(name_interface.find("F"  )->id(), 60U,  12U, 0U));
+				points.push_back(Route::Point(name_interface.find("E-F")->id(), 72U,  18U, 0U));
+				points.push_back(Route::Point(name_interface.find("E"  )->id(), 90U,  12U, 0U));
+				points.push_back(Route::Point(name_interface.find("D-E")->id(), 102U, 18U, 0U));
+				points.push_back(Route::Point(name_interface.find("D"  )->id(), 120U, 12U, 0U));
 
 				auto route_4 = std::make_shared < Route >(
 					generate_random_id(), 500U, Route::Direction::north, 0.6, points, Route::Type::type_yellow);
@@ -530,25 +530,32 @@ namespace solution
 
 			try
 			{
+				const auto delta_left = 25.0f;
+
 				const auto delta  = 25.0f;
-				const auto width  = 1200U + 2 * static_cast < unsigned int > (delta);
-				const auto height = 700U  + 4 * static_cast < unsigned int > (delta);
+				
+				const auto width  = 1200U + 2 * static_cast < unsigned int > (delta) + static_cast < unsigned int > (delta_left);
+				const auto height = 720U  + 4 * static_cast < unsigned int > (delta);
 
 				sf::RenderWindow window(sf::VideoMode(width + 5U, height), "Demonstration");
 
 				std::vector < Line > static_lines;
 
 				static_lines.emplace_back(
-					Line::point_t(Line::vector_t(delta, delta)),
-					Line::point_t(Line::vector_t(width - delta, delta)));
+					Line::point_t(Line::vector_t(delta + delta_left, delta), sf::Color::Black),
+					Line::point_t(Line::vector_t(width - delta, delta), sf::Color::Black));
 
 				static_lines.emplace_back(
-					Line::point_t(Line::vector_t(delta, height - delta)),
-					Line::point_t(Line::vector_t(width - delta, height - delta)));
+					Line::point_t(Line::vector_t(delta + delta_left, height - delta), sf::Color::Black),
+					Line::point_t(Line::vector_t(width - delta, height - delta), sf::Color::Black));
 
 				static_lines.emplace_back(
-					Line::point_t(Line::vector_t(delta, 2.0f * delta)),
-					Line::point_t(Line::vector_t(delta, height - 2.0f * delta)));
+					Line::point_t(Line::vector_t(delta + delta_left, 2.0f * delta), sf::Color::Black),
+					Line::point_t(Line::vector_t(delta + delta_left, height - 2.0f * delta), sf::Color::Black));
+
+				static_lines.emplace_back(
+					Line::point_t(Line::vector_t(width - delta, 2.0f * delta), sf::Color::Black),
+					Line::point_t(Line::vector_t(width - delta, height - 2.0f * delta), sf::Color::Black));
 
 				sf::Font font;
 
@@ -556,14 +563,17 @@ namespace solution
 
 				std::vector < sf::Text > letters;
 
+				std::vector < std::string > station_names = {
+					"BAG", "MAA", "AGU", "NAR", "OOR", "LUN", "CHO", "SHI" };
+
 				for (auto i = 0U; i < 8U; ++i)
 				{
-					sf::Text letter('A' + i, font);
+					sf::Text letter(station_names[i], font);
 
-					letter.setCharacterSize(15);
+					letter.setCharacterSize(16);
 					letter.setStyle(sf::Text::Bold);
-					letter.setFillColor(sf::Color::White);
-					letter.setPosition(sf::Vector2f(6.0f, 2.0f * delta + i * 100.0f - 10.0f));
+					letter.setFillColor(sf::Color::Black);
+					letter.setPosition(sf::Vector2f(8.0f, 2.0f * delta + i * 100.0f));
 
 					letters.push_back(std::move(letter));
 				}
@@ -575,8 +585,8 @@ namespace solution
 					sf::Text number(std::to_string(i * 60U), font);
 
 					number.setCharacterSize(12);
-					number.setFillColor(sf::Color::White);
-					number.setPosition(sf::Vector2f(delta + i * 60.0f - 4.0f, 4.0f));
+					number.setFillColor(sf::Color::Black);
+					number.setPosition(sf::Vector2f(delta + delta_left + i * 60.0f - 4.0f, 4.0f));
 
 					numbers.push_back(std::move(number));
 				}
@@ -586,43 +596,53 @@ namespace solution
 					sf::Text number(std::to_string(i * 60U), font);
 
 					number.setCharacterSize(12);
-					number.setFillColor(sf::Color::White);
-					number.setPosition(sf::Vector2f(delta + i * 60.0f - 4.0f, height - 17.0f));
+					number.setFillColor(sf::Color::Black);
+					number.setPosition(sf::Vector2f(delta + delta_left + i * 60.0f - 4.0f, height - 17.0f));
 
 					numbers.push_back(std::move(number));
 				}
 
-				for (auto i = 0U; i <= 20U; ++i)
+				for (auto i = 0U; i < 21U; ++i)
 				{
 					static_lines.emplace_back(
-						Line::point_t(Line::vector_t(delta + i * 60.0f, delta - 5.0f)),
-						Line::point_t(Line::vector_t(delta + i * 60.0f, delta + 5.0f)));
+						Line::point_t(Line::vector_t(delta + delta_left + i * 60.0f, delta - 5.0f), sf::Color::Black),
+						Line::point_t(Line::vector_t(delta + delta_left + i * 60.0f, delta + 5.0f), sf::Color::Black));
 
 					static_lines.emplace_back(
-						Line::point_t(Line::vector_t(delta + i * 60.0f, height - delta - 5.0f)),
-						Line::point_t(Line::vector_t(delta + i * 60.0f, height - delta + 5.0f)));
+						Line::point_t(Line::vector_t(delta + delta_left + i * 60.0f, height - delta - 5.0f), sf::Color::Black),
+						Line::point_t(Line::vector_t(delta + delta_left + i * 60.0f, height - delta + 5.0f), sf::Color::Black));
 				}
 
-				for (auto i = 0U; i <= 8U; ++i)
+				for (auto i = 0U; i < 8U; ++i)
 				{
-					static_lines.emplace_back(
-						Line::point_t(Line::vector_t(delta - 5.0f, 2.0f * delta + i * 100.0f)),
-						Line::point_t(Line::vector_t(delta + 5.0f, 2.0f * delta + i * 100.0f)));
+					for (auto j = 0U; j < 5U; ++j)
+					{
+						static_lines.emplace_back(
+							Line::point_t(Line::vector_t(delta + delta_left - 5.0f, 2.0f * delta + i * 100.0f + j * 5.0f), sf::Color::Black),
+							Line::point_t(Line::vector_t(delta + delta_left + 5.0f, 2.0f * delta + i * 100.0f + j * 5.0f), sf::Color::Black));
+
+						static_lines.emplace_back(
+							Line::point_t(Line::vector_t(width - delta - 5.0f, 2.0f * delta + i * 100.0f + j * 5.0f), sf::Color::Black),
+							Line::point_t(Line::vector_t(width - delta + 5.0f, 2.0f * delta + i * 100.0f + j * 5.0f), sf::Color::Black));
+					}
 				}
 
 				std::vector < sf::CircleShape > dots;
 
-				for (auto i = 0U; i <= 120U; ++i)
+				for (auto i = 0U; i <= 300U; ++i)
 				{
-					for (auto j = 0U; j <= 8U; ++j)
+					for (auto j = 0U; j < 8U; ++j)
 					{
-						sf::CircleShape dot(0.5f);
+						for (auto k = 0U; k < 5U; ++k)
+						{
+							sf::CircleShape dot(0.5f);
 
-						dot.setFillColor(sf::Color::White);
+							dot.setFillColor(sf::Color::Black);
 
-						dot.setPosition(sf::Vector2f(delta + i * 10.0f, 2.0f * delta + j * 100.0f));
+							dot.setPosition(sf::Vector2f(delta + delta_left + i * 4.0f, 2.0f * delta + j * 100.0f + k * 5.0f));
 
-						dots.push_back(dot);
+							dots.push_back(dot);
+						}
 					}
 				}
 
@@ -645,11 +665,11 @@ namespace solution
 
 					if (is_initial)
 					{
-						show_initial(lines, delta, width, height);
+						show_initial(lines, delta, delta_left, width, height);
 					}
 					else
 					{
-						show_current(lines, delta, width, height);
+						show_current(lines, delta, delta_left, width, height);
 					}
 
 					std::vector < sf::RectangleShape > bans;
@@ -660,10 +680,10 @@ namespace solution
 						for (const auto & ban : m_bans)
 						{
 							sf::RectangleShape rectangle(sf::Vector2f(
-								static_cast < float > (ban.end - ban.begin), 100.0f));
+								static_cast < float > (ban.end - ban.begin), 100.0f - 20.0f));
 
-							rectangle.setPosition(sf::Vector2f(delta + ban.begin, 
-								2.0f * delta + (id_segments_interface.find(ban.segment_id)->index() / 2U) * 100.0f));
+							rectangle.setPosition(sf::Vector2f(delta + delta_left + ban.begin,
+								2.0f * delta + (id_segments_interface.find(ban.segment_id)->index() / 2U) * 100.0f + 20.0f));
 
 							rectangle.setFillColor(sf::Color(255, 0, 0, 63));
 							rectangle.setOutlineColor(sf::Color::Red);
@@ -672,7 +692,7 @@ namespace solution
 						}
 					}
 
-					window.clear();
+					window.clear(sf::Color::White);
 
 					for (const auto & static_line : static_lines)
 					{
@@ -715,7 +735,7 @@ namespace solution
 			}
 		}
 
-		void System::show_initial(std::vector < Line > & lines, float delta, 
+		void System::show_initial(std::vector < Line > & lines, float delta, float delta_left,
 			unsigned int width, unsigned int height) const
 		{
 			RUN_LOGGER(logger);
@@ -727,42 +747,180 @@ namespace solution
 
 				for (const auto [id, route] : m_routes)
 				{
-					for (const auto & point : route->points())
+					for (auto i = 0U; i < std::size(route->points()); ++i)
 					{
+						const auto & point = route->points()[i];
+
 						const auto index = id_segments_interface.find(point.segment_id)->index();
 
-						switch (route->direction())
-						{
-						case Route::Direction::south:
-						{
-							lines.emplace_back(
-								Line::point_t(Line::vector_t(delta + route->start_time() + point.arrival,
-									2.0f * delta + (index / 2U) * 100.0f)),
-								Line::point_t(Line::vector_t(delta + route->start_time() + point.arrival + point.staying,
-									2.0f * delta + ((index + 1U) / 2U) * 100.0f)));
+						const auto capacity = id_segments_interface.find(point.segment_id)->capacity();
 
-							break;
-						}
-						case Route::Direction::north:
+						if (capacity > 1U)
 						{
 							lines.emplace_back(
-								Line::point_t(Line::vector_t(delta + route->start_time() + point.arrival,
-									2.0f * delta + ((index + 1U) / 2U) * 100.0f)),
-								Line::point_t(Line::vector_t(delta + route->start_time() + point.arrival + point.staying,
-									2.0f * delta + (index / 2U) * 100.0f)));
+								Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time(),
+									2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)),
+								Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + point.staying,
+									2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)));
 
-							break;
+							set_color(lines, route);
+
+							lines.emplace_back(
+								Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time(),
+									2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f + 1.0f)),
+								Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + point.staying,
+									2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f + 1.0f)));
+
+							set_color(lines, route);
+
+							switch (route->direction())
+							{
+							case Route::Direction::south:
+							{
+								if (i != 0U)
+								{
+									lines.emplace_back(
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time(),
+											2.0f * delta + (index / 2U) * 100.0f)),
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time(),
+											2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)));
+
+									set_color(lines, route);
+
+									lines.emplace_back(
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + 1.0f,
+											2.0f * delta + (index / 2U) * 100.0f)),
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + 1.0f,
+											2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)));
+
+									set_color(lines, route);
+								}
+
+								if (i != std::size(route->points()) - 1U)
+								{
+									lines.emplace_back(
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + point.staying,
+											2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)),
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + point.staying,
+											2.0f * delta + (index / 2U) * 100.0f + 20.0f)));
+
+									set_color(lines, route);
+
+									lines.emplace_back(
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + point.staying + 1.0f,
+											2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)),
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + point.staying + 1.0f,
+											2.0f * delta + (index / 2U) * 100.0f + 20.0f)));
+
+									set_color(lines, route);
+								}
+
+								break;
+							}
+							case Route::Direction::north:
+							{
+								if (i != 0U)
+								{
+									lines.emplace_back(
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time(),
+											2.0f * delta + (index / 2U) * 100.0f + 20.0f)),
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time(),
+											2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)));
+
+									set_color(lines, route);
+
+									lines.emplace_back(
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + 1.0f,
+											2.0f * delta + (index / 2U) * 100.0f + 20.0f)),
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + 1.0f,
+											2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)));
+
+									set_color(lines, route);
+								}
+
+								if (i != std::size(route->points()) - 1U)
+								{
+									lines.emplace_back(
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + point.staying,
+											2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)),
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + point.staying,
+											2.0f * delta + (index / 2U) * 100.0f)));
+
+									set_color(lines, route);
+
+									lines.emplace_back(
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + point.staying + 1.0f,
+											2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)),
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + point.staying + 1.0f,
+											2.0f * delta + (index / 2U) * 100.0f)));
+
+									set_color(lines, route);
+								}
+
+								break;
+							}
+							default:
+							{
+								throw std::runtime_error("unknown route direction: " +
+									static_cast < int > (route->direction()));
+
+								break;
+							}
+							}
 						}
-						default:
+						else
 						{
-							throw std::runtime_error("unknown route direction: " +
-								static_cast < int > (route->direction()));
+							switch (route->direction())
+							{
+							case Route::Direction::south:
+							{
+								lines.emplace_back(
+									Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time(),
+										2.0f * delta + (index / 2U) * 100.0f + 20.0f)),
+									Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + point.staying,
+										2.0f * delta + ((index + 1U) / 2U) * 100.0f)));
 
-							break;
-						}
-						}
+								set_color(lines, route);
 
-						set_color(lines, route);
+								lines.emplace_back(
+									Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + 1.0f,
+										2.0f * delta + (index / 2U) * 100.0f + 20.0f)),
+									Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + point.staying + 1.0f,
+										2.0f * delta + ((index + 1U) / 2U) * 100.0f)));
+
+								set_color(lines, route);
+
+								break;
+							}
+							case Route::Direction::north:
+							{
+								lines.emplace_back(
+									Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time(),
+										2.0f * delta + ((index + 1U) / 2U) * 100.0f)),
+									Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + point.staying,
+										2.0f * delta + (index / 2U) * 100.0f + 20.0f)));
+
+								set_color(lines, route);
+
+								lines.emplace_back(
+									Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + 1.0f,
+										2.0f * delta + ((index + 1U) / 2U) * 100.0f)),
+									Line::point_t(Line::vector_t(delta + delta_left + point.arrival + route->start_time() + point.staying + 1.0f,
+										2.0f * delta + (index / 2U) * 100.0f + 20.0f)));
+
+								set_color(lines, route);
+
+								break;
+							}
+							default:
+							{
+								throw std::runtime_error("unknown route direction: " +
+									static_cast < int > (route->direction()));
+
+								break;
+							}
+							}
+						}
 					}
 				}
 			}
@@ -772,7 +930,7 @@ namespace solution
 			}
 		}
 
-		void System::show_current(std::vector < Line > & lines, float delta,
+		void System::show_current(std::vector < Line > & lines, float delta, float delta_left,
 			unsigned int width, unsigned int height) const
 		{
 			RUN_LOGGER(logger);
@@ -789,11 +947,11 @@ namespace solution
 				auto time = deviation_strategies_interface.begin()->time;
 
 				lines.emplace_back(
-					Line::point_t(Line::vector_t(delta + time, 2.0f * delta)),
-					Line::point_t(Line::vector_t(delta + time, height - 2.0f * delta)));
+					Line::point_t(Line::vector_t(delta + delta_left + time, 2.0f * delta)),
+					Line::point_t(Line::vector_t(delta + delta_left + time, height - 2.0f * delta)));
 
-				lines.back().points[0].color = sf::Color::White;
-				lines.back().points[1].color = sf::Color::White;
+				lines.back().points[0].color = sf::Color::Black;
+				lines.back().points[1].color = sf::Color::Black;
 
 				std::cout <<
 					"time: " << std::setw(4) << std::right << time << ' ' <<
@@ -803,42 +961,180 @@ namespace solution
 
 				for (const auto & [id, train] : *(deviation_strategies_interface.begin()->trains))
 				{
-					for (const auto & point : train.gid())
+					for (auto i = 0U; i < std::size(train.gid()); ++i)
 					{
+						const auto & point = train.gid()[i];
+
 						const auto index = id_segments_interface.find(point.segment_id)->index();
 
-						switch (train.route()->direction())
-						{
-						case Route::Direction::south:
-						{
-							lines.emplace_back(
-								Line::point_t(Line::vector_t(delta + point.arrival,
-									2.0f * delta + (index / 2U) * 100.0f)),
-								Line::point_t(Line::vector_t(delta + point.arrival + point.staying,
-									2.0f * delta + ((index + 1U) / 2U) * 100.0f)));
+						const auto capacity = id_segments_interface.find(point.segment_id)->capacity();
 
-							break;
-						}
-						case Route::Direction::north:
+						if (capacity > 1U)
 						{
 							lines.emplace_back(
-								Line::point_t(Line::vector_t(delta + point.arrival,
-									2.0f * delta + ((index + 1U) / 2U) * 100.0f)),
-								Line::point_t(Line::vector_t(delta + point.arrival + point.staying,
-									2.0f * delta + (index / 2U) * 100.0f)));
+								Line::point_t(Line::vector_t(delta + delta_left + point.arrival,
+									2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)),
+								Line::point_t(Line::vector_t(delta + delta_left + point.arrival + point.staying,
+									2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)));
 
-							break;
+							set_color(lines, train.route());
+
+							lines.emplace_back(
+								Line::point_t(Line::vector_t(delta + delta_left + point.arrival,
+									2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f + 1.0f)),
+								Line::point_t(Line::vector_t(delta + delta_left + point.arrival + point.staying,
+									2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f + 1.0f)));
+
+							set_color(lines, train.route());
+
+							switch (train.route()->direction())
+							{
+							case Route::Direction::south:
+							{
+								if (i != 0U)
+								{
+									lines.emplace_back(
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival,
+											2.0f * delta + (index / 2U) * 100.0f)),
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival,
+											2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)));
+
+									set_color(lines, train.route());
+
+									lines.emplace_back(
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + 1.0f,
+											2.0f * delta + (index / 2U) * 100.0f)),
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + 1.0f,
+											2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)));
+
+									set_color(lines, train.route());
+								}
+
+								if (i != std::size(train.gid()) - 1U)
+								{
+									lines.emplace_back(
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + point.staying,
+											2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)),
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + point.staying,
+											2.0f * delta + (index / 2U) * 100.0f + 20.0f)));
+
+									set_color(lines, train.route());
+
+									lines.emplace_back(
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + point.staying + 1.0f,
+											2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)),
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + point.staying + 1.0f,
+											2.0f * delta + (index / 2U) * 100.0f + 20.0f)));
+
+									set_color(lines, train.route());
+								}
+
+								break;
+							}
+							case Route::Direction::north:
+							{
+								if (i != 0U)
+								{
+									lines.emplace_back(
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival,
+											2.0f * delta + (index / 2U) * 100.0f + 20.0f)),
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival,
+											2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)));
+
+									set_color(lines, train.route());
+
+									lines.emplace_back(
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + 1.0f,
+											2.0f * delta + (index / 2U) * 100.0f + 20.0f)),
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + 1.0f,
+											2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)));
+
+									set_color(lines, train.route());
+								}								
+
+								if (i != std::size(train.gid()) - 1U)
+								{
+									lines.emplace_back(
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + point.staying,
+											2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)),
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + point.staying,
+											2.0f * delta + (index / 2U) * 100.0f)));
+
+									set_color(lines, train.route());
+
+									lines.emplace_back(
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + point.staying + 1.0f,
+											2.0f * delta + (index / 2U) * 100.0f + point.position * 5.0f)),
+										Line::point_t(Line::vector_t(delta + delta_left + point.arrival + point.staying + 1.0f,
+											2.0f * delta + (index / 2U) * 100.0f)));
+
+									set_color(lines, train.route());
+								}
+
+								break;
+							}
+							default:
+							{
+								throw std::runtime_error("unknown route direction: " +
+									static_cast < int > (train.route()->direction()));
+
+								break;
+							}
+							}
 						}
-						default:
+						else
 						{
-							throw std::runtime_error("unknown route direction: " +
-								static_cast < int > (train.route()->direction()));
+							switch (train.route()->direction())
+							{
+							case Route::Direction::south:
+							{
+								lines.emplace_back(
+									Line::point_t(Line::vector_t(delta + delta_left + point.arrival,
+										2.0f * delta + (index / 2U) * 100.0f + 20.0f)),
+									Line::point_t(Line::vector_t(delta + delta_left + point.arrival + point.staying,
+										2.0f * delta + ((index + 1U) / 2U) * 100.0f)));
 
-							break;
-						}
-						}
+								set_color(lines, train.route());
 
-						set_color(lines, train.route());
+								lines.emplace_back(
+									Line::point_t(Line::vector_t(delta + delta_left + point.arrival + 1.0f,
+										2.0f * delta + (index / 2U) * 100.0f + 20.0f)),
+									Line::point_t(Line::vector_t(delta + delta_left + point.arrival + point.staying + 1.0f,
+										2.0f * delta + ((index + 1U) / 2U) * 100.0f)));
+
+								set_color(lines, train.route());
+
+								break;
+							}
+							case Route::Direction::north:
+							{
+								lines.emplace_back(
+									Line::point_t(Line::vector_t(delta + delta_left + point.arrival,
+										2.0f * delta + ((index + 1U) / 2U) * 100.0f)),
+									Line::point_t(Line::vector_t(delta + delta_left + point.arrival + point.staying,
+										2.0f * delta + (index / 2U) * 100.0f + 20.0f)));
+
+								set_color(lines, train.route());
+
+								lines.emplace_back(
+									Line::point_t(Line::vector_t(delta + delta_left + point.arrival + 1.0f,
+										2.0f * delta + ((index + 1U) / 2U) * 100.0f)),
+									Line::point_t(Line::vector_t(delta + delta_left + point.arrival + point.staying + 1.0f,
+										2.0f * delta + (index / 2U) * 100.0f + 20.0f)));
+
+								set_color(lines, train.route());
+
+								break;
+							}
+							default:
+							{
+								throw std::runtime_error("unknown route direction: " +
+									static_cast < int > (train.route()->direction()));
+
+								break;
+							}
+							}
+						}
 					}
 				}
 			}
@@ -879,8 +1175,8 @@ namespace solution
 				}
 				case Route::Type::type_yellow:
 				{
-					lines.back().points[0].color = sf::Color::Yellow;
-					lines.back().points[1].color = sf::Color::Yellow;
+					lines.back().points[0].color = sf::Color(255, 0, 255);
+					lines.back().points[1].color = sf::Color(255, 0, 255);
 
 					break;
 				}
@@ -936,11 +1232,13 @@ namespace solution
 					{
 						auto train_id = generate_random_id();
 
+						auto position = id_segments_interface.find(route->points().at(0).segment_id)->get_free_position();
+
 						trains.emplace(train_id, Train(train_id, id));
-						trains[train_id].set_route(route);
+						trains[train_id].set_route(route, position);
 						commands[train_id] = Command::stay;
 
-						id_segments_interface.find(route->points().at(0U).segment_id)->train_arrived();
+						id_segments_interface.find(route->points().at(0U).segment_id)->train_arrived(position);
 					}
 				}
 			}
@@ -977,11 +1275,15 @@ namespace solution
 						{
 							if (id_segments_interface.find(trains[id].next_segment_id())->is_available())
 							{
-								id_segments_interface.find(trains[id].current_segment_id())->train_departured();
+								auto current_position = trains[id].gid().back().position;
 
-								trains[id].move();
+								id_segments_interface.find(trains[id].current_segment_id())->train_departured(current_position);
 
-								id_segments_interface.find(trains[id].current_segment_id())->train_arrived();
+								auto new_position = id_segments_interface.find(trains[id].next_segment_id())->get_free_position();
+
+								trains[id].move(new_position);
+
+								id_segments_interface.find(trains[id].current_segment_id())->train_arrived(new_position);
 
 								register_event(trains[id].current_segment_id(), segments, active_segments);
 							}
@@ -1041,7 +1343,9 @@ namespace solution
 							variant[id] = Command::skip;
 						}
 
-						id_segments_interface.find(train.current_segment_id())->train_departured();
+						auto current_position = train.gid().back().position;
+
+						id_segments_interface.find(train.current_segment_id())->train_departured(current_position);
 
 						continue;
 					}

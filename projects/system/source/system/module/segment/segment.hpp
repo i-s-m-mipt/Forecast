@@ -8,6 +8,7 @@
 #endif // #ifdef BOOST_HAS_PRAGMA_ONCE
 
 #include <exception>
+#include <iterator>
 #include <set>
 #include <stdexcept>
 #include <string>
@@ -62,7 +63,8 @@ namespace solution
 						std::is_convertible_v < Name, std::string > > >
 				explicit Segment(Id && id, Name && name, std::size_t capacity, std::size_t index) :
 					m_id(std::forward < Id > (id)), m_name(std::forward < Name > (name)),
-					m_size(0U), m_capacity(capacity), m_state(State::normal), m_index(index)
+					m_size(0U), m_capacity(capacity), m_state(State::normal), m_index(index),
+					m_positions(m_capacity, false)
 				{}
 
 				~Segment() noexcept = default;
@@ -106,9 +108,9 @@ namespace solution
 
 			public:
 
-				void train_arrived() const; // TODO: remove const
+				void train_arrived(std::size_t position) const; // TODO: remove const
 
-				void train_departured() const; // TODO: remove const
+				void train_departured(std::size_t position) const; // TODO: remove const
 
 				bool is_available() const;
 
@@ -118,6 +120,8 @@ namespace solution
 				}
 
 				bool add_adgacent_segment(const id_t & id) const;
+
+				std::size_t get_free_position() const;
 
 			private:
 
@@ -130,6 +134,7 @@ namespace solution
 
 				mutable State m_state; // TODO: remove mutable
 				mutable std::size_t m_size; // TODO: remove mutable
+				mutable std::vector < bool > m_positions;
 				mutable segments_container_t m_adjacent_segments;
 			};
 

@@ -66,8 +66,9 @@ namespace solution
 
 					template < typename Id, typename Enable =
 						std::enable_if_t < std::is_convertible_v < Id, id_t > > >
-					explicit Point(Id && segment_id_v, std::time_t arrival_v, std::time_t staying_v) :
-						segment_id(std::forward < Id > (segment_id_v)), arrival(arrival_v), staying(staying_v)
+					explicit Point(Id && segment_id_v, std::time_t arrival_v, std::time_t staying_v, 
+						std::size_t position_v) : segment_id(std::forward < Id > (segment_id_v)), 
+							arrival(arrival_v), staying(staying_v), position(position_v)
 					{}
 
 					~Point() noexcept = default;
@@ -76,6 +77,8 @@ namespace solution
 
 					std::time_t arrival;
 					std::time_t staying;
+
+					std::size_t position;
 				};
 
 			public:

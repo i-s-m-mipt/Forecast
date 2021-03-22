@@ -100,7 +100,7 @@ namespace solution
 
 			public:
 
-				void set_route(std::shared_ptr < Route > route);
+				void set_route(std::shared_ptr < Route > route, std::size_t position);
 
 			public:
 
@@ -108,7 +108,7 @@ namespace solution
 
 				void stay();
 
-				void move();
+				void move(std::size_t position);
 
 				bool has_completed_move() const;
 

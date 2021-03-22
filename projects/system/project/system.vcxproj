@@ -140,17 +140,17 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>BOOST_DISABLE_PRAGMA_MESSAGE;HAVE_SNPRINTF;_CRT_SECURE_NO_WARNINGS;_DEBUG;BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE; _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x0601;SFML_STATIC;BOOST_DISABLE_PRAGMA_MESSAGE;HAVE_SNPRINTF;_CRT_SECURE_NO_WARNINGS;_DEBUG;BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE; _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Libraries\boost;C:\Libraries\python\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Libraries\boost;C:\Libraries\sfml\include;C:\Libraries\python\include;C:\Libraries\json\include</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4715; 26451; 26495; 26812;</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>C:\Libraries\boost\stage\lib;C:\Libraries\python\libs;</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libboost_python37-vc142-mt-gd-x64-1_73.lib;libboost_atomic-vc142-mt-gd-x64-1_73.lib;libboost_chrono-vc142-mt-gd-x64-1_73.lib;libboost_container-vc142-mt-gd-x64-1_73.lib;libboost_context-vc142-mt-gd-x64-1_73.lib;libboost_contract-vc142-mt-gd-x64-1_73.lib;libboost_coroutine-vc142-mt-gd-x64-1_73.lib;libboost_date_time-vc142-mt-gd-x64-1_73.lib;libboost_exception-vc142-mt-gd-x64-1_73.lib;libboost_fiber-vc142-mt-gd-x64-1_73.lib;libboost_filesystem-vc142-mt-gd-x64-1_73.lib;libboost_graph-vc142-mt-gd-x64-1_73.lib;libboost_iostreams-vc142-mt-gd-x64-1_73.lib;libboost_locale-vc142-mt-gd-x64-1_73.lib;libboost_log_setup-vc142-mt-gd-x64-1_73.lib;libboost_log-vc142-mt-gd-x64-1_73.lib;libboost_math_c99f-vc142-mt-gd-x64-1_73.lib;libboost_math_c99l-vc142-mt-gd-x64-1_73.lib;libboost_math_c99-vc142-mt-gd-x64-1_73.lib;libboost_math_tr1f-vc142-mt-gd-x64-1_73.lib;libboost_math_tr1l-vc142-mt-gd-x64-1_73.lib;libboost_math_tr1-vc142-mt-gd-x64-1_73.lib;libboost_prg_exec_monitor-vc142-mt-gd-x64-1_73.lib;libboost_program_options-vc142-mt-gd-x64-1_73.lib;libboost_random-vc142-mt-gd-x64-1_73.lib;libboost_regex-vc142-mt-gd-x64-1_73.lib;libboost_serialization-vc142-mt-gd-x64-1_73.lib;libboost_stacktrace_noop-vc142-mt-gd-x64-1_73.lib;libboost_stacktrace_windbg_cached-vc142-mt-gd-x64-1_73.lib;libboost_stacktrace_windbg-vc142-mt-gd-x64-1_73.lib;libboost_system-vc142-mt-gd-x64-1_73.lib;libboost_test_exec_monitor-vc142-mt-gd-x64-1_73.lib;libboost_thread-vc142-mt-gd-x64-1_73.lib;libboost_timer-vc142-mt-gd-x64-1_73.lib;libboost_type_erasure-vc142-mt-gd-x64-1_73.lib;libboost_unit_test_framework-vc142-mt-gd-x64-1_73.lib;libboost_wave-vc142-mt-gd-x64-1_73.lib;libboost_wserialization-vc142-mt-gd-x64-1_73.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Libraries\sfml\lib;C:\Libraries\boost\stage\lib;C:\Libraries\python\libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-graphics-s-d.lib;sfml-window-s-d.lib;sfml-system-s-d.lib;opengl32.lib;freetype.lib;winmm.lib;gdi32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -159,7 +159,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>SFML_STATIC;BOOST_DISABLE_PRAGMA_MESSAGE;HAVE_SNPRINTF;_CRT_SECURE_NO_WARNINGS;NDEBUG;BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE; _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WIN32_WINNT=0x0601;SFML_STATIC;BOOST_DISABLE_PRAGMA_MESSAGE;HAVE_SNPRINTF;_CRT_SECURE_NO_WARNINGS;NDEBUG;BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE; _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>C:\Libraries\boost;C:\Libraries\sfml\include;C:\Libraries\python\include;C:\Libraries\json\include</AdditionalIncludeDirectories>
