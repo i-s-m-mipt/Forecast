@@ -341,3 +341,8 @@ healthchecksdb
 
 service/
 /__pycache__
+
+*.lib
+*.exp
+*.dll
+*.exe
