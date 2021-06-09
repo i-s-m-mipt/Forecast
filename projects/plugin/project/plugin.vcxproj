@@ -20,12 +20,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\shared\source\logger\logger.cpp" />
-    <ClCompile Include="..\source\controller\controller.cpp" />
+    <ClCompile Include="..\source\common\serializer.cpp" />
     <ClCompile Include="..\source\export.cpp" />
+    <ClCompile Include="..\source\system\agents\train\train.cpp" />
+    <ClCompile Include="..\source\system\config\config.cpp" />
+    <ClCompile Include="..\source\system\module\segment\segment.cpp" />
+    <ClCompile Include="..\source\system\system.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\source\logger\logger.hpp" />
-    <ClInclude Include="..\source\controller\controller.hpp" />
+    <ClInclude Include="..\source\common\aihash.h" />
+    <ClInclude Include="..\source\common\serializer.h" />
+    <ClInclude Include="..\source\common\zsheader.hpp" />
+    <ClInclude Include="..\source\system\agents\train\train.hpp" />
+    <ClInclude Include="..\source\system\config\config.hpp" />
+    <ClInclude Include="..\source\system\module\segment\segment.hpp" />
+    <ClInclude Include="..\source\system\system.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -88,7 +98,7 @@
     <IntDir>$(ProjectDir)..\service\release\</IntDir>
     <IncludePath>C:\Libraries\boost;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>C:\Libraries\boost\libs;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86)</LibraryPath>
-    <TargetName>СинтезРасписания1Dll</TargetName>
+    <TargetName>plugin</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -131,6 +141,9 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <AdditionalIncludeDirectories>C:\Libraries\boost;</AdditionalIncludeDirectories>
+      <Optimization>MaxSpeed</Optimization>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <DisableSpecificWarnings>4715</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

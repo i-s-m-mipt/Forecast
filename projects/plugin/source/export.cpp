@@ -1,4 +1,5 @@
 #include <exception>
+#include <memory>
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
@@ -6,85 +7,124 @@
 
 #include <boost/dll.hpp>
 
-#include "controller/controller.hpp"
+#include "common/serializer.h"
+#include "common/zsheader.hpp"
+#include "system/system.hpp"
 
-using Controller = solution::plugin::Controller;
+using Logger = solution::shared::Logger;
+using System = solution::plugin::System;
 
-// =============================================================================
-
-struct Point // verify
+struct Source
 {
-    std::string name;
-    unsigned int dt;
-    double lenght;
-    double weight;
-    int maxspeed;
+	std::string file;
+	Config config;
+	Graph segments;
+	std::vector < NitkaID > routes;
+	std::vector < Zapret > locks;
+	int current_time = 0;
+	int interval = 0;
+	bool is_forecast = false;
 };
 
-struct Nitka // verify
+namespace
 {
-    unsigned int StartTime;
-    std::string type; 
-    int priority;
-    std::vector < Point > points;
-};
-
-struct Zapret // verify
-{
-    std::string name;
-    int from, to;  
-};
-
-// =============================================================================
-
-extern "C" __declspec(dllexport) bool zsNitkaWorkInit(bool, std::wstring) { return true; } // verify
-extern "C" __declspec(dllexport) void zssetGid(std::vector < Nitka > &) {} // verify
-extern "C" __declspec(dllexport) bool zsSaveState(std::wstring) { return true; } // verify
-extern "C" __declspec(dllexport) bool zsLoadState(std::wstring) { return true; } // verify
-extern "C" __declspec(dllexport) void zssetZapret(std::vector < Zapret > &) {} // verify
-extern "C" __declspec(dllexport) void zssetZapretZ(int, std::vector < Zapret > &) {} // verify
-extern "C" __declspec(dllexport) void zsclearZapret() {} // verify
-extern "C" __declspec(dllexport) void zscalcZapretData() {} // verify
-extern "C" __declspec(dllexport) void zssetConfig(int, int, std::vector < int >) {} // verify
-
-extern "C" __declspec(dllexport) void zsNitkaWork(
-    std::vector < Nitka > & dummy, std::vector < std::vector < Nitka > > & result) // verify
-{
-    std::unordered_map < std::string, std::string > converter;
-
-    std::fstream fin("converter.txt", std::ios::in);
-
-    for (int i = 0; i < 28; ++i)
-    {
-        std::string key, value;
-
-        fin >> key >> value;
-
-        converter[key] = value;
-    }
-
-    Controller controller;
-
-    controller.run();
-
-    std::vector < Nitka > gid;
-    gid.reserve(controller.gid().size());
-    
-    for (const auto & thread : controller.gid())
-    {
-        Nitka nitka = { 1602495664, thread.first, 1, {} };
-
-        for (const auto & record : thread.second)
-        {
-            Point point = { converter[record.first], static_cast < unsigned int > (record.second) * 60U, 0.0, 0.0, 0 };
-
-            nitka.points.emplace_back(std::move(point));
-        }
-
-        gid.push_back(std::move(nitka));
-    }
-
-    result.push_back(std::move(gid));
+	std::shared_ptr < aim::CSerializer > serializer;
+	std::shared_ptr < Source > source;
+	std::shared_ptr < std::thread > worker;
+	std::shared_ptr < System > solver;
 }
 
-// =============================================================================
+const char * aimInit(const char * data) 
+{
+	serializer = std::make_shared < aim::CSerializer > ();
+
+	source = std::make_shared < Source > ();
+	
+	serializer->deserializeInit(data, source->file, source->config, source->segments);
+
+	return serializer->serializeInitResult(std::string());
+}
+
+const char * aimWork(const char * data)
+{
+	return serializer->serializeInitResult(std::string());
+}
+
+const char * aimStartWork(const char * data, void(*callback)(void)) 
+{
+	if (worker) 
+	{
+		if (solver)
+		{
+			worker->join();
+			worker.reset();
+		}
+		else 
+		{
+			return serializer->serializeStartWorkResult("worker still running");
+		}
+	}
+
+	serializer->deserializeStartWork(data, source->routes, source->locks, 
+		source->current_time, source->interval, source->is_forecast);
+
+	solver = std::make_shared < System > (source->segments, source->routes, source->locks);
+
+	worker = std::make_shared < std::thread > ([](
+		const std::vector < NitkaID > & routes, const std::vector < Zapret > & locks, 
+		int current_time, int interval, bool is_forecast, void(*callback)(void))
+			{
+				solver->run();
+				callback();
+			},
+		source->routes, source->locks, source->current_time, source->interval, source->is_forecast, callback);
+
+	return serializer->serializeStartWorkResult(std::string());
+}
+
+const char * aimGetResult(const char * reserved) 
+{
+	if (!solver->is_done())
+	{
+		return serializer->serializeGetResult(std::string(), 0.0, {});
+	}
+	else
+	{
+		const unsigned int second_in_minute = 60U;
+
+		std::vector < NitkaID > nitki;
+
+		for (const auto & [id, chart] : solver->charts())
+		{
+			NitkaID nitka;
+
+			nitka.StartTime = static_cast < unsigned int > (chart.start) * second_in_minute;
+			nitka.type      = chart.type;
+			nitka.priority  = static_cast < int > (chart.priority);
+
+			for (const auto & point : chart.points)
+			{
+				nitka.points.push_back(Point{ point.segment, 
+					static_cast < unsigned int > (point.time) * second_in_minute, 0.0, 0.0, 0, false });
+			}
+
+			nitki.push_back(nitka);
+		}
+
+		std::vector< std::vector < NitkaID > > result;
+
+		result.push_back(nitki);
+
+		if (worker) 
+		{
+			worker->join();
+			worker.reset();
+		}
+
+		solver.reset();
+
+		return serializer->serializeGetResult(std::string(), 1.0, result);
+	}
+}
+
+void aimClose() {}

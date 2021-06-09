@@ -7,8 +7,26 @@
     <Filter Include="source\logger">
       <UniqueIdentifier>{c921ed32-6021-4792-b215-73f8f4ff3deb}</UniqueIdentifier>
     </Filter>
-    <Filter Include="source\controller">
-      <UniqueIdentifier>{ac4425ff-dee0-4606-805b-034992aace01}</UniqueIdentifier>
+    <Filter Include="source\common">
+      <UniqueIdentifier>{59a82922-a1d3-45b1-b8e3-cbf6092cc35a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\system">
+      <UniqueIdentifier>{1d0f902e-2fbd-49b0-8319-7f6caa1915dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\system\agents">
+      <UniqueIdentifier>{4db51a3b-0f8d-4a23-998f-835f57b9e2b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\system\agents\train">
+      <UniqueIdentifier>{1b474bf0-9c81-4813-bbb3-c6bda504232e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\system\config">
+      <UniqueIdentifier>{21516191-7c9f-4ffe-9098-be7de2fae40b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\system\module">
+      <UniqueIdentifier>{15f8900f-1cfb-4be8-8c21-d0c03682fdf9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="source\system\module\segment">
+      <UniqueIdentifier>{eb2181d2-964e-4c8d-ace8-3a0e2db71010}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -18,16 +36,46 @@
     <ClCompile Include="..\..\shared\source\logger\logger.cpp">
       <Filter>source\logger</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\controller\controller.cpp">
-      <Filter>source\controller</Filter>
+    <ClCompile Include="..\source\common\serializer.cpp">
+      <Filter>source\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\system\agents\train\train.cpp">
+      <Filter>source\system\agents\train</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\system\config\config.cpp">
+      <Filter>source\system\config</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\system\module\segment\segment.cpp">
+      <Filter>source\system\module\segment</Filter>
+    </ClCompile>
+    <ClCompile Include="..\source\system\system.cpp">
+      <Filter>source\system</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\source\logger\logger.hpp">
       <Filter>source\logger</Filter>
     </ClInclude>
-    <ClInclude Include="..\source\controller\controller.hpp">
-      <Filter>source\controller</Filter>
+    <ClInclude Include="..\source\common\aihash.h">
+      <Filter>source\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\common\serializer.h">
+      <Filter>source\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\common\zsheader.hpp">
+      <Filter>source\common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\system\agents\train\train.hpp">
+      <Filter>source\system\agents\train</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\system\config\config.hpp">
+      <Filter>source\system\config</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\system\module\segment\segment.hpp">
+      <Filter>source\system\module\segment</Filter>
+    </ClInclude>
+    <ClInclude Include="..\source\system\system.hpp">
+      <Filter>source\system</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
