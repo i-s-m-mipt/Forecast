@@ -21,7 +21,6 @@
   <ItemGroup>
     <ClCompile Include="..\..\shared\source\logger\logger.cpp" />
     <ClCompile Include="..\source\main.cpp" />
-    <ClCompile Include="..\source\system\agents\train\route\route.cpp" />
     <ClCompile Include="..\source\system\agents\train\train.cpp" />
     <ClCompile Include="..\source\system\config\config.cpp" />
     <ClCompile Include="..\source\system\module\segment\segment.cpp" />
@@ -29,7 +28,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\shared\source\logger\logger.hpp" />
-    <ClInclude Include="..\source\system\agents\train\route\route.hpp" />
     <ClInclude Include="..\source\system\agents\train\train.hpp" />
     <ClInclude Include="..\source\system\config\config.hpp" />
     <ClInclude Include="..\source\system\module\segment\segment.hpp" />
@@ -165,6 +163,7 @@
       <AdditionalIncludeDirectories>C:\Libraries\boost;C:\Libraries\sfml\include;C:\Libraries\python\include;C:\Libraries\json\include</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <DisableSpecificWarnings>4715; 26451; 26495; 26812;</DisableSpecificWarnings>
+      <EnableModules>false</EnableModules>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

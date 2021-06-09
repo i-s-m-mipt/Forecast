@@ -23,11 +23,8 @@
     <Filter Include="source\system\agents\train">
       <UniqueIdentifier>{655954a5-895c-4c78-8bc7-e33fc0a3ea9e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="source\system\agents\train\route">
-      <UniqueIdentifier>{607a97f5-24d0-4a01-8b14-f892c6402a79}</UniqueIdentifier>
-    </Filter>
     <Filter Include="source\system\config">
-      <UniqueIdentifier>{550fed30-6042-4237-bbc5-7093d9d89be8}</UniqueIdentifier>
+      <UniqueIdentifier>{ff611716-db63-4455-8378-d65e9674b193}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -46,9 +43,6 @@
     <ClCompile Include="..\source\system\agents\train\train.cpp">
       <Filter>source\system\agents\train</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\system\agents\train\route\route.cpp">
-      <Filter>source\system\agents\train\route</Filter>
-    </ClCompile>
     <ClCompile Include="..\source\system\config\config.cpp">
       <Filter>source\system\config</Filter>
     </ClCompile>
@@ -65,9 +59,6 @@
     </ClInclude>
     <ClInclude Include="..\source\system\agents\train\train.hpp">
       <Filter>source\system\agents\train</Filter>
-    </ClInclude>
-    <ClInclude Include="..\source\system\agents\train\route\route.hpp">
-      <Filter>source\system\agents\train\route</Filter>
     </ClInclude>
     <ClInclude Include="..\source\system\config\config.hpp">
       <Filter>source\system\config</Filter>

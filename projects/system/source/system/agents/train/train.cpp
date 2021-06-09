@@ -34,6 +34,34 @@ namespace solution
 				}
 			}
 
+			bool Train::has_completed_movement() const
+			{
+				RUN_LOGGER(logger);
+
+				try
+				{
+					return (m_position == end);
+				}
+				catch (const std::exception & exception)
+				{
+					shared::catch_handler < train_exception > (logger, exception);
+				}
+			}
+
+			bool Train::has_completed_route(std::time_t standard_time) const
+			{
+				RUN_LOGGER(logger);
+
+				try
+				{
+					return (has_completed_movement() && is_ready(standard_time));
+				}
+				catch (const std::exception & exception)
+				{
+					shared::catch_handler < train_exception > (logger, exception);
+				}
+			}
+
 			void Train::stay(std::time_t standard_time)
 			{
 				RUN_LOGGER(logger);
@@ -53,7 +81,7 @@ namespace solution
 				}
 			}
 
-			void Train::move(const std::string & position) const
+			void Train::move(const std::string & position)
 			{
 				RUN_LOGGER(logger);
 

@@ -6,25 +6,29 @@ namespace solution
 	{
 		namespace module
 		{
-			void Segment::train_arrived(std::size_t position) const
+			std::time_t Segment::standard_time(const std::string & type, Direction direction) const
 			{
 				RUN_LOGGER(logger);
 
 				try
 				{
-					if (m_size == m_capacity)
+					switch (direction)
 					{
-						throw std::overflow_error("too many trains on segment");
+					case Direction::north:
+					{
+						return m_standard_times.at(type).north;
+					}
+					case Direction::south:
+					{
+						return m_standard_times.at(type).south;
+					}
+					default:
+					{
+						throw std::runtime_error("unknown direction");
+					}
 					}
 
-					if (m_positions.at(position))
-					{
-						throw std::overflow_error("too many trains on position");
-					}
-
-					++m_size;
-
-					m_positions.at(position) = true;
+					
 				}
 				catch (const std::exception & exception)
 				{
@@ -32,25 +36,27 @@ namespace solution
 				}
 			}
 
-			void Segment::train_departured(std::size_t position) const
+			void Segment::train_arrived()
 			{
 				RUN_LOGGER(logger);
 
 				try
 				{
-					if (m_size == 0U)
-					{
-						throw std::underflow_error("not enough trains on segment");
-					}
+					m_has_train = true;
+				}
+				catch (const std::exception & exception)
+				{
+					shared::catch_handler < segment_exception > (logger, exception);
+				}
+			}
 
-					if (!m_positions.at(position))
-					{
-						throw std::underflow_error("not enough trains on position");
-					}
+			void Segment::train_departured()
+			{
+				RUN_LOGGER(logger);
 
-					--m_size;
-
-					m_positions.at(position) = false;
+				try
+				{
+					m_has_train = false;
 				}
 				catch (const std::exception & exception)
 				{
@@ -64,7 +70,7 @@ namespace solution
 
 				try
 				{
-					return (m_size < m_capacity && m_state != State::locked);
+					return (!m_has_train && state != State::locked);
 				}
 				catch (const std::exception & exception)
 				{
@@ -72,13 +78,13 @@ namespace solution
 				}
 			}
 
-			bool Segment::add_adgacent_segment(const id_t & id) const
+			bool Segment::add_northern_adgacent_segment(const std::string & name)
 			{
 				RUN_LOGGER(logger);
 
 				try
 				{
-					return m_adjacent_segments.insert(id).second;
+					return m_northern_adjacent_segments.insert(name).second;
 				}
 				catch (const std::exception & exception)
 				{
@@ -86,20 +92,27 @@ namespace solution
 				}
 			}
 
-			std::size_t Segment::get_free_position() const
+			bool Segment::add_southern_adgacent_segment(const std::string & name)
 			{
 				RUN_LOGGER(logger);
 
 				try
 				{
-					auto result = std::find(std::begin(m_positions), std::end(m_positions), false);
+					return m_southern_adjacent_segments.insert(name).second;
+				}
+				catch (const std::exception & exception)
+				{
+					shared::catch_handler < segment_exception > (logger, exception);
+				}
+			}
 
-					if (result == std::end(m_positions))
-					{
-						throw std::overflow_error("no free position");
-					}
+			void Segment::set_standard_time(const std::string & type, Time time)
+			{
+				RUN_LOGGER(logger);
 
-					return std::distance(std::begin(m_positions), result);
+				try
+				{
+					m_standard_times[type] = time;
 				}
 				catch (const std::exception & exception)
 				{
