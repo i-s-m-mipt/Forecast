@@ -47,6 +47,8 @@ const char * aimInit(const char * data)
 
 const char * aimWork(const char * data)
 {
+	data;
+
 	return serializer->serializeInitResult(std::string());
 }
 
@@ -73,10 +75,12 @@ const char * aimStartWork(const char * data, void(*callback)(void))
 	worker = std::make_shared < std::thread > ([](
 		const std::vector < NitkaID > & routes, const std::vector < Zapret > & locks, 
 		int current_time, int interval, bool is_forecast, void(*callback)(void))
-			{
-				solver->run();
-				callback();
-			},
+		{
+			routes; locks; current_time; interval; is_forecast;
+
+			solver->run();
+			callback();
+		},
 		source->routes, source->locks, source->current_time, source->interval, source->is_forecast, callback);
 
 	return serializer->serializeStartWorkResult(std::string());
@@ -84,6 +88,8 @@ const char * aimStartWork(const char * data, void(*callback)(void))
 
 const char * aimGetResult(const char * reserved) 
 {
+	reserved; 
+
 	if (!solver->is_done())
 	{
 		return serializer->serializeGetResult(std::string(), 0.0, {});

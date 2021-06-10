@@ -169,6 +169,8 @@ namespace solution
 
 		bool Logger::fout_filter(const boost::log::attribute_value_set & attribute_value_set)
 		{
+			attribute_value_set;
+
 			return true;
 		}
 

@@ -45,7 +45,8 @@ namespace solution
 		enum class Direction
 		{
 			north,
-			south
+			south,
+			error
 		};
 
 	} // namespace plugin

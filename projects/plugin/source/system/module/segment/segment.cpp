@@ -27,6 +27,8 @@ namespace solution
 						throw std::runtime_error("unknown direction");
 					}
 					}
+
+					return 0LL;
 				}
 				catch (const std::exception & exception)
 				{

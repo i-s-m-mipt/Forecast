@@ -222,6 +222,8 @@ namespace solution
 						return segment.second;
 					}
 				}
+
+				return Direction::error;
 			}
 			catch (const std::exception & exception)
 			{
@@ -682,6 +684,8 @@ namespace solution
 					throw std::runtime_error("unknown direction");
 				}
 				}
+
+				return false;
 			}
 			catch (const std::exception & exception)
 			{
