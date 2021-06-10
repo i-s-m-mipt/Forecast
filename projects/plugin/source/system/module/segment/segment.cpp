@@ -6,12 +6,17 @@ namespace solution
 	{
 		namespace module
 		{
-			std::time_t Segment::standard_time(const std::string & type, Direction direction) const
+			std::time_t Segment::standard_time(std::string type, Direction direction) const
 			{
 				RUN_LOGGER(logger);
 
 				try
 				{
+					if (m_standard_times.find(type) == std::end(m_standard_times))
+					{
+						type = "train";
+					}
+
 					switch (direction)
 					{
 					case Direction::north:

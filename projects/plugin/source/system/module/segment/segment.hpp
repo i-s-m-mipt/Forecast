@@ -85,7 +85,7 @@ namespace solution
 					return m_southern_adjacent_segments;
 				}
 
-				std::time_t standard_time(const std::string & type, Direction direction) const;
+				std::time_t standard_time(std::string type, Direction direction) const;
 
 			public:
 
