@@ -59,8 +59,8 @@ namespace solution
 					std::enable_if_t <
 						std::is_convertible_v < T, std::string > && 
 						std::is_convertible_v < P, std::string > > >
-				explicit Train(T && type_v, Direction direction_v, P && begin_v, P && end_v, double priority_v) :
-					id(generate_random_id()), type(std::forward < T > (type_v)), direction(direction_v),
+				explicit Train(std::size_t index_v, T && type_v, Direction direction_v, P && begin_v, P && end_v, double priority_v) :
+					index(index_v), type(std::forward < T > (type_v)), direction(direction_v),
 					begin(std::forward < P > (begin_v)), end(std::forward < P > (end_v)), priority(priority_v), 
 					command(Command::stay), m_deviation(0.0), m_segment(begin), m_segment_time(0LL)
 				{
@@ -99,7 +99,7 @@ namespace solution
 
 			public: // const
 
-				id_t id;
+				std::size_t index;
 				std::string type;
 				Direction direction;
 				std::string begin;

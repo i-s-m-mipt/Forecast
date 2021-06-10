@@ -132,7 +132,7 @@ namespace solution
 
 		private:
 
-			using charts_container_t = std::unordered_map < id_t, Chart, detail::id_hash_t > ;
+			using charts_container_t = std::unordered_map < std::size_t, Chart > ;
 
 		public:
 

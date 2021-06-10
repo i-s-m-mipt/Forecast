@@ -100,9 +100,13 @@ const char * aimGetResult(const char * reserved)
 
 		std::vector < NitkaID > nitki;
 
-		for (const auto & [id, chart] : solver->charts())
+		const auto & charts = solver->charts();
+
+		for (auto index = 0U; index < std::size(charts); ++index)
 		{
 			NitkaID nitka;
+
+			const auto & chart = charts.at(index);
 
 			nitka.StartTime = static_cast < unsigned int > (chart.start) * second_in_minute;
 			nitka.type      = chart.type;

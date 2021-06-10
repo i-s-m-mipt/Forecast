@@ -121,6 +121,8 @@ namespace solution
 			{
 				std::set < std::time_t > starts;
 
+				auto index = 0U;
+
 				for (const auto & input_route : input_routes)
 				{
 					starts.insert(input_route.StartTime / seconds_in_minute);
@@ -129,7 +131,7 @@ namespace solution
 					const auto end   = input_route.points.back ().name;
 
 					m_routes.push_back(std::make_pair(input_route.StartTime / seconds_in_minute,
-						Train(input_route.type, get_direction(begin, end), begin, end, input_route.priority)));
+						Train(index++, input_route.type, get_direction(begin, end), begin, end, input_route.priority)));
 				}
 
 				m_time_begin = *std::begin(starts);
@@ -342,24 +344,24 @@ namespace solution
 				{
 					for (const auto & train : node->trains)
 					{
-						if (m_charts.find(train.id) == std::end(m_charts))
+						if (m_charts.find(train.index) == std::end(m_charts))
 						{
-							m_charts[train.id] = Chart();
+							m_charts[train.index] = Chart();
 
-							m_charts[train.id].start    = m_time_begin + delta;
-							m_charts[train.id].type     = train.type;
-							m_charts[train.id].priority = train.priority;
+							m_charts[train.index].start    = m_time_begin + delta;
+							m_charts[train.index].type     = train.type;
+							m_charts[train.index].priority = train.priority;
 
-							m_charts[train.id].points.push_back(Point{ train.segment(), 0LL });
+							m_charts[train.index].points.push_back(Point{ train.segment(), 0LL });
 						}
 
-						if (m_charts[train.id].points.back().segment == train.segment())
+						if (m_charts[train.index].points.back().segment == train.segment())
 						{
-							++m_charts[train.id].points.back().time;
+							++m_charts[train.index].points.back().time;
 						}
 						else
 						{
-							m_charts[train.id].points.push_back(Point{ train.segment(), 1LL });
+							m_charts[train.index].points.push_back(Point{ train.segment(), 1LL });
 						}
 					}
 
