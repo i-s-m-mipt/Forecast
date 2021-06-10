@@ -223,11 +223,11 @@ namespace solution
 
 		private:
 
-			static inline constexpr std::time_t seconds_in_minute = 60LL;
+			static const std::time_t seconds_in_minute = 60LL;
 
-			static inline constexpr std::size_t strategies_limit = 4U;
+			static const std::size_t strategies_limit = 4U;
 
-			static inline constexpr std::time_t time_limit = 1440U;
+			static const std::time_t time_limit = 1440U;
 
 		private:
 

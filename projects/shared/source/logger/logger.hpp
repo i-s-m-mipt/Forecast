@@ -232,7 +232,7 @@ namespace solution
 
 		private:
 
-			static inline const std::string delimeter = " : ";
+			static const std::string delimeter;
 
 		private:
 

@@ -287,6 +287,8 @@ namespace solution
 
 			try
 			{
+				std::fstream fout("progress.txt", std::ios::out);
+
 				for (auto time = m_time_begin; (time - m_time_begin < time_limit) && 
 					(m_leafs.front()->completed_routes_counter < std::size(m_routes)); ++time)
 				{
@@ -310,6 +312,8 @@ namespace solution
 
 						make_new_nodes(node);
 					}
+
+					fout << time - m_time_begin << std::endl;
 				}
 			}
 			catch (const std::exception & exception)

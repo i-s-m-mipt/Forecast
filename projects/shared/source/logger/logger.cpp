@@ -204,6 +204,8 @@ namespace solution
 			}
 		}
 
+		const std::string Logger::delimeter = " : ";
+
 		const Logger::attributes_container_t Logger::attributes =
 		{
 			{ Logger::Attribute_Index::line, std::make_pair("line",
