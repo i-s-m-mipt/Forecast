@@ -751,16 +751,9 @@ namespace solution
 							{
 								variants[i][index].command = Train::Command::move;
 
-								auto northern_segment = node->segments.at(train.segment()).northern_adjacent_segments().front();
-								auto southern_segment = node->segments.at(train.segment()).southern_adjacent_segments().front();
+								variants.push_back(variants[i]);
 
-								if (std::size(node->segments.at(northern_segment).southern_adjacent_segments()) > 1U ||
-									std::size(node->segments.at(southern_segment).northern_adjacent_segments()) > 1U)
-								{
-									variants.push_back(variants[i]);
-
-									variants.back()[index].command = Train::Command::wait;
-								}
+								variants.back()[index].command = Train::Command::wait;
 							}
 						}
 					}
