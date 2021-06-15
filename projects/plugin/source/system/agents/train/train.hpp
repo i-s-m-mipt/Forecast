@@ -97,6 +97,11 @@ namespace solution
 
 				void move(const std::string & segment);
 
+				void set_segment_time(std::time_t segment_time) const noexcept
+				{
+					m_segment_time = segment_time;
+				}
+
 			public: // const
 
 				std::size_t index;

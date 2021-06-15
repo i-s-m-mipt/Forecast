@@ -106,16 +106,32 @@ const char * aimGetResult(const char * reserved)
 		{
 			NitkaID nitka;
 
-			const auto & chart = charts.at(index);
+			const auto & chart = charts[index];
 
-			nitka.StartTime = static_cast < unsigned int > (chart.start) * second_in_minute;
-			nitka.type      = chart.type;
-			nitka.priority  = static_cast < int > (chart.priority);
+			if (source->is_forecast)
+			{
+				nitka.pgStartTime = static_cast < unsigned int > (chart.start) * second_in_minute;
+			}
+			else
+			{
+				nitka.StartTime = static_cast < unsigned int > (chart.start) * second_in_minute;
+			}
+			
+			nitka.type        = chart.type;
+			nitka.priority    = static_cast < int > (chart.priority);
 
 			for (const auto & point : chart.points)
 			{
-				nitka.points.push_back(Point{ point.segment, 
-					static_cast < unsigned int > (point.time) * second_in_minute, 0.0, 0.0, 0, false });
+				if (source->is_forecast)
+				{
+					nitka.pgPoints.push_back(Point{ point.segment,
+						static_cast < unsigned int > (point.time) * second_in_minute, 0.0, 0.0, 0, false });
+				}
+				else
+				{
+					nitka.points.push_back(Point{ point.segment,
+						static_cast < unsigned int > (point.time) * second_in_minute, 0.0, 0.0, 0, false });
+				}
 			}
 
 			nitki.push_back(nitka);

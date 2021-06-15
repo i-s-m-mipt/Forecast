@@ -36,15 +36,15 @@ namespace solution
 			{
 				make_segments(input_segments);
 
-				make_routes(input_routes);
-
-				make_locks(input_locks);
-
 				m_head = new Node;
 
 				m_head->segments = m_segments;
 
 				m_leafs.push_back(m_head);
+
+				make_routes(input_routes);
+
+				make_locks(input_locks);
 			}
 			catch (const std::exception & exception)
 			{
@@ -132,9 +132,34 @@ namespace solution
 
 					m_routes.push_back(std::make_pair(input_route.StartTime / seconds_in_minute,
 						Train(index++, input_route.type, get_direction(begin, end), begin, end, input_route.priority)));
+
+					if (!input_route.idPoints.empty())
+					{
+						m_time_begin = input_route.idStartTime;
+
+						for (const auto & point : input_route.idPoints)
+						{
+							m_time_begin += point.dt;
+						}
+
+						m_time_begin /= seconds_in_minute;
+
+						m_head->trains.push_back(m_routes.back().second);
+
+						m_head->trains.back().move(input_route.idPoints.back().name);
+
+						m_head->trains.back().set_segment_time(input_route.idPoints.back().dt / seconds_in_minute);
+
+						m_head->segments.at(input_route.idPoints.back().name).train_arrived();
+
+						m_head->has_event = true;
+					}
 				}
 
-				m_time_begin = *std::begin(starts);
+				if (m_time_begin == 0LL)
+				{
+					m_time_begin = *std::begin(starts);
+				}
 			}
 			catch (const std::exception & exception)
 			{
@@ -328,6 +353,8 @@ namespace solution
 
 			try
 			{
+				std::fstream fout("progress.txt", std::ios::out | std::ios::app);
+
 				std::vector < Node * > path;
 
 				std::sort(std::begin(m_leafs), std::end(m_leafs),
@@ -340,18 +367,20 @@ namespace solution
 					path.push_back(path.back()->parent);
 				}
 
+				fout << "length: " << std::size(path) << std::endl;
+
 				std::reverse(std::begin(path), std::end(path));
 
 				auto delta = 0LL;
+
+				m_charts.resize(std::size(m_routes));
 
 				for (const auto node : path)
 				{
 					for (const auto & train : node->trains)
 					{
-						if (m_charts.find(train.index) == std::end(m_charts))
+						if (m_charts[train.index].points.empty())
 						{
-							m_charts[train.index] = Chart();
-
 							m_charts[train.index].start    = m_time_begin + delta;
 							m_charts[train.index].type     = train.type;
 							m_charts[train.index].priority = train.priority;
@@ -751,9 +780,9 @@ namespace solution
 							{
 								variants[i][index].command = Train::Command::move;
 
-								variants.push_back(variants[i]);
+								//variants.push_back(variants[i]);
 
-								variants.back()[index].command = Train::Command::wait;
+								//variants.back()[index].command = Train::Command::wait;
 							}
 						}
 					}

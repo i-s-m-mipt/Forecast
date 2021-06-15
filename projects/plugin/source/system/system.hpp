@@ -132,14 +132,14 @@ namespace solution
 
 		private:
 
-			using charts_container_t = std::unordered_map < std::size_t, Chart > ;
+			using charts_container_t = std::vector < Chart > ;
 
 		public:
 
 			explicit System(
 				const input_segments_t & input_segments, 
 				const input_routes_t   & input_routes,
-				const input_locks_t    & input_locks) : m_head(nullptr), m_done_flag(false)
+				const input_locks_t    & input_locks) : m_time_begin(0LL), m_head(nullptr), m_done_flag(false)
 			{
 				initialize(input_segments, input_routes, input_locks);
 			}
