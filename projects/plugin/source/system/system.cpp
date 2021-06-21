@@ -779,10 +779,6 @@ namespace solution
 							for (auto i = 0U; i < size; ++i)
 							{
 								variants[i][index].command = Train::Command::move;
-
-								//variants.push_back(variants[i]);
-
-								//variants.back()[index].command = Train::Command::wait;
 							}
 						}
 					}
