@@ -202,7 +202,7 @@ namespace solution
 
 			void cut_tree(Node * node, const std::set < Node * > & required_nodes);
 
-			void make_trains(std::time_t time, Node * node) const;
+			void make_trains(std::time_t time, Node * node);
 
 			void update_segments(std::time_t time, Node * node) const;
 
@@ -225,9 +225,9 @@ namespace solution
 
 			static const std::time_t seconds_in_minute = 60LL;
 
-			static const std::size_t strategies_limit = 4U;
+			static const std::size_t strategies_limit = 1U;
 
-			static const std::time_t time_limit = 1440U;
+			static const std::time_t time_limit = 7200U;
 
 		private:
 

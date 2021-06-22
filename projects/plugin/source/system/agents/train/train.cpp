@@ -40,7 +40,7 @@ namespace solution
 
 				try
 				{
-					return (m_segment == end);
+					return ((m_segment == end) || at_end);
 				}
 				catch (const std::exception & exception)
 				{

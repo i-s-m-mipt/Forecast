@@ -306,6 +306,9 @@ namespace solution
 
 						update_segments(time, node);
 
+						std::sort(std::begin(node->trains), std::end(node->trains),
+							[](const auto & lhs, const auto & rhs) { return lhs.deviation() > rhs.deviation(); });
+
 						execute_commands(node);
 
 						node->update_deviation();
@@ -417,23 +420,30 @@ namespace solution
 			}
 		}
 
-		void System::make_trains(std::time_t time, Node * node) const
+		void System::make_trains(std::time_t time, Node * node)
 		{
 			RUN_LOGGER(logger);
 
 			try
 			{
-				for (const auto & route : m_routes)
+				for (auto & route : m_routes)
 				{
-					const auto begin = route.second.begin;
-
-					if (route.first == time && node->segments.at(begin).is_available())
+					if (route.first == time)
 					{
-						node->trains.push_back(route.second);
+						const auto begin = route.second.begin;
 
-						node->segments.at(begin).train_arrived();
+						if (node->segments.at(begin).is_available())
+						{
+							node->trains.push_back(route.second);
 
-						node->has_event = true;
+							node->segments.at(begin).train_arrived();
+
+							node->has_event = true;
+						}
+						else
+						{
+							route.first += 2LL;
+						}
 					}
 				}
 			}
@@ -515,26 +525,37 @@ namespace solution
 
 								bool has_end = (std::find(std::begin(segments), std::end(segments), train.end) != std::end(segments));
 
-								for (const auto & segment : segments)
+								if (has_end && node->segments.at(train.end).is_available())
 								{
-									if (node->segments.at(segment).is_available() && !has_deadlock(node, train.segment(), train.direction))
+									node->segments.at(train.segment()).train_departured();
+
+									train.move(train.end);
+
+									node->segments.at(train.segment()).train_arrived();
+
+									node->has_event = true;
+								}
+								else
+								{
+									for (const auto & segment : segments)
 									{
-										node->segments.at(train.segment()).train_departured();
+										if (node->segments.at(segment).is_available() && !has_deadlock(node, train.segment(), train.direction))
+										{
+											node->segments.at(train.segment()).train_departured();
 
-										if (has_end)
-										{
-											train.move(train.end);
-										}
-										else
-										{
 											train.move(segment);
+
+											if (has_end)
+											{
+												train.at_end = true;
+											}
+
+											node->segments.at(segment).train_arrived();
+
+											node->has_event = true;
+
+											break;
 										}
-
-										node->segments.at(train.segment()).train_arrived();
-
-										node->has_event = true;
-
-										break;
 									}
 								}
 
@@ -546,26 +567,37 @@ namespace solution
 
 								bool has_end = (std::find(std::begin(segments), std::end(segments), train.end) != std::end(segments));
 
-								for (const auto & segment : segments)
+								if (has_end && node->segments.at(train.end).is_available())
 								{
-									if (node->segments.at(segment).is_available() && !has_deadlock(node, train.segment(), train.direction))
+									node->segments.at(train.segment()).train_departured();
+
+									train.move(train.end);
+
+									node->segments.at(train.segment()).train_arrived();
+
+									node->has_event = true;
+								}
+								else
+								{
+									for (const auto & segment : segments)
 									{
-										node->segments.at(train.segment()).train_departured();
+										if (node->segments.at(segment).is_available() && !has_deadlock(node, train.segment(), train.direction))
+										{
+											node->segments.at(train.segment()).train_departured();
 
-										if (has_end)
-										{
-											train.move(train.end);
-										}
-										else
-										{
 											train.move(segment);
+
+											if (has_end)
+											{
+												train.at_end = true;
+											}
+
+											node->segments.at(segment).train_arrived();
+
+											node->has_event = true;
+
+											break;
 										}
-
-										node->segments.at(train.segment()).train_arrived();
-
-										node->has_event = true;
-
-										break;
 									}
 								}
 

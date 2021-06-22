@@ -62,7 +62,7 @@ namespace solution
 				explicit Train(std::size_t index_v, T && type_v, Direction direction_v, P && begin_v, P && end_v, double priority_v) :
 					index(index_v), type(std::forward < T > (type_v)), direction(direction_v),
 					begin(std::forward < P > (begin_v)), end(std::forward < P > (end_v)), priority(priority_v), 
-					command(Command::stay), m_deviation(0.0), m_segment(begin), m_segment_time(0LL)
+					at_end(false), command(Command::stay), m_deviation(0.0), m_segment(begin), m_segment_time(0LL)
 				{
 					initialize();
 				}
@@ -110,6 +110,7 @@ namespace solution
 				std::string begin;
 				std::string end;
 				double priority;
+				bool at_end;
 
 			public:
 
