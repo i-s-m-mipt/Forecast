@@ -36,11 +36,11 @@ namespace solution
 			{
 				make_segments(input_segments);
 
-				m_head = new Node;
+				m_head = std::make_unique < Node > ();
 
 				m_head->segments = m_segments;
 
-				m_leafs.push_back(m_head);
+				m_leafs.push_back(m_head.get());
 
 				make_routes(input_routes);
 
@@ -58,7 +58,7 @@ namespace solution
 
 			try
 			{
-				// clear(m_head); // TODO
+				// ...
 			}
 			catch (const std::exception & exception)
 			{
@@ -233,36 +233,6 @@ namespace solution
 			}
 		}
 
-		void System::clear(Node * node)
-		{
-			RUN_LOGGER(logger);
-
-			try
-			{
-				if (node)
-				{
-					if (!node->children.empty())
-					{
-						for (auto child : node->children)
-						{
-							if (child)
-							{
-								clear(child);
-							}
-						}
-					}
-
-					delete node;
-
-					node = nullptr;
-				}
-			}
-			catch (const std::exception & exception)
-			{
-				shared::catch_handler < system_exception > (logger, exception);
-			}
-		}
-
 		void System::run()
 		{
 			RUN_LOGGER(logger);
@@ -377,41 +347,6 @@ namespace solution
 					}
 
 					++delta;
-				}
-			}
-			catch (const std::exception & exception)
-			{
-				shared::catch_handler < system_exception > (logger, exception);
-			}
-		}
-
-		void System::cut_tree(Node * node, const std::set < Node * > & required_nodes)
-		{
-			RUN_LOGGER(logger);
-
-			try
-			{
-				if (node)
-				{
-					if (required_nodes.find(node) == std::end(required_nodes))
-					{
-						clear(node);
-					}
-					else
-					{
-						for (auto child : node->children)
-						{
-							if (child)
-							{
-								cut_tree(child, required_nodes);
-							}
-						}
-
-						node->children.erase(std::remove_if(std::begin(node->children), std::end(node->children),
-							[](const auto child) { return (child == nullptr); }), std::end(node->children));
-
-						node->children.shrink_to_fit();
-					}
 				}
 			}
 			catch (const std::exception & exception)
@@ -795,7 +730,7 @@ namespace solution
 
 				for (const auto & variant : variants)
 				{
-					auto new_node = new Node;
+					auto new_node = std::make_unique < Node > ();
 
 					new_node->segments = node->segments;
 					new_node->trains = variant;
@@ -803,39 +738,20 @@ namespace solution
 					new_node->parent = node;
 					new_node->completed_routes_counter = node->completed_routes_counter;
 
-					node->children.push_back(new_node);
+					node->children.push_back(std::move(new_node));
 
-					m_leafs.push_back(new_node);
+					m_leafs.push_back(node->children.back().get());
 
 					if (std::size(m_leafs) > strategies_limit)
 					{
 						std::sort(std::begin(m_leafs), std::end(m_leafs),
 							[](const auto & lhs, const auto & rhs) { return (lhs->deviation < rhs->deviation); });
 
-						for (auto i = strategies_limit; i < std::size(m_leafs); ++i)
-						{
-							clear(m_leafs[i]);
-						}
-
 						m_leafs.erase(std::next(std::begin(m_leafs), strategies_limit), std::end(m_leafs));
 					}
 				}
 
 				node->segments.clear();
-			}
-			catch (const std::exception & exception)
-			{
-				shared::catch_handler < system_exception > (logger, exception);
-			}
-		}
-
-		void System::clear()
-		{
-			RUN_LOGGER(logger);
-
-			try
-			{
-				clear(m_head);
 			}
 			catch (const std::exception & exception)
 			{

@@ -103,7 +103,7 @@ namespace solution
 
 				Node * parent = nullptr;
 
-				std::vector < Node * > children;
+				std::vector < std::unique_ptr < Node > > children;
 
 				std::size_t completed_routes_counter = 0U;
 			};
@@ -177,10 +177,6 @@ namespace solution
 
 			Direction get_direction(const std::string & begin, const std::string & end) const;
 
-		private:
-
-			void clear(Node * node);
-
 		public:
 
 			const auto & charts() const noexcept
@@ -199,9 +195,7 @@ namespace solution
 			void make_charts();
 
 		private:
-
-			void cut_tree(Node * node, const std::set < Node * > & required_nodes);
-
+			
 			void make_trains(std::time_t time, Node * node);
 
 			void update_segments(std::time_t time, Node * node) const;
@@ -218,8 +212,6 @@ namespace solution
 			{
 				return m_done_flag.load();
 			}
-
-			void clear();
 
 		private:
 
@@ -239,7 +231,7 @@ namespace solution
 
 			std::time_t m_time_begin;
 
-			Node * m_head;
+			std::unique_ptr < Node > m_head;
 
 			std::deque < Node * > m_leafs;
 
