@@ -230,6 +230,8 @@ namespace solution
 			catch (const std::exception & exception)
 			{
 				shared::catch_handler < system_exception > (logger, exception);
+
+				return Direction::error;
 			}
 		}
 
@@ -260,7 +262,7 @@ namespace solution
 				std::fstream fout("progress.txt", std::ios::out);
 
 				for (auto time = m_time_begin; (time - m_time_begin < time_limit) && 
-					(m_leafs.front()->completed_routes_counter < std::size(m_routes)); ++time)
+					(m_leafs.front()->completed_routes_counter < std::size(m_routes)) && !m_interrupt_flag.load(); ++time)
 				{
 					auto leafs_copy = std::move(m_leafs);
 
@@ -667,6 +669,8 @@ namespace solution
 			catch (const std::exception & exception)
 			{
 				shared::catch_handler < system_exception > (logger, exception);
+
+				return false;
 			}
 		}
 

@@ -38,6 +38,8 @@ namespace solution
 				catch (const std::exception & exception)
 				{
 					shared::catch_handler < segment_exception > (logger, exception);
+
+					return 0LL;
 				}
 			}
 

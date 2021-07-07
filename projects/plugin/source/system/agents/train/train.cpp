@@ -59,6 +59,8 @@ namespace solution
 				catch (const std::exception & exception)
 				{
 					shared::catch_handler < train_exception > (logger, exception);
+
+					return false;
 				}
 			}
 

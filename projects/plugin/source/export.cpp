@@ -153,4 +153,24 @@ const char * aimGetResult(const char * reserved)
 	}
 }
 
-void aimClose() {}
+void aimClose() 
+{
+	solver->interrupt();
+
+	while (!solver->is_done())
+	{
+		std::this_thread::yield();
+	}
+
+	serializer.reset();
+
+	source.reset();
+
+	if (worker)
+	{
+		worker->join();
+		worker.reset();
+	}
+
+	solver.reset();
+}

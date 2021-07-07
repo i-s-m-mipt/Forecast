@@ -139,7 +139,8 @@ namespace solution
 			explicit System(
 				const input_segments_t & input_segments, 
 				const input_routes_t   & input_routes,
-				const input_locks_t    & input_locks) : m_time_begin(0LL), m_head(nullptr), m_done_flag(false)
+				const input_locks_t    & input_locks) : m_time_begin(0LL), m_head(nullptr), 
+					m_done_flag(false), m_interrupt_flag(false)
 			{
 				initialize(input_segments, input_routes, input_locks);
 			}
@@ -213,6 +214,11 @@ namespace solution
 				return m_done_flag.load();
 			}
 
+			void interrupt() const noexcept
+			{
+				m_interrupt_flag.store(true);
+			}
+
 		private:
 
 			static const std::time_t seconds_in_minute = 60LL;
@@ -240,6 +246,8 @@ namespace solution
 		private:
 
 			mutable std::atomic < bool > m_done_flag;
+
+			mutable std::atomic < bool > m_interrupt_flag;
 		};
 
 	} // namespace plugin

@@ -126,6 +126,8 @@ namespace solution
 			catch (const std::exception & exception)
 			{
 				catch_handler < logger_exception > (FUNCTION, exception);
+
+				return nullptr;
 			}
 		}
 
