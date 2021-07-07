@@ -229,8 +229,10 @@ namespace solution
 
 			try
 			{
-				if (const auto directory = QFileDialog::getExistingDirectory(this,
-					tr("Find Files"), QDir::currentPath()); !directory.isEmpty())
+				const auto directory = QFileDialog::getExistingDirectory(this,
+					tr("Find Files"), QDir::currentPath());
+
+				if (!directory.isEmpty())
 				{
 					m_line_input->setText(directory);
 				}
@@ -247,8 +249,10 @@ namespace solution
 
 			try
 			{
-				if (const auto directory = QFileDialog::getExistingDirectory(this,
-					tr("Find Files"), QDir::currentPath()); !directory.isEmpty())
+				const auto directory = QFileDialog::getExistingDirectory(this,
+					tr("Find Files"), QDir::currentPath());
+
+				if (!directory.isEmpty())
 				{
 					m_line_model->setText(directory);
 				}
@@ -272,13 +276,13 @@ namespace solution
 
 					std::thread([this]()
 						{
-							const std::filesystem::path file = "progress";
+							const boost::filesystem::path file = "progress";
 
 							auto value = 0;
 
 							while (m_progress_value.load() < max_progress_value)
 							{
-								if (std::filesystem::exists(file))
+								if (boost::filesystem::exists(file))
 								{
 									std::fstream fin(file.string(), std::ios::in);
 
@@ -295,7 +299,7 @@ namespace solution
 								std::this_thread::sleep_for(std::chrono::milliseconds(100));
 							}
 
-							std::filesystem::remove(file);
+							boost::filesystem::remove(file);
 
 							if (value == max_progress_value)
 							{
@@ -326,10 +330,10 @@ namespace solution
 
 			try
 			{
-				const std::filesystem::path input_path = m_line_input->text().toStdString();
-				const std::filesystem::path model_path = m_line_model->text().toStdString();
+				const boost::filesystem::path input_path = m_line_input->text().toStdString();
+				const boost::filesystem::path model_path = m_line_model->text().toStdString();
 
-				if (input_path.empty() || !std::filesystem::exists(input_path))
+				if (input_path.empty() || !boost::filesystem::exists(input_path))
 				{
 					m_label_error->setStyleSheet("QLabel { color : red; }");
 					m_label_error->setText(QString::fromLocal8Bit(
@@ -338,7 +342,7 @@ namespace solution
 					return false;
 				}
 
-				if (model_path.empty() || !std::filesystem::exists(model_path))
+				if (model_path.empty() || !boost::filesystem::exists(model_path))
 				{
 					m_label_error->setStyleSheet("QLabel { color : red; }");
 					m_label_error->setText(QString::fromLocal8Bit(

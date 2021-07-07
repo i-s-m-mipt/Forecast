@@ -10,7 +10,6 @@
 #include <atomic>
 #include <chrono>
 #include <exception>
-#include <filesystem>
 #include <iostream>
 #include <memory>
 #include <stdexcept>
@@ -18,6 +17,8 @@
 #include <thread>
 
 #include <Windows.h>
+
+#include <boost/filesystem.hpp>
 
 #include <QtWidgets>
 
@@ -105,10 +106,10 @@ namespace solution
 
 		private:
 
-			static inline const auto outer_font_size = 12;
-			static inline const auto inner_font_size = 10;
+			static const auto outer_font_size = 12;
+			static const auto inner_font_size = 10;
 
-			static inline const auto max_progress_value = 100;
+			static const auto max_progress_value = 100;
 
 		private:
 

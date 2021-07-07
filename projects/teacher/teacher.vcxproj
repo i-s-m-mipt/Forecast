@@ -49,12 +49,17 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
       <AdditionalIncludeDirectories>C:\Libraries\boost;$(Qt_INCLUDEPATH_);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>libboost_python37-vc142-mt-x64-1_73.lib;libboost_atomic-vc142-mt-x64-1_73.lib;libboost_chrono-vc142-mt-x64-1_73.lib;libboost_container-vc142-mt-x64-1_73.lib;libboost_context-vc142-mt-x64-1_73.lib;libboost_contract-vc142-mt-x64-1_73.lib;libboost_coroutine-vc142-mt-x64-1_73.lib;libboost_date_time-vc142-mt-x64-1_73.lib;libboost_exception-vc142-mt-x64-1_73.lib;libboost_fiber-vc142-mt-x64-1_73.lib;libboost_filesystem-vc142-mt-x64-1_73.lib;libboost_graph-vc142-mt-x64-1_73.lib;libboost_iostreams-vc142-mt-x64-1_73.lib;libboost_locale-vc142-mt-x64-1_73.lib;libboost_log_setup-vc142-mt-x64-1_73.lib;libboost_log-vc142-mt-x64-1_73.lib;libboost_math_c99f-vc142-mt-x64-1_73.lib;libboost_math_c99l-vc142-mt-x64-1_73.lib;libboost_math_c99-vc142-mt-x64-1_73.lib;libboost_math_tr1f-vc142-mt-x64-1_73.lib;libboost_math_tr1l-vc142-mt-x64-1_73.lib;libboost_math_tr1-vc142-mt-x64-1_73.lib;libboost_prg_exec_monitor-vc142-mt-x64-1_73.lib;libboost_program_options-vc142-mt-x64-1_73.lib;libboost_random-vc142-mt-x64-1_73.lib;libboost_regex-vc142-mt-x64-1_73.lib;libboost_serialization-vc142-mt-x64-1_73.lib;libboost_stacktrace_noop-vc142-mt-x64-1_73.lib;libboost_stacktrace_windbg_cached-vc142-mt-x64-1_73.lib;libboost_stacktrace_windbg-vc142-mt-x64-1_73.lib;libboost_system-vc142-mt-x64-1_73.lib;libboost_test_exec_monitor-vc142-mt-x64-1_73.lib;libboost_thread-vc142-mt-x64-1_73.lib;libboost_timer-vc142-mt-x64-1_73.lib;libboost_type_erasure-vc142-mt-x64-1_73.lib;libboost_unit_test_framework-vc142-mt-x64-1_73.lib;libboost_wave-vc142-mt-x64-1_73.lib;libboost_wserialization-vc142-mt-x64-1_73.lib;$(Qt_LIBS_);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libboost_filesystem-vc142-mt-x64-1_75.lib;$(Qt_LIBS_);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Libraries\boost\stage\lib;$(Qt_LIBPATH_);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <LanguageStandard>stdcpp14</LanguageStandard>
+    </ClCompile>
   </ItemDefinitionGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'" Label="QtSettings">
     <QtInstall>20.11.05</QtInstall>
