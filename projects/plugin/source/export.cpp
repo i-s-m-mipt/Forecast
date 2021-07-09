@@ -70,7 +70,7 @@ const char * aimStartWork(const char * data, void(*callback)(void))
 	serializer->deserializeStartWork(data, source->routes, source->locks, 
 		source->current_time, source->interval, source->is_forecast);
 
-	solver = std::make_shared < System > (source->segments, source->routes, source->locks);
+	solver = std::make_shared < System > (source->segments, source->routes, source->locks, source->config.Do1);
 
 	worker = std::make_shared < std::thread > ([](
 		const std::vector < NitkaID > & routes, const std::vector < Zapret > & locks, 

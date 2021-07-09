@@ -57,13 +57,32 @@ namespace solution
 				}
 			}
 
-			void Segment::train_departured() const
+			void Segment::train_departured(std::time_t time) const
 			{
 				RUN_LOGGER(logger);
 
 				try
 				{
-					m_has_train = false;
+					m_last_departure = time;
+				}
+				catch (const std::exception & exception)
+				{
+					shared::catch_handler < segment_exception > (logger, exception);
+				}
+			}
+
+			void Segment::update_status(std::time_t time) const
+			{
+				RUN_LOGGER(logger);
+
+				try
+				{
+					if (m_last_departure && time - m_last_departure >= m_interval)
+					{
+						m_has_train = false;
+
+						m_last_departure = 0LL;
+					}
 				}
 				catch (const std::exception & exception)
 				{

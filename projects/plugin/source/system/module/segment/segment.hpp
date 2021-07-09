@@ -67,8 +67,9 @@ namespace solution
 
 				template < typename Name, typename Enable = 
 					std::enable_if_t < std::is_convertible_v < Name, std::string > > >
-				explicit Segment(Name && name_v) :
-					name(std::forward < Name > (name_v)), state(State::normal), m_has_train(false)
+				explicit Segment(Name && name_v, std::time_t interval) :
+					name(std::forward < Name > (name_v)), state(State::normal), 
+					m_interval(interval), m_has_train(false)
 				{}
 
 				~Segment() noexcept = default;
@@ -91,7 +92,9 @@ namespace solution
 
 				void train_arrived() const;
 
-				void train_departured() const;
+				void train_departured(std::time_t time) const;
+
+				void update_status(std::time_t time) const;
 
 				bool is_available() const;
 
@@ -100,6 +103,11 @@ namespace solution
 				void append_southern_adjacent_segment(const std::string & segment);
 
 				void set_standard_time(const std::string & type, Time time);
+
+				bool is_locked() const
+				{
+					return (state == State::locked);
+				}
 
 			public: // const
 
@@ -116,9 +124,13 @@ namespace solution
 
 				std::unordered_map < std::string, Time > m_standard_times;
 
+				std::time_t m_interval;
+
 			private:
 
 				mutable bool m_has_train;
+
+				mutable std::time_t m_last_departure = 0LL;
 			};
 
 		} // namespace module

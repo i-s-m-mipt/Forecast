@@ -139,8 +139,8 @@ namespace solution
 			explicit System(
 				const input_segments_t & input_segments, 
 				const input_routes_t   & input_routes,
-				const input_locks_t    & input_locks) : m_time_begin(0LL), m_head(nullptr), 
-					m_done_flag(false), m_interrupt_flag(false)
+				const input_locks_t    & input_locks, std::time_t interval) : m_time_begin(0LL), m_head(nullptr), 
+				m_interval(interval), m_done_flag(false), m_interrupt_flag(false)
 			{
 				initialize(input_segments, input_routes, input_locks);
 			}
@@ -201,7 +201,7 @@ namespace solution
 
 			void update_segments(std::time_t time, Node * node) const;
 
-			void execute_commands(Node * node) const;
+			void execute_commands(std::time_t time, Node * node) const;
 
 			bool has_deadlock(Node * node, std::string segment, Direction direction) const;
 
@@ -242,6 +242,8 @@ namespace solution
 			std::deque < Node * > m_leafs;
 
 			charts_container_t m_charts;
+
+			std::time_t m_interval;
 
 		private:
 

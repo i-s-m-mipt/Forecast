@@ -34,6 +34,13 @@ namespace solution
 
 			try
 			{
+				m_interval /= seconds_in_minute;
+
+				if (m_interval == 0LL)
+				{
+					m_interval = 1LL;
+				}
+
 				make_segments(input_segments);
 
 				m_head = std::make_unique < Node > ();
@@ -75,7 +82,7 @@ namespace solution
 				for (const auto & node : input_segments.nodes)
 				{
 					m_segments.emplace(std::piecewise_construct, 
-						std::forward_as_tuple(node.name), std::forward_as_tuple(node.name));
+						std::forward_as_tuple(node.name), std::forward_as_tuple(node.name, m_interval));
 
 					for (const auto & record : node.standard_times)
 					{
@@ -281,7 +288,7 @@ namespace solution
 						std::sort(std::begin(node->trains), std::end(node->trains),
 							[](const auto & lhs, const auto & rhs) { return lhs.deviation() > rhs.deviation(); });
 
-						execute_commands(node);
+						execute_commands(time, node);
 
 						node->update_deviation();
 
@@ -419,18 +426,23 @@ namespace solution
 			}
 		}
 
-		void System::execute_commands(Node * node) const
+		void System::execute_commands(std::time_t time, Node * node) const
 		{
 			RUN_LOGGER(logger);
 
 			try
 			{
+				for (auto & segment : node->segments)
+				{
+					segment.second.update_status(time);
+				}
+
 				std::for_each(std::begin(node->trains), std::end(node->trains),
-					[this, node](const auto & train) 
+					[this, time, node](const auto & train) 
 					{
 						if (train.command == Train::Command::skip)
 						{
-							node->segments.at(train.segment()).train_departured();
+							node->segments.at(train.segment()).train_departured(time);
 
 							++node->completed_routes_counter;
 						}
@@ -462,9 +474,9 @@ namespace solution
 
 								bool has_end = (std::find(std::begin(segments), std::end(segments), train.end) != std::end(segments));
 
-								if (has_end && node->segments.at(train.end).is_available())
+								if (has_end && node->segments.at(train.end).is_available() && !node->segments.at(train.segment()).is_locked())
 								{
-									node->segments.at(train.segment()).train_departured();
+									node->segments.at(train.segment()).train_departured(time);
 
 									train.move(train.end);
 
@@ -476,9 +488,11 @@ namespace solution
 								{
 									for (const auto & segment : segments)
 									{
-										if (node->segments.at(segment).is_available() && !has_deadlock(node, train.segment(), train.direction))
+										if (node->segments.at(segment).is_available() && 
+											!has_deadlock(node, train.segment(), train.direction) &&
+											!node->segments.at(train.segment()).is_locked())
 										{
-											node->segments.at(train.segment()).train_departured();
+											node->segments.at(train.segment()).train_departured(time);
 
 											train.move(segment);
 
@@ -504,9 +518,9 @@ namespace solution
 
 								bool has_end = (std::find(std::begin(segments), std::end(segments), train.end) != std::end(segments));
 
-								if (has_end && node->segments.at(train.end).is_available())
+								if (has_end && node->segments.at(train.end).is_available() && !node->segments.at(train.segment()).is_locked())
 								{
-									node->segments.at(train.segment()).train_departured();
+									node->segments.at(train.segment()).train_departured(time);
 
 									train.move(train.end);
 
@@ -518,9 +532,11 @@ namespace solution
 								{
 									for (const auto & segment : segments)
 									{
-										if (node->segments.at(segment).is_available() && !has_deadlock(node, train.segment(), train.direction))
+										if (node->segments.at(segment).is_available() && 
+											!has_deadlock(node, train.segment(), train.direction) && 
+											!node->segments.at(train.segment()).is_locked())
 										{
-											node->segments.at(train.segment()).train_departured();
+											node->segments.at(train.segment()).train_departured(time);
 
 											train.move(segment);
 
