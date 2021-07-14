@@ -34,6 +34,21 @@ namespace
 	std::shared_ptr < System > solver;
 }
 
+//globals
+const char * g_name = "Play strategy algorithm";
+const char * g_version = __DATE__ " " __TIME__;
+
+//dll support
+const char * aimName()
+{
+	return g_name;
+}
+
+const char * aimVersion()
+{
+	return g_version;
+}
+
 const char * aimInit(const char * data) 
 {
 	serializer = std::make_shared < aim::CSerializer > ();
@@ -155,14 +170,15 @@ const char * aimGetResult(const char * reserved)
 
 void aimClose() 
 {
-	solver->interrupt();
-
-	while (!solver->is_done())
+	if (solver)
 	{
-		std::this_thread::yield();
-	}
+		solver->interrupt();
 
-	serializer.reset();
+		while (!solver->is_done())
+		{
+			std::this_thread::yield();
+		}
+	}
 
 	source.reset();
 
