@@ -515,7 +515,8 @@ namespace solution
 									{
 										if (node->segments.at(segment).is_available() && 
 											!has_deadlock(node, train.segment(), train.direction) &&
-											!node->segments.at(train.segment()).is_locked())
+											!node->segments.at(train.segment()).is_locked() &&
+											!has_deadend(node, segment, train.end, train.direction))
 										{
 											node->segments.at(train.segment()).train_departured(time);
 
@@ -559,7 +560,8 @@ namespace solution
 									{
 										if (node->segments.at(segment).is_available() && 
 											!has_deadlock(node, train.segment(), train.direction) && 
-											!node->segments.at(train.segment()).is_locked())
+											!node->segments.at(train.segment()).is_locked() &&
+											!has_deadend(node, segment, train.end, train.direction))
 										{
 											node->segments.at(train.segment()).train_departured(time);
 
@@ -694,6 +696,89 @@ namespace solution
 						if (!node->segments.at(segment).is_available())
 						{
 							return true;
+						}
+					}
+
+					break;
+				}
+				default:
+				{
+					throw std::runtime_error("unknown direction");
+				}
+				}
+
+				return false;
+			}
+			catch (const std::exception & exception)
+			{
+				shared::catch_handler < system_exception > (logger, exception);
+
+				return false;
+			}
+		}
+
+		bool System::has_deadend(Node * node, std::string next_segment,
+			std::string last_segment, Direction direction) const
+		{
+			RUN_LOGGER(logger);
+
+			try
+			{
+				switch (direction)
+				{
+				case Direction::north:
+				{
+					while (true)
+					{
+						auto size = std::size(node->segments.at(next_segment).northern_adjacent_segments());
+
+						if (size == 0U)
+						{
+							if (next_segment != last_segment)
+							{
+								return true;
+							}
+							else
+							{
+								return false;
+							}
+						}
+						else if (size > 1U)
+						{
+							return false;
+						}
+						else
+						{
+							next_segment = node->segments.at(next_segment).northern_adjacent_segments().front();
+						}
+					}
+
+					break;
+				}
+				case Direction::south:
+				{
+					while (true)
+					{
+						auto size = std::size(node->segments.at(next_segment).southern_adjacent_segments());
+
+						if (size == 0U)
+						{
+							if (next_segment != last_segment)
+							{
+								return true;
+							}
+							else
+							{
+								return false;
+							}
+						}
+						else if (size > 1U)
+						{
+							return false;
+						}
+						else
+						{
+							next_segment = node->segments.at(next_segment).southern_adjacent_segments().front();
 						}
 					}
 

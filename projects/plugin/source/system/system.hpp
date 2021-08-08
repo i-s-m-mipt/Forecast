@@ -205,6 +205,9 @@ namespace solution
 
 			bool has_deadlock(Node * node, std::string segment, Direction direction) const;
 
+			bool has_deadend(Node * node, std::string next_segment, 
+				std::string last_segment, Direction direction) const;
+
 			void make_new_nodes(Node * node);
 
 		public:
