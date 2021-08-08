@@ -139,9 +139,34 @@ namespace solution
 
 					m_routes.push_back(std::make_pair(input_route.StartTime / seconds_in_minute,
 						Train(index++, input_route.type, get_direction(begin, end), begin, end, input_route.priority)));
+
+					if (!input_route.idPoints.empty())
+					{
+						m_time_begin = input_route.idStartTime;
+
+						for (const auto & point : input_route.idPoints)
+						{
+							m_time_begin += point.dt;
+						}
+
+						m_time_begin /= seconds_in_minute;
+
+						m_head->trains.push_back(m_routes.back().second);
+
+						m_head->trains.back().move(input_route.idPoints.back().name);
+
+						m_head->trains.back().set_segment_time(input_route.idPoints.back().dt / seconds_in_minute);
+
+						m_head->segments.at(input_route.idPoints.back().name).train_arrived();
+
+						m_head->has_event = true;
+					}
 				}
 
-				m_time_begin = *std::begin(starts);
+				if (m_time_begin == 0LL)
+				{
+					m_time_begin = *std::begin(starts);
+				}
 			}
 			catch (const std::exception & exception)
 			{
