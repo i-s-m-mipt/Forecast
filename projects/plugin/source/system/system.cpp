@@ -623,6 +623,11 @@ namespace solution
 				{
 					while (true)
 					{
+						if (std::size(node->segments.at(segment).northern_adjacent_segments()) == 0U)
+						{
+							return false;
+						}
+
 						auto available_segment = 
 							node->segments.at(segment).northern_adjacent_segments().front();
 
@@ -664,6 +669,11 @@ namespace solution
 				{
 					while (true)
 					{
+						if (std::size(node->segments.at(segment).northern_adjacent_segments()) == 0U)
+						{
+							return false;
+						}
+
 						auto available_segment =
 							node->segments.at(segment).southern_adjacent_segments().front();
 
