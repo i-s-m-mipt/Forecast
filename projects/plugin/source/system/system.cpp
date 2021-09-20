@@ -34,24 +34,24 @@ namespace solution
 
 			try
 			{
-				m_interval /= seconds_in_minute;
+				m_interval /= seconds_in_minute; // в минутах
 
 				if (m_interval == 0LL)
 				{
-					m_interval = 1LL;
+					m_interval = 1LL; // минимум 1 минута
 				}
 
-				make_segments(input_segments);
+				make_segments(input_segments); // загружаем граф
 
-				m_head = std::make_unique < Node > ();
+				m_head = std::make_unique < Node > (); // создаем голову кипариса
 
-				m_head->segments = m_segments;
+				m_head->segments = m_segments; // инициализиуем ее
 
-				m_leafs.push_back(m_head.get());
+				m_leafs.push_back(m_head.get()); // первый лист - сама голова
 
-				make_routes(input_routes);
+				make_routes(input_routes); // создаем исходные нитки
 
-				make_locks(input_locks);
+				make_locks(input_locks); // загружаем запреты
 			}
 			catch (const std::exception & exception)
 			{
@@ -73,6 +73,7 @@ namespace solution
 			}
 		}
 
+		// Преобразование данных из dll во внутренний формат
 		void System::make_segments(const input_segments_t & input_segments)
 		{
 			RUN_LOGGER(logger);
@@ -86,11 +87,13 @@ namespace solution
 
 					for (const auto & record : node.standard_times)
 					{
+						// все время в минутах
 						m_segments.at(node.name).set_standard_time(record.type, Segment::Time{ 
 							record.time / seconds_in_minute, record.timeRev / seconds_in_minute });
 					}
 				}
 
+				// задаем смежные сегменты
 				for (const auto & line : input_segments.lines)
 				{
 					switch (line.srcDirection)
@@ -120,26 +123,29 @@ namespace solution
 			}
 		}
 
+		// Преобразование данных из dll во внутренний формат
 		void System::make_routes(const input_routes_t & input_routes)
 		{
 			RUN_LOGGER(logger);
 
 			try
 			{
-				std::set < std::time_t > starts;
+				std::set < std::time_t > starts; // времена начала ниток
 
 				auto index = 0U;
 
 				for (const auto & input_route : input_routes)
 				{
-					starts.insert(input_route.StartTime / seconds_in_minute);
+					starts.insert(input_route.StartTime / seconds_in_minute); // в минутах
 
 					const auto begin = input_route.points.front().name;
 					const auto end   = input_route.points.back ().name;
 
+					// конструируем нитку во внутреннем представлении маршрута
 					m_routes.push_back(std::make_pair(input_route.StartTime / seconds_in_minute,
 						Train(index++, input_route.type, get_direction(begin, end), begin, end, input_route.priority)));
 
+					// у этой нитки есть исполненный фрагмент?
 					if (!input_route.idPoints.empty())
 					{
 						m_time_begin = input_route.idStartTime;
@@ -149,21 +155,18 @@ namespace solution
 							m_time_begin += point.dt;
 						}
 
-						m_time_begin /= seconds_in_minute;
+						m_time_begin /= seconds_in_minute; // изменяем время начала моделирования
 
+						// обновляем головной узел
 						m_head->trains.push_back(m_routes.back().second);
-
 						m_head->trains.back().move(input_route.idPoints.back().name);
-
 						m_head->trains.back().set_segment_time(input_route.idPoints.back().dt / seconds_in_minute);
-
 						m_head->segments.at(input_route.idPoints.back().name).train_arrived();
-
 						m_head->has_event = true;
 					}
 				}
 
-				if (m_time_begin == 0LL)
+				if (m_time_begin == 0LL) // если не было исполненного движения
 				{
 					m_time_begin = *std::begin(starts);
 				}
@@ -174,6 +177,7 @@ namespace solution
 			}
 		}
 
+		// Преобразование данных из dll во внутренний формат
 		void System::make_locks(const input_locks_t & input_locks)
 		{
 			RUN_LOGGER(logger);
@@ -194,6 +198,10 @@ namespace solution
 			}
 		}
 
+		// Определение, в каком направлении нужно двигаться от begin до end
+		// По сути, это BFS, применим для линейных графов, а для графов со
+		// сложной топологией, типа кольца или восьмерки, требуется корректировка,
+		// но см. мои комментарии про вырожденные случаи в hpp
 		Direction System::get_direction(const std::string & begin, const std::string & end) const
 		{
 			RUN_LOGGER(logger);
@@ -273,11 +281,11 @@ namespace solution
 
 			try
 			{
-				make_tree();
+				make_tree(); // построить кипарис или одну его ветку в вырожденном случае
 
-				make_charts();
+				make_charts(); // восстановить корректные нитки по кипарису с конца
 
-				m_done_flag.store(true);
+				m_done_flag.store(true); // просигнализировао завершении для dll
 			}
 			catch (const std::exception & exception)
 			{
@@ -285,14 +293,16 @@ namespace solution
 			}
 		}
 
+		// Основная функция алгоритма
 		void System::make_tree()
 		{
 			RUN_LOGGER(logger);
 
 			try
 			{
-				std::fstream fout("progress.txt", std::ios::out);
+				std::fstream fout("progress.txt", std::ios::out); // только для наблюдения и отладки
 
+				// основной цикл построения кипариса, по нему можно обновлять прогресс бар
 				for (auto time = m_time_begin; (time - m_time_begin < time_limit) && 
 					(m_leafs.front()->completed_routes_counter < std::size(m_routes)) && !m_interrupt_flag.load(); ++time)
 				{
@@ -300,27 +310,35 @@ namespace solution
 
 					m_leafs.clear();
 
-					for (auto i = 0U; i < std::size(leafs_copy); ++i)
+					for (auto i = 0U; i < std::size(leafs_copy); ++i) // один лист в вырожденном случае
 					{
-						auto node = leafs_copy.front();
+						auto node = leafs_copy.front(); // извлекаем лист
 
-						leafs_copy.pop_front();
+						leafs_copy.pop_front(); // удаляем его из очереди
 
-						make_trains(time, node);
+						make_trains(time, node); // создаем поезда, которые появились на этом шаге
 
-						update_segments(time, node);
+						update_segments(time, node); // обновляем состояния сегментов
 
+						// сортировка поездов в текущемм узле по приоритетам и отклонениям,
+						// этого достаточно чтобы выделить наиболее оптимальную ветку кипариса
+						// в вырожденном случае, т.е. итоговый приоритет движения отдается тем
+						// поездам, которые окажутся первыми в этом отсортированном массиве
 						std::sort(std::begin(node->trains), std::end(node->trains),
-							[](const auto & lhs, const auto & rhs) { return lhs.deviation() > rhs.deviation(); });
+							[](const auto & lhs, const auto & rhs) 
+							{ 
+								return ((lhs.priority > rhs.priority) || 
+									((lhs.priority == rhs.priority) && (lhs.deviation() > rhs.deviation())));
+							});
 
-						execute_commands(time, node);
+						execute_commands(time, node); // выполняем команды в порядке сортировки
 
-						node->update_deviation();
+						node->update_deviation(); // обновляем отклонение
 
-						make_new_nodes(node);
+						make_new_nodes(node); // расширем кипарис (один узел в вырожденном случае)
 					}
 
-					fout << time - m_time_begin << std::endl;
+					fout << time - m_time_begin << std::endl; // для отладки или в прогресс бар
 				}
 			}
 			catch (const std::exception & exception)
@@ -329,14 +347,13 @@ namespace solution
 			}
 		}
 
+		// Формирование итоговых графиков по кипарису
 		void System::make_charts()
 		{
 			RUN_LOGGER(logger);
 
 			try
 			{
-				std::fstream fout("progress.txt", std::ios::out | std::ios::app);
-
 				std::vector < Node * > path;
 
 				std::sort(std::begin(m_leafs), std::end(m_leafs),
@@ -348,8 +365,6 @@ namespace solution
 				{
 					path.push_back(path.back()->parent);
 				}
-
-				fout << "length: " << std::size(path) << std::endl;
 
 				std::reverse(std::begin(path), std::end(path));
 
@@ -389,6 +404,7 @@ namespace solution
 			}
 		}
 
+		// Создание новых поездов, которые сформировались в этот момент времени
 		void System::make_trains(std::time_t time, Node * node)
 		{
 			RUN_LOGGER(logger);
@@ -422,6 +438,7 @@ namespace solution
 			}
 		}
 
+		// ОБновление статусов сегментов в соответствии с запретами
 		void System::update_segments(std::time_t time, Node * node) const
 		{
 			RUN_LOGGER(logger);
@@ -451,6 +468,7 @@ namespace solution
 			}
 		}
 
+		// Выполнение заданных поездам команд
 		void System::execute_commands(std::time_t time, Node * node) const
 		{
 			RUN_LOGGER(logger);
@@ -459,13 +477,13 @@ namespace solution
 			{
 				for (auto & segment : node->segments)
 				{
-					segment.second.update_status(time);
+					segment.second.update_status(time); // виртуальная занятость, интервал
 				}
 
 				std::for_each(std::begin(node->trains), std::end(node->trains),
 					[this, time, node](const auto & train) 
 					{
-						if (train.command == Train::Command::skip)
+						if (train.command == Train::Command::skip) // поезда, завершившие маршрут
 						{
 							node->segments.at(train.segment()).train_departured(time);
 
@@ -473,6 +491,7 @@ namespace solution
 						}
 					});
 
+				// потом вообще удаляем их
 				node->trains.erase(std::remove_if(std::begin(node->trains), std::end(node->trains), 
 					[](const auto & train) { return (train.command == Train::Command::skip); }), std::end(node->trains));
 
@@ -480,25 +499,28 @@ namespace solution
 				{
 					switch (train.command)
 					{
-					case Train::Command::stay:
-					case Train::Command::wait:
+					case Train::Command::stay: // команды ожидания
+					case Train::Command::wait: // команды ожидания
 					{
 						train.stay(node->segments.at(train.segment()).standard_time(train.type, train.direction));
 
 						break;
 					}
-					case Train::Command::move:
+					case Train::Command::move: // двигаться если есть возможность
 					{
-						if (train.segment() != train.end)
+						if (train.segment() != train.end) // если не доехали до конца
 						{
 							switch (train.direction)
 							{
 							case Direction::north:
 							{
+								// куда можно
 								const auto & segments = node->segments.at(train.segment()).northern_adjacent_segments();
 
+								// впереди конец?
 								bool has_end = (std::find(std::begin(segments), std::end(segments), train.end) != std::end(segments));
 
+								// он доступен?
 								if (has_end && node->segments.at(train.end).is_available() && !node->segments.at(train.segment()).is_locked())
 								{
 									node->segments.at(train.segment()).train_departured(time);
@@ -509,10 +531,11 @@ namespace solution
 
 									node->has_event = true;
 								}
-								else
+								else // не доступен или не конец
 								{
 									for (const auto & segment : segments)
 									{
+										// выбираем доступный вариант, но следим, чтобы не появился дедлок
 										if (node->segments.at(segment).is_available() && 
 											!has_deadlock(node, train.segment(), train.direction) &&
 											!node->segments.at(train.segment()).is_locked() &&
@@ -524,7 +547,7 @@ namespace solution
 
 											if (has_end)
 											{
-												train.at_end = true;
+												train.at_end = true; // вручную выставляем флаг конца
 											}
 
 											node->segments.at(segment).train_arrived();
@@ -538,7 +561,7 @@ namespace solution
 
 								break;
 							}
-							case Direction::south:
+							case Direction::south: // симметрично
 							{
 								const auto & segments = node->segments.at(train.segment()).southern_adjacent_segments();
 
@@ -611,6 +634,7 @@ namespace solution
 			}
 		}
 
+		// Проверка, приведет ли движение к дедлоку
 		bool System::has_deadlock(Node * node, std::string segment, Direction direction) const
 		{
 			RUN_LOGGER(logger);
@@ -619,13 +643,13 @@ namespace solution
 			{
 				switch (direction)
 				{
-				case Direction::north:
+				case Direction::north: // здесь вносится корректировка для пакетного пропуска
 				{
-					while (true)
+					while (true) // если один свободный, то продолжаем
 					{
 						if (std::size(node->segments.at(segment).northern_adjacent_segments()) == 0U)
 						{
-							return false;
+							return false; // не дедлок если тупик с выходом во вне
 						}
 
 						auto available_segment = 
@@ -645,11 +669,11 @@ namespace solution
 								}
 							}
 
-							if (counter >= 2)
+							if (counter >= 2) // если свободных два, то не тупик
 							{
 								return false;
 							}
-							else if (counter == 0U)
+							else if (counter == 0U) // если свободных ноль, то точно тупик
 							{
 								return true;
 							}
@@ -665,7 +689,7 @@ namespace solution
 
 					break;
 				}
-				case Direction::south:
+				case Direction::south: // симметрично
 				{
 					while (true)
 					{
@@ -727,6 +751,7 @@ namespace solution
 			}
 		}
 
+		// Проверка на наличие тупика
 		bool System::has_deadend(Node * node, std::string next_segment,
 			std::string last_segment, Direction direction) const
 		{
@@ -810,6 +835,7 @@ namespace solution
 			}
 		}
 
+		// Ветвление дерева кипариса
 		void System::make_new_nodes(Node * node)
 		{
 			RUN_LOGGER(logger);
@@ -818,7 +844,7 @@ namespace solution
 			{
 				std::vector < trains_container_t > variants;
 
-				variants.push_back(node->trains);
+				variants.push_back(node->trains); // изначально один вариант
 
 				auto index = 0U;
 
@@ -827,11 +853,11 @@ namespace solution
 					const auto standard_time = 
 						node->segments.at(train.segment()).standard_time(train.type, train.direction);
 
-					if (train.has_completed_route(standard_time))
+					if (train.has_completed_route(standard_time)) // поезд можно исключить из вариантов
 					{
 						for (auto & variant : variants)
 						{
-							variant[index].command = Train::Command::skip;
+							variant[index].command = Train::Command::skip; // во всех вариантах исключаем
 						}
 
 						++index;
@@ -839,15 +865,21 @@ namespace solution
 						continue;
 					}
 
-					if (!train.is_ready(standard_time))
+					if (!train.is_ready(standard_time)) // если поезд не готов к действиям
 					{
 						for (auto & variant : variants)
 						{
-							variant[index].command = Train::Command::stay;
+							variant[index].command = Train::Command::stay; // то везде stay
 						}
 					}
 					else
 					{
+						// Здесь всем поездам дается команда move, т.к. в вырожденном
+						// случае линейного графа они сортируются по приоритетам и отклонениям
+						// и это дает оптимальное решение. В случае с графами со сложной топологией
+						// здесь следует добавлять вариант с командой wait и тем самым получать
+						// ветвление дерева. Также надо изменить показатель максимальной ширины
+						// дерева с 1 до большего значения, в зависимости от топологии.
 						if ((train.command == Train::Command::wait) && (!node->has_event))
 						{
 							++index;
@@ -868,7 +900,7 @@ namespace solution
 					++index;
 				}
 
-				for (const auto & variant : variants)
+				for (const auto & variant : variants) // 1 вариант в вырожденном случае
 				{
 					auto new_node = std::make_unique < Node > ();
 

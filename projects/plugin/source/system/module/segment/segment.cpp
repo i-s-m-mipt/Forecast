@@ -6,6 +6,7 @@ namespace solution
 	{
 		namespace module
 		{
+			// Получить стандартное время для сегмента для данного типа поезда и направления
 			std::time_t Segment::standard_time(std::string type, Direction direction) const
 			{
 				RUN_LOGGER(logger);
@@ -43,6 +44,7 @@ namespace solution
 				}
 			}
 
+			// На сегмент прибыл поезд
 			void Segment::train_arrived() const
 			{
 				RUN_LOGGER(logger);
@@ -57,12 +59,16 @@ namespace solution
 				}
 			}
 
+			// Поезд покинул сегмент
 			void Segment::train_departured(std::time_t time) const
 			{
 				RUN_LOGGER(logger);
 
 				try
 				{
+					// Важно: has_train не становится false, т.е. остается
+					// виртуальная занятость. Только спустя интервал сегмент
+					// можно считать полностью свободным
 					m_last_departure = time;
 				}
 				catch (const std::exception & exception)
@@ -71,6 +77,7 @@ namespace solution
 				}
 			}
 
+			// А вот это уже снятие виртуальной занятости через интервал
 			void Segment::update_status(std::time_t time) const
 			{
 				RUN_LOGGER(logger);
@@ -90,12 +97,17 @@ namespace solution
 				}
 			}
 
+			// На сегмент можно приехать, если нет поезда (даже виртуально) и нет аншлага
 			bool Segment::is_available() const
 			{
 				RUN_LOGGER(logger);
 
 				try
 				{
+					// В этом месте надо подумать над проблемой аншлагов, когда
+					// поезд заезжает на плановый аншлаг. Окончательного решения
+					// я пока не выработал для общего случая, а для вырожденного
+					// оно достаточно тривиальное
 					return (!m_has_train && state != State::locked);
 				}
 				catch (const std::exception & exception)
@@ -104,6 +116,7 @@ namespace solution
 				}
 			}
 
+			// Начальная инициализация
 			void Segment::append_northern_adjacent_segment(const std::string & segment)
 			{
 				RUN_LOGGER(logger);
@@ -125,6 +138,7 @@ namespace solution
 				}
 			}
 
+			// Начальная инициализация
 			void Segment::append_southern_adjacent_segment(const std::string & segment)
 			{
 				RUN_LOGGER(logger);
@@ -146,6 +160,7 @@ namespace solution
 				}
 			}
 
+			// Начальная инициализация
 			void Segment::set_standard_time(const std::string & type, Time time)
 			{
 				RUN_LOGGER(logger);

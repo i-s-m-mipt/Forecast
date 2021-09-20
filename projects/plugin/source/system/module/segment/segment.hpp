@@ -45,6 +45,8 @@ namespace solution
 			{
 			public:
 
+				// Состояние сегмента - нормальное или есть аншлаг
+				// Пока не рассматривается ограничение скорости
 				enum class State // TODO: add reduced speed
 				{
 					normal,
@@ -111,26 +113,27 @@ namespace solution
 
 			public: // const
 
-				std::string name;
+				std::string name; // название сегмента
 
 			public:
 
-				State state;
+				State state; // состояние сегмента
 
 			private:
 
-				segments_container_t m_northern_adjacent_segments;
-				segments_container_t m_southern_adjacent_segments;
+				segments_container_t m_northern_adjacent_segments; // названия северных смежных сегментов
+				segments_container_t m_southern_adjacent_segments; // названия южных смежных сегментов
 
+				// время движения в обоих направлениях для разных поездов
 				std::unordered_map < std::string, Time > m_standard_times;
 
-				std::time_t m_interval;
+				std::time_t m_interval; // чтобы поезда успели разминуться
 
 			private:
 
-				mutable bool m_has_train;
+				mutable bool m_has_train; // есть ли поезд
 
-				mutable std::time_t m_last_departure = 0LL;
+				mutable std::time_t m_last_departure = 0LL; // когда с этого сегмента уехал последний поезд
 			};
 
 		} // namespace module

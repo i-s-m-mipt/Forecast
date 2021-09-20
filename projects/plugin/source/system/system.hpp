@@ -75,12 +75,12 @@ namespace solution
 
 		private:
 
-			struct Lock
+			struct Lock // Запрет движения
 			{
-				std::string segment;
+				std::string segment; // название сегмента
 
-				std::time_t begin;
-				std::time_t end;
+				std::time_t begin; // время начала
+				std::time_t end; // время окончания
 			};
 
 		private:
@@ -89,28 +89,43 @@ namespace solution
 
 		private:
 
+			// Узлы строящегося дерева (кипариса) стратегий движения. Было обнаружено в
+			// ходе моих исследований, что линейные графы типа Монголии и Казахстана
+			// представляют собой т.н. вырожденный случай. В этом вырожденном случае
+			// достаточно строить только одну основную ветку кипариса, которая вычисляется
+			// в результате сортировки всех активных поездов по приоритетам и отклонениям
+			// от графиков нормативного движения, после чего право движения предоставляется
+			// поездам в порядке сортировки. При таком пропуске поездов реализуется наиболее
+			// оптимальное движение в соответствии с рассматриваемым функционалом. Аналогично
+			// все это применимо также и для многопутных линейных схем ЖД участков, когда
+			// параллельно идет несколько перегонов. Для топологий участков типа кольца или
+			// колеса со спицами требуется провести дополнительные исследования, однако
+			// таких графов нам так и не поступало. Кольцо гипотетически может быть на МЦК
+			// и/или в метро, однако там решается задача сохранения интервального движения,
+			// а не минимизации отклонения от планового расписания, поэтому вырождение
+			// сохранятеся. Далее в коде будет отмечено, как строить одну ветку кипариса.
 			struct Node
 			{
 				void update_deviation();
 
-				segments_container_t segments;
+				segments_container_t segments; // сегменты с информацией о состояниях и занятости
 
-				trains_container_t trains;
+				trains_container_t trains; // поезда в состояниях на данный момент времени стратегии
 
-				bool has_event = false;
+				bool has_event = false; // события порождают ветвления в кипарисе
 
-				double deviation = 0.0;
+				double deviation = 0.0; // суммарное отклонение по всем поездам
 
-				Node * parent = nullptr;
+				Node * parent = nullptr; // родительский узел
 
-				std::vector < std::unique_ptr < Node > > children;
+				std::vector < std::unique_ptr < Node > > children; // узлы потомков
 
-				std::size_t completed_routes_counter = 0U;
+				std::size_t completed_routes_counter = 0U; // сколько ниток уже завершилост из исходных
 			};
 
 		private:
 
-			struct Point
+			struct Point // компонент нитки
 			{
 				std::string segment;
 
@@ -119,7 +134,7 @@ namespace solution
 
 		private:
 
-			struct Chart
+			struct Chart // нитка
 			{
 				std::time_t start = 0LL;
 
@@ -226,33 +241,33 @@ namespace solution
 
 			static const std::time_t seconds_in_minute = 60LL;
 
-			static const std::size_t strategies_limit = 1U;
+			static const std::size_t strategies_limit = 1U; // вырожденный случай для Монголии/Казахстана и др.
 
-			static const std::time_t time_limit = 7200U;
-
-		private:
-
-			segments_container_t m_segments;
-
-			routes_container_t m_routes;
-
-			locks_container_t m_locks;
-
-			std::time_t m_time_begin;
-
-			std::unique_ptr < Node > m_head;
-
-			std::deque < Node * > m_leafs;
-
-			charts_container_t m_charts;
-
-			std::time_t m_interval;
+			static const std::time_t time_limit = 7200U; // На сколько вперед просчитывается движение
 
 		private:
 
-			mutable std::atomic < bool > m_done_flag;
+			segments_container_t m_segments; // начальный граф
 
-			mutable std::atomic < bool > m_interrupt_flag;
+			routes_container_t m_routes; // заданные нитки
+
+			locks_container_t m_locks; // заданные запреты
+
+			std::time_t m_time_begin; // с какого момента времени просчитывается движение
+
+			std::unique_ptr < Node > m_head; // головной узел кипариса начианется в m_time_begin
+
+			std::deque < Node * > m_leafs; // листья (один лист в вырожденном случае)
+
+			charts_container_t m_charts; // итоговые нитки скорректированные
+
+			std::time_t m_interval; // интервал для сегментов
+
+		private:
+
+			mutable std::atomic < bool > m_done_flag; // для dll
+
+			mutable std::atomic < bool > m_interrupt_flag; // для dll
 		};
 
 	} // namespace plugin

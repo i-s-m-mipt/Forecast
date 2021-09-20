@@ -43,12 +43,15 @@ namespace solution
 			{
 			public:
 
+				//  оманда, которую агент (поезд) должен исполн€ть на каждом шаге
+				// в процессе моделировани€ движени€. ѕодробно эти команды описаны
+				// в статье “»—”-3, которую можно запросить у  атерины.
 				enum class Command
 				{
-					stay,
-					skip,
-					move,
-					wait,
+					stay, // продолжать делать предыдущее действие (stay или wait)
+					skip, // проигнорировать (этот) поезд, который завершил нитку
+					move, // переместитьс€ на перегон или станционный путь
+					wait, // сто€ть на станционном пути по плану или сверх нормы
 				};
 
 			public:
@@ -104,27 +107,24 @@ namespace solution
 
 			public: // const
 
-				std::size_t index;
-				std::string type;
-				Direction direction;
-				std::string begin;
-				std::string end;
-				double priority;
-				bool at_end;
-
-			public:
-
-				Command command;
+				std::size_t index; // уникальный номер поезда (номер нитки)
+				std::string type; // тип поезда
+				Direction direction; // направление движени€
+				std::string begin; // название сегмента, с которого начинаетс€ движение
+				std::string end; // название сегмента, на который в конце надо приехать
+				double priority; // приоритет поезда
+				bool at_end; // доехал ли поезд до последнего сегмента своего маршрута
+				Command command; // текуща€ команда, которую поезд должен исполн€ть
 
 			private:
 
-				double m_deviation;
+				double m_deviation; // отклонение от плана, комонент оптимизируемой функции
 
-				std::string m_segment;
+				std::string m_segment; // название сегмента, на котором поезд сейчас находитс€
 
 			private:
 
-				mutable std::time_t m_segment_time;
+				mutable std::time_t m_segment_time; // врем€, которое поезд находитс€ на текущем сегменте
 			};
 
 		} // namespace agents
